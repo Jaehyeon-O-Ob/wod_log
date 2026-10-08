@@ -143,6 +143,7 @@ return {
     if (bottomNav) bottomNav.classList.toggle('has-coach', isCoach);
 
     if (!isCoach) {
+      if ($('coachCompletionsDialog')?.open) $('coachCompletionsDialog').close();
       if (location.hash === '#coach' || ($('page-coach') && !$('page-coach').hidden)) {
         if (typeof showPage === 'function') showPage('todo');
       }
@@ -570,6 +571,13 @@ return {
 
   async fetchCoachPrograms() {
     return await this.req('/rest/v1/coach_programs?select=*&order=start_date.desc,created_at.desc');
+  },
+
+  async fetchCoachCompletions(programId) {
+    if (!this.isCoach) throw new Error(this.message('코치만 수행 여부를 확인할 수 있습니다.', 'Only coaches can view participation.'));
+    return this.req('/rest/v1/rpc/get_coach_program_completions', {
+      method: 'POST', body: JSON.stringify({p_program_id: programId})
+    });
   },
 
   async deleteCoachPrograms(ids) {

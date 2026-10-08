@@ -1,5 +1,5 @@
 // Optional static-host PWA support. The HTML files also work by themselves.
-const CACHE = 'wod-log-web-repair-20261008-v2';
+const CACHE = 'wod-log-web-coach-completions-20261008-v3';
 const FILES = ['./cloud.js', './crossfit_wod_tracker_ko.html', './crossfit_wod_tracker_en.html', './manifest-ko.webmanifest', './manifest-en.webmanifest', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(async cache => {
