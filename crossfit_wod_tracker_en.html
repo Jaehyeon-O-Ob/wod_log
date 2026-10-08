@@ -1185,6 +1185,30 @@ function baseNote(key){const l=liftInfo(key),b=baseFor(key);if(!b.key)return '';
 function itemsHTML(p){return `<ul class="item-list">${p.items.map(it=>{const note=[baseNote(it.liftKey),it.note].filter(Boolean).join(' · ');return `<li><strong>${esc(liftName(it.liftKey))}</strong><span class="cls-pill">${esc(liftGroup(it.liftKey))}</span><div class="item-rows">${esc(it.rows.map(r=>rowText(r,it,p.weightUnit)).join(' · '))}</div>${note?`<div class="item-note">${esc(note)}</div>`:''}</li>`;}).join('')}</ul>`;}
 function notesHTML(notes){if(!notes)return '';return notes.length>160?`<details><summary class="help">${esc(t('notes'))}</summary><p class="record-note">${esc(notes)}</p></details>`:`<p class="record-note">${esc(notes)}</p>`;}
 
+/* ---------------- Auth Modal & Mode Management ---------------- */
+let authMode = 'signIn';
+function setAuthMode(mode) {
+  authMode = mode;
+  $('tabSignIn')?.classList.toggle('active', mode === 'signIn');
+  $('tabSignUp')?.classList.toggle('active', mode === 'signUp');
+  if ($('authNameField')) $('authNameField').hidden = mode !== 'signUp';
+  if ($('authConfirmField')) $('authConfirmField').hidden = mode !== 'signUp';
+  if ($('authGenderField')) $('authGenderField').hidden = mode !== 'signUp';
+  if ($('authSubmitBtn')) $('authSubmitBtn').textContent = t(mode === 'signIn' ? 'signIn' : 'signUp');
+  if ($('authError')) $('authError').hidden = true;
+}
+
+function openAuthModal() {
+  setAuthMode('signIn');
+  if ($('authEmail')) $('authEmail').value = '';
+  if ($('authPassword')) $('authPassword').value = '';
+  if ($('authName')) $('authName').value = '';
+  if ($('authPasswordConfirm')) $('authPasswordConfirm').value = '';
+  if ($('closeAuthBtn')) $('closeAuthBtn').hidden = !Supabase.session;
+  const dlg = $('authDialog');
+  if (dlg && !dlg.open) dlg.showModal();
+}
+
 /* ---------------- Navigation ---------------- */
 let category='WOD', selected=new Set(), oldWeightUnit='lb', oldRmUnit='lb';
 let entryMode='log', activePlan=null, formDirty=false;
@@ -1782,31 +1806,8 @@ function renderCoachWodBanner() {
 }
 
 /* ---------------- Event Listeners for Supabase & Auth ---------------- */
-let authMode = 'signIn';
-function setAuthMode(mode) {
-  authMode = mode;
-  $('tabSignIn').classList.toggle('active', mode === 'signIn');
-  $('tabSignUp').classList.toggle('active', mode === 'signUp');
-  $('authNameField').hidden = mode !== 'signUp';
-  $('authConfirmField').hidden = mode !== 'signUp';
-  if ($('authGenderField')) $('authGenderField').hidden = mode !== 'signUp';
-  $('authSubmitBtn').textContent = t(mode === 'signIn' ? 'signIn' : 'signUp');
-  $('authError').hidden = true;
-}
-
 $('tabSignIn')?.addEventListener('click', () => setAuthMode('signIn'));
 $('tabSignUp')?.addEventListener('click', () => setAuthMode('signUp'));
-
-const openAuthModal = () => {
-  setAuthMode('signIn');
-  $('authEmail').value = '';
-  $('authPassword').value = '';
-  $('authName').value = '';
-  $('authPasswordConfirm').value = '';
-  if ($('closeAuthBtn')) $('closeAuthBtn').hidden = !Supabase.session;
-  const dlg = $('authDialog');
-  if (dlg && !dlg.open) dlg.showModal();
-};
 
 $('loginBtnTop')?.addEventListener('click', openAuthModal);
 $('loginBtnSide')?.addEventListener('click', openAuthModal);
