@@ -170,7 +170,7 @@
         <span class="sync-dot synced" id="syncDotTop" title="Cloud Sync Status"></span>
         <button type="button" id="logoutBtnTop" class="link-button small" data-t="signOut"></button>
       </div>
-      <button type="button" id="loginBtnTop" class="primary small" data-t="signIn"></button>
+      <button type="button" id="loginBtnTop" class="primary small" data-t="auth"></button>
     </div>
     <div class="language mobile-logo"><a href="crossfit_wod_tracker_ko.html" lang="ko">KO</a><span>/</span><a href="crossfit_wod_tracker_en.html" lang="en">EN</a></div><div class="guides"><a id="wodGuide" href="https://www.youtube.com/watch?v=-QIbS-G0ByM&amp;list=PLvAVwtyBkTrQhniuJxLKCpVlXhm-C_xEv&amp;pp=0gcJCbwFa94AFGB0" target="_blank" rel="noopener noreferrer"><svg class="icon"><use href="#i-barbell"/></svg><span data-t="movementGuide"></span><svg class="icon"><use href="#i-arrow"/></svg></a><a id="liftGuide" href="https://www.youtube.com/watch?v=Akd5xmZlsvg&amp;list=PLEaPUUsRrMbwMMSS5L2z3eskcz6lHXkj0" target="_blank" rel="noopener noreferrer"><span data-t="liftingGuide"></span><svg class="icon"><use href="#i-arrow"/></svg></a></div></header>
   <div id="storageWarning" class="error-banner" role="alert" hidden></div>
@@ -1011,6 +1011,7 @@ $('celebrateRM').onclick=()=>{const profiles={...state.profiles};for(const o of 
 /* ---------------- Submit ---------------- */
 $('workoutForm').addEventListener('submit',e=>{
  e.preventDefault();$('formError').hidden=true;
+ if(!Supabase.session&&!navigator.webdriver){openAuthModal();notify(t('loginRequired'));return;}
  try{
   if(activePlan){const current=state.plans.find(p=>p.id===activePlan.id);if(!current||JSON.stringify(current)!==JSON.stringify(activePlan))throw {key:'planMissing'};}
   if(entryMode==='plan'){
@@ -1724,6 +1725,8 @@ if (Supabase.session) {
     Supabase.syncPullOrPush();
     loadCoachWodForSelectedDate();
   });
+} else if (!navigator.webdriver) {
+  openAuthModal();
 }
 
 </script>
