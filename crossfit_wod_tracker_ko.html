@@ -120,6 +120,32 @@
 .auth-dialog{max-width:440px;width:90%}
 .approval-dialog{max-width:440px;width:90%;text-align:center}
 
+
+/* Leaderboard & Edit requests */
+.my-rank-banner{background:linear-gradient(135deg,#fef3c7,#fde68a);border:1.5px solid #d97706;padding:10px 14px;border-radius:10px;font-weight:800;color:#92400e;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.lb-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+.lb-table th{text-align:left;padding:8px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--line)}
+.lb-table td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+.lb-table tr.my-row{background:#f0fdf4;font-weight:700}
+.lb-table tr.my-row td:first-child{border-left:3px solid #16a34a}
+.rank-badge{font-weight:800;font-size:14px;display:inline-flex;align-items:center;justify-content:center;min-width:32px}
+.gender-pill{display:inline-block;padding:1px 5px;border-radius:4px;font-size:9px;font-weight:700;margin-left:4px}
+.gender-pill.m{background:#dbeafe;color:#1e40af}
+.gender-pill.f{background:#fce7f3;color:#9d174d}
+.leaderboard-dialog{max-width:540px;width:95%}
+.edit-log-dialog{max-width:480px;width:90%}
+.shared-prog-card{border-left-color:#8b5cf6!important;background:#faf5ff!important;margin-bottom:12px}
+.shared-prog-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.shared-prog-head h4{margin:0;font-size:14px}
+.edit-requests-list{display:grid;gap:10px;margin-top:12px}
+.edit-req-card{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.edit-req-meta h4{margin:0 0 4px;font-size:14px}
+.edit-req-meta p{margin:0;font-size:12px;color:var(--muted)}
+.edit-req-actions{display:flex;gap:6px}
+.history-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.share-log-field{margin:14px 0 6px}
+.gender-segmented{margin-top:4px}
+
 </style>
 </head>
 <body>
@@ -138,8 +164,8 @@
 <aside class="sidebar">
   <a class="logo" href="#add"><span class="logo-icon"><svg class="icon"><use href="#i-barbell"/></svg></span><span><strong>WOD LOG<span style="color:var(--accent)">.</span></strong><small>TRAIN. TRACK. REPEAT.</small></span></a>
   <nav class="nav" aria-label="Navigation">
-    <button data-page="add" class="active"><svg class="icon"><use href="#i-add"/></svg><span data-t="add"></span><span class="num">01</span></button>
-    <button data-page="todo"><svg class="icon"><use href="#i-calendar"/></svg><span data-t="todo"></span><span class="num" id="todoNavCount">0</span></button>
+    <button data-page="todo" class="active"><svg class="icon"><use href="#i-calendar"/></svg><span data-t="todo"></span><span class="num" id="todoNavCount">01</span></button>
+    <button data-page="add"><svg class="icon"><use href="#i-add"/></svg><span data-t="add"></span><span class="num">02</span></button>
     <button data-page="history"><svg class="icon"><use href="#i-history"/></svg><span data-t="history"></span><span class="num">03</span></button>
     <button data-page="strength"><svg class="icon"><use href="#i-strength"/></svg><span data-t="strength"></span><span class="num">04</span></button>
     <button data-page="data"><svg class="icon"><use href="#i-data"/></svg><span data-t="data"></span><span class="num">05</span></button>
@@ -175,8 +201,8 @@
     <div class="language mobile-logo"><a href="crossfit_wod_tracker_ko.html" lang="ko">KO</a><span>/</span><a href="crossfit_wod_tracker_en.html" lang="en">EN</a></div><div class="guides"><a id="wodGuide" href="https://www.youtube.com/watch?v=-QIbS-G0ByM&amp;list=PLvAVwtyBkTrQhniuJxLKCpVlXhm-C_xEv&amp;pp=0gcJCbwFa94AFGB0" target="_blank" rel="noopener noreferrer"><svg class="icon"><use href="#i-barbell"/></svg><span data-t="movementGuide"></span><svg class="icon"><use href="#i-arrow"/></svg></a><a id="liftGuide" href="https://www.youtube.com/watch?v=Akd5xmZlsvg&amp;list=PLEaPUUsRrMbwMMSS5L2z3eskcz6lHXkj0" target="_blank" rel="noopener noreferrer"><span data-t="liftingGuide"></span><svg class="icon"><use href="#i-arrow"/></svg></a></div></header>
   <div id="storageWarning" class="error-banner" role="alert" hidden></div>
 
-  <section id="page-add" class="page">
-    <div class="page-head"><div><div class="eyebrow" data-t="session"></div><h1 data-t="intro"></h1><p data-t="introSub"></p></div><span class="stamp">01 / WORKOUT LOG</span></div>
+  <section id="page-add" class="page" hidden>
+    <div class="page-head"><div><div class="eyebrow" data-t="session"></div><h1 data-t="intro"></h1><p data-t="introSub"></p></div><span class="stamp">02 / WORKOUT LOG</span></div>
     <div class="stats"><div class="stat"><div><div class="stat-label" data-t="total"></div><strong id="totalStat">0</strong></div><div class="chart-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></div></div><div class="stat"><div class="stat-label" data-t="thisMonth"></div><strong id="monthStat">0</strong></div><div class="stat"><div class="stat-label" data-t="rms"></div><strong id="rmStat">0</strong></div></div>
     <div class="todo-summary"><div><strong data-t="todayWorkouts"></strong><p class="subtle" id="todayPlansSummary"></p><ul class="today-list" id="todayList"></ul></div><button class="small" data-page="todo" data-t="viewPlans"></button></div>
     <div class="work-grid"><div class="panel"><h2 id="entryTitle" data-t="newEntry"></h2><p id="entryHint" class="subtle" data-t="formIntro"></p>
@@ -204,14 +230,28 @@
         <div id="contentSuggest" class="suggest" aria-live="polite" hidden></div>
         <div class="field"><span class="field-label" data-t="rxLabel"></span><div class="rx-switch"><label><input type="radio" name="rx" value="rx" checked><span>Rx’d</span></label><label><input type="radio" name="rx" value="scaled"><span>Scaled</span></label></div><span class="help" data-t="rxHint"></span></div>
         <div class="field"><label for="notes" data-t="notes"></label><textarea id="notes" maxlength="10000" data-placeholder="notesHint"></textarea></div>
+        <div id="logPrivacyField" class="field share-log-field">
+          <label class="check">
+            <input type="checkbox" id="logPublicLeaderboard" checked>
+            <span data-t="logPublicLeaderboardLabel"></span>
+          </label>
+          <p class="help" data-t="logPublicLeaderboardHint"></p>
+        </div>
+        <div id="planShareField" class="field share-log-field" hidden>
+          <label class="check">
+            <input type="checkbox" id="planSharePublic">
+            <span data-t="planShareLabel"></span>
+          </label>
+          <p class="help" data-t="planShareHint"></p>
+        </div>
         <div id="formError" class="form-error" role="alert" hidden></div><div class="save-bar"><button id="saveEntry" type="submit" class="primary" data-t="save"></button></div>
       </form>
     </div><div class="right-stack"><section class="panel timer-panel"><div class="panel-header"><h2 data-t="timer"></h2><svg class="icon"><use href="#i-clock"/></svg></div><p class="subtle" data-t="timerHint"></p><div class="divider" style="background:#434b3b"></div><div class="timer-label" id="timerLabel"></div><div class="timer-digits" id="timerDisplay" role="timer" aria-live="off">00:00</div><div class="timer-label" id="timerPhase"></div><div class="timer-progress"><div id="timerProgress"></div></div><div class="timer-actions"><button id="timerStart" class="primary" data-t="start"></button><button id="timerReset" class="ghost" data-t="resetTimer"></button></div><button class="link-button" id="timerApply" data-t="applyTime"></button><p class="help" data-t="timerSetup"></p></section>
       <section class="panel"><div class="panel-header"><h2 data-t="recent"></h2><button class="link-button small" data-page="history" data-t="viewAll"></button></div><div id="recentList"></div></section><p class="subtle" data-t="offline"></p></div></div>
   </section>
 
-  <section id="page-todo" class="page" hidden>
-    <div class="page-head"><div><div class="eyebrow">PLAN. TRAIN. COMPLETE.</div><h1 data-t="todo"></h1><p data-t="todoIntro"></p></div></div>
+  <section id="page-todo" class="page">
+    <div class="page-head"><div><div class="eyebrow">PLAN. TRAIN. COMPLETE.</div><h1 data-t="todo"></h1><p data-t="todoIntro"></p></div><span class="stamp">01 / CALENDAR &amp; PLANS</span></div>
     <div id="coachWodBanner" class="coach-wod-banner" hidden>
       <div class="coach-wod-header">
         <span class="role-pill coach" data-t="coachWod"></span>
@@ -314,6 +354,12 @@
             <label for="coachProgramText" data-t="content"></label>
             <textarea id="coachProgramText" maxlength="15000" style="min-height:160px" placeholder="21-15-9&#10;스러스터 (95/65 lb)&#10;풀업&#10;Time Cap: 10 min" required></textarea>
           </div>
+          <div class="field">
+            <label class="check">
+              <input type="checkbox" id="coachProgramPublic" checked>
+              <span data-t="coachProgramPublicLabel">전체 회원에게 공개 (ON)</span>
+            </label>
+          </div>
           <button type="submit" class="primary" data-t="coachPublish"></button>
         </form>
       </div>
@@ -330,6 +376,13 @@
         <div id="membersList" class="members-list"></div>
       </div>
     </div>
+        <div class="panel spaced">
+      <div class="panel-header">
+        <h2 data-t="coachEditRequests"></h2>
+        <span id="editRequestsCount" class="pill">0</span>
+      </div>
+      <div id="coachEditRequestsList" class="edit-requests-list"></div>
+    </div>
     <div class="panel spaced">
       <h2 data-t="coachPrograms"></h2>
       <div id="coachProgramsList" class="coach-programs-list"></div>
@@ -337,7 +390,7 @@
   </section>
   <footer class="footer"><span data-t="tagline"></span><span>WOD LOG · Web 1.3 <span aria-hidden="true">↗</span></span></footer>
 </main></div>
-<nav class="bottom-nav" aria-label="Navigation"><button data-page="add" class="active"><svg class="icon"><use href="#i-add"/></svg><span data-t="add"></span></button><button data-page="todo"><svg class="icon"><use href="#i-calendar"/></svg><span data-t="todo"></span></button><button data-page="history"><svg class="icon"><use href="#i-history"/></svg><span data-t="history"></span></button><button data-page="strength"><svg class="icon"><use href="#i-strength"/></svg><span data-t="strength"></span></button><button data-page="data"><svg class="icon"><use href="#i-data"/></svg><span data-t="data"></span></button><button data-page="coach" id="bottomNavCoach" class="coach-only" hidden><svg class="icon"><use href="#i-coach"/></svg><span data-t="coachShort"></span></button>
+<nav class="bottom-nav" aria-label="Navigation"><button data-page="todo" class="active"><svg class="icon"><use href="#i-calendar"/></svg><span data-t="todo"></span></button><button data-page="add"><svg class="icon"><use href="#i-add"/></svg><span data-t="add"></span></button><button data-page="history"><svg class="icon"><use href="#i-history"/></svg><span data-t="history"></span></button><button data-page="strength"><svg class="icon"><use href="#i-strength"/></svg><span data-t="strength"></span></button><button data-page="data"><svg class="icon"><use href="#i-data"/></svg><span data-t="data"></span></button><button data-page="coach" id="bottomNavCoach" class="coach-only" hidden><svg class="icon"><use href="#i-coach"/></svg><span data-t="coachShort"></span></button>
 </nav>
 <div id="toast" class="toast" role="status" hidden></div>
 <dialog id="confirmDialog" class="dialog" aria-labelledby="dialogTitle" aria-describedby="dialogMessage"><h2 id="dialogTitle" data-t="confirmation"></h2><p id="dialogMessage"></p><form method="dialog" class="dialog-actions"><button value="cancel" autofocus data-t="cancel"></button><button value="confirm" class="primary" data-t="confirm"></button></form></dialog>
@@ -358,6 +411,14 @@
     <div class="field" id="authNameField" hidden>
       <label for="authName" data-t="name"></label>
       <input id="authName" maxlength="60" data-placeholder="nameHint" autocomplete="name">
+    </div>
+    <div class="field" id="authGenderField" hidden>
+      <label data-t="gender"></label>
+      <div class="segmented gender-segmented" role="group">
+        <button type="button" id="genderM" class="active" data-gender="M" data-t="male"></button>
+        <button type="button" id="genderF" data-gender="F" data-t="female"></button>
+      </div>
+      <input type="hidden" id="authGender" value="M">
     </div>
     <div class="field">
       <label for="authEmail" data-t="email"></label>
@@ -384,9 +445,90 @@
     <button type="button" id="approvalSignOutBtn" class="ghost" data-t="signOut"></button>
   </div>
 </dialog>
+
+<dialog id="editLogDialog" class="dialog edit-log-dialog" aria-labelledby="editLogTitle">
+  <div class="panel-header">
+    <h2 id="editLogTitle" data-t="editLog"></h2>
+    <button type="button" id="closeEditLogBtn" class="ghost small">✕</button>
+  </div>
+  <p id="editLogHint" class="subtle"></p>
+  <form id="editLogForm" class="spaced">
+    <input type="hidden" id="editLogId">
+    <div class="row">
+      <div class="field">
+        <label for="editLogDate" data-t="date"></label>
+        <input type="date" id="editLogDate" required>
+      </div>
+      <div class="field">
+        <label for="editLogRx" data-t="rxLabel"></label>
+        <select id="editLogRx">
+          <option value="rx">Rx’d</option>
+          <option value="scaled">Scaled</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label for="editLogTitleInput" data-t="title"></label>
+      <input type="text" id="editLogTitleInput" required maxlength="160">
+    </div>
+    <div class="field">
+      <label for="editLogScore" data-t="scoreCol"></label>
+      <input type="text" id="editLogScore" required placeholder="예: 08:42 또는 5R + 10">
+    </div>
+    <div class="field">
+      <label for="editLogReason" data-t="editReason"></label>
+      <input type="text" id="editLogReason" data-placeholder="editReasonHint">
+    </div>
+    <div class="dialog-actions">
+      <button type="button" id="cancelEditLogBtn" class="ghost" data-t="cancel"></button>
+      <button type="submit" id="submitEditLogBtn" class="primary" data-t="save"></button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="leaderboardDialog" class="dialog leaderboard-dialog" aria-labelledby="lbTitle">
+  <div class="panel-header">
+    <div>
+      <h2 id="lbTitle" data-t="leaderboard"></h2>
+      <p id="lbWodMeta" class="subtle"></p>
+    </div>
+    <button type="button" id="closeLbBtn" class="ghost small">✕</button>
+  </div>
+  <div id="myRankBanner" class="my-rank-banner" hidden></div>
+  <div class="segmented lb-grade-toggle" role="group">
+    <button type="button" id="lbTabRxd" class="active" data-grade="rx" data-t="rxdRankings"></button>
+    <button type="button" id="lbTabScaled" data-grade="scaled" data-t="scaledRankings"></button>
+  </div>
+  <div class="segmented lb-gender-toggle" role="group">
+    <button type="button" id="lbGenderAll" class="active" data-gender="ALL" data-t="allGenders"></button>
+    <button type="button" id="lbGenderM" data-gender="M" data-t="maleOnly"></button>
+    <button type="button" id="lbGenderF" data-gender="F" data-t="femaleOnly"></button>
+  </div>
+  <div id="leaderboardContent" class="leaderboard-table-wrap"></div>
+</dialog>
 <script>
+
+function parseScoreValues(log) {
+  let score_seconds = null, score_reps = null, score_weight = null;
+  if (!log) return { score_seconds, score_reps, score_weight };
+  if (log.workoutType === 'FOR_TIME') {
+    if (log.score && /^\d{1,5}:[0-5]\d$/.test(log.score.trim())) {
+      const [m, s] = log.score.trim().split(':').map(Number);
+      score_seconds = m * 60 + s;
+    } else if (log.timeCapMinutes) {
+      score_seconds = log.timeCapMinutes * 60 + 9999 - (log.capReps || 0);
+    }
+  } else if (log.workoutType === 'AMRAP') {
+    const m = String(log.score).match(/(\d+)R\s*\+\s*(\d+)/i);
+    if (m) score_reps = Number(m[1]) * 1000 + Number(m[2]);
+  } else if (log.workoutType === 'STRENGTH_MAX' && log.weightUsed) {
+    score_weight = toKg(log.weightUsed, log.weightUnit || 'lb');
+  }
+  return { score_seconds, score_reps, score_weight };
+}
+
 'use strict';
-const LANG='ko', T={"appTitle": "크로스핏 WOD & 스트렝스 트래커", "tagline": "오늘의 노력, 내일의 기록.", "local": "이 브라우저에 저장", "movementGuide": "WOD 동작 가이드", "liftingGuide": "역도 가이드 영상 보기", "add": "기록 추가", "history": "기록 히스토리", "strength": "1RM & 비교", "data": "데이터 관리", "session": "오늘의 트레이닝", "intro": "한 번의 반복도, 하나의 기록으로.", "introSub": "와드와 스트렝스를 기록하고 지난 나와 비교하세요.", "total": "누적 기록", "thisMonth": "이번 달", "rms": "등록한 1RM", "newEntry": "운동 기록하기", "date": "운동 날짜", "title": "WOD 제목", "titleHint": "예: Fran, Murph, 오늘의 박스 WOD (이전과 비슷하면 선택 안내가 나타납니다)", "content": "운동 구성", "contentHint": "예: 21-15-9 스러스터 · 풀업", "type": "운동 방식", "required": "필수", "previous": "같은 WOD의 이전 기록", "noPrevious": "아직 같은 제목의 기록이 없습니다. 첫 기록을 남겨보세요.", "titleStart": "제목을 입력하면 이전 기록이 여기에 표시됩니다.", "time": "완료 시간 (분:초)", "cap": "타임캡 도달 / 미완주", "capTime": "타임캡 (분)", "extraReps": "타임캡 시 추가 반복수 (+Reps)", "rounds": "라운드", "reps": "반복수", "duration": "제한 시간 (분)", "every": "주기 (분)", "custom": "직접 입력", "customEvery": "직접 입력 주기 (분)", "completed": "완주 여부", "success": "완주", "pass": "미완주", "roundReps": "라운드별 반복수", "roundRepsHint": "예: 12, 12, 10, 10", "work": "운동 시간 (초)", "rest": "휴식 시간 (초)", "scoreMode": "결과 기록 기준", "repsMode": "반복수 기준", "timeMode": "시간 기준", "totalReps": "총 반복수", "repHelp": "총 반복수 또는 라운드 수만큼의 반복수를 입력하세요. 둘 다 입력하면 합계가 일치해야 합니다.", "timeHelp": "최종 완료 시간 또는 라운드 수만큼의 시간을 입력하세요 (분:초, 쉼표 구분).", "roundTimes": "라운드별 완료 시간", "finalTime": "최종 완료 시간 (분:초)", "weight": "사용 무게", "unit": "무게 단위", "rxLabel": "수행 기준", "rxHint": "Rx’d: 원래 구성 그대로 · Scaled: 무게 또는 동작 조정", "notes": "메모", "notesHint": "페이스, 바벨 구성, 다음에 기억할 것…", "save": "기록 저장", "saved": "운동 기록을 저장했습니다. 수고하셨어요! 💪", "titleRequired": "WOD 제목을 입력해주세요", "invalid": "입력값을 확인해주세요.", "invalidTime": "시간을 분:초 형식으로 입력해주세요. 초는 00~59여야 합니다.", "invalidRounds": "라운드별 결과 개수와 총 라운드 수가 일치해야 합니다.", "invalidSum": "총 반복수와 라운드별 반복수 합계가 일치하지 않습니다.", "scoreRequired": "결과를 입력해주세요.", "lift": "스트렝스 종목", "sets": "세트 수", "latest": "최근 기록", "noLift": "이 종목의 첫 기록을 남겨보세요.", "rmQuick": "1RM 기준 목표 무게", "noRM": "이 종목의 1RM을 계산기 탭에서 등록해주세요.", "target": "목표 퍼센트 (%)", "useWeight": "이 무게 적용", "timer": "트레이닝 타이머", "timerHint": "선택한 운동 방식과 시간 설정을 사용합니다. 화면을 계속 열어두면 진행 상황을 확인하기 쉽습니다.", "ready": "준비", "running": "진행 중", "paused": "일시정지", "finished": "완료", "workPhase": "운동", "restPhase": "휴식", "start": "시작", "pause": "일시정지", "resume": "계속", "resetTimer": "타이머 재설정", "applyTime": "현재 시간으로 결과 입력", "timerApplied": "시간을 결과 칸에 입력했습니다.", "timerSetup": "설정을 변경한 뒤에는 타이머를 재설정하세요. 인터벌 마지막 라운드의 휴식은 생략합니다.", "resetAsk": "진행 중인 타이머를 재설정할까요?", "recent": "최근 트레이닝", "viewAll": "전체 보기", "empty": "아직 기록이 없습니다", "emptySub": "첫 운동을 저장하면 기록과 비교가 시작됩니다.", "search": "운동명 또는 메모 검색", "all": "전체", "allTypes": "모든 운동 방식", "noResults": "검색 조건에 맞는 기록이 없습니다.", "delete": "삭제", "deleteAsk": "이 기록을 삭제할까요? 삭제한 기록은 복구할 수 없습니다.", "deleted": "기록을 삭제했습니다.", "select": "선택", "deleteSelected": "선택한 기록 삭제", "selectedAsk": "선택한 {n}개 기록을 삭제할까요?", "historyIntro": "날짜순 기록에서 꾸준함을 확인하세요.", "rmIntro": "1RM을 등록하고 종목 계열별로 기록을 비교하세요.", "oneRM": "나의 1RM", "rmWeight": "1RM 무게", "saveRM": "1RM 저장", "savedRM": "1RM을 저장했습니다.", "deleteRM": "이 종목의 1RM 삭제", "deleteRMAsk": "이 종목의 1RM을 삭제할까요?", "notSet": "아직 등록되지 않음", "updated": "수정일", "rounding": "플레이트 반올림 간격", "exact": "소수점 1자리", "roundHint": "현재 표시 단위의 간격으로 반올림합니다. 저장된 1RM 원본은 유지됩니다.", "percentTable": "1RM 퍼센트표", "percentage": "퍼센트", "converter": "lb ↔ kg 변환기", "convertValue": "변환할 무게", "switchUnits": "단위 바꾸기", "dataIntro": "기록은 현재 브라우저에 보관됩니다. 파일로 백업해 안전하게 보관하세요.", "exportTitle": "엑셀로 내보내기", "exportDesc": "완료한 운동 기록을 UTF-8 BOM CSV로 다운로드합니다. 예정 운동은 전체 백업(JSON)에 포함됩니다.", "exportCSV": "CSV 다운로드", "importTitle": "엑셀 편집 후 복원", "importDesc": "CSV를 가져오면 완료한 운동 기록 전체가 파일의 행으로 교체됩니다. 파일에서 삭제한 행은 히스토리에서도 삭제됩니다. 예정 운동과 1RM은 유지됩니다.", "csvNote": "세부내용 열에는 운동 구성과 인터벌 설정을 보존하는 JSON이 들어갑니다. JSON의 content 값 또는 셀 전체를 일반 텍스트로 편집할 수 있습니다. 일반 텍스트로 바꾸면 인터벌 설정은 별도로 보존되지 않습니다.", "importCSV": "CSV 파일 선택", "importAsk": "검증 완료: {n}개 기록. 현재 운동 기록 {old}개를 이 파일로 교체할까요?", "imported": "{n}개 기록을 복원했습니다.", "invalidCSV": "CSV 형식이나 값이 올바르지 않습니다. 변경 사항은 저장되지 않았습니다.", "line": "행", "backupTitle": "전체 백업", "backupDesc": "완료한 운동 기록, 예정 운동, 모든 종목의 1RM을 JSON 파일 하나에 저장합니다. 기기나 언어판을 옮길 때 사용하세요.", "exportJSON": "전체 백업 다운로드", "importJSON": "전체 백업 복원", "restoreAsk": "완료 기록 {n}개, 예정 운동 {p}개, 1RM {r}개로 현재 데이터를 모두 교체할까요?", "invalidJSON": "올바른 트래커 백업 파일이 아닙니다.", "resetTitle": "전체 초기화", "resetDesc": "이 브라우저의 완료 기록, 예정 운동, 모든 1RM을 삭제합니다.", "resetAll": "모든 데이터 삭제", "resetAllAsk": "모든 완료 기록, 예정 운동, 1RM을 영구 삭제할까요? 먼저 전체 백업 파일을 내려받으세요.", "resetDone": "모든 데이터를 초기화했습니다.", "storageError": "브라우저 저장소를 사용할 수 없습니다. 저장 공간과 개인정보 보호 설정을 확인해주세요. 데이터 파일을 먼저 백업하세요.", "corrupt": "저장 데이터를 읽을 수 없습니다. 기존 데이터는 덮어쓰지 않았습니다. 데이터 관리에서 백업을 복원하거나 초기화해주세요.", "downloaded": "파일 다운로드를 시작했습니다.", "offline": "인터넷 없이도 기록할 수 있습니다. 가이드 영상은 인터넷 연결이 필요합니다.", "install": "홈 화면에 추가", "installHelp": "iPhone: Safari 공유 → 홈 화면에 추가. Android: Chrome 메뉴 → 홈 화면에 추가. 웹으로 이용할 때는 HTTPS 주소를 사용하세요.", "installButton": "앱 설치", "language": "언어 변경", "localeHelp": "같은 웹 주소의 언어판은 데이터를 공유합니다. 파일을 직접 열면 브라우저에 따라 저장소가 분리될 수 있으므로 전체 백업으로 옮겨주세요.", "count": "{n}개 기록", "rmCount": "{n}개 1RM", "cancel": "취소", "confirm": "확인", "confirmation": "확인해주세요", "close": "닫기", "details": "운동 상세", "noContent": "운동 구성 미입력", "minutes": "분", "seconds": "초", "timerError": "타이머의 시간과 라운드 설정을 확인해주세요.", "saveFail": "저장하지 못했습니다. 저장소 설정을 확인하고 다시 시도해주세요.", "previewLimit": "최근 5개 기록", "maxFile": "파일은 10MB 이하로 선택해주세요.", "repsWord": "회", "setsWord": "세트", "roundWord": "라운드", "capWord": "타임캡", "formIntro": "오늘의 운동을 입력하세요. 필수 항목은 *로 표시됩니다.", "liveTarget": "목표 중량", "percentHint": "50~100%를 5% 간격으로 표시합니다.", "backupReminder": "브라우저 데이터를 지우면 기록도 삭제됩니다. 정기적으로 백업해주세요.", "recordUnitHint": "단위를 바꾸면 입력된 무게도 자동 환산됩니다.", "timerChanged": "타이머는 시작할 때의 설정으로 계속 진행됩니다. 새 설정을 적용하려면 재설정하세요.", "todo": "달력", "todoIntro": "날짜를 눌러 그날 해야 할 운동과 완료한 운동을 확인하세요. WOD는 파란색, Strength는 빨간색, 지난 미완료는 회색입니다.", "viewPlans": "달력 보기", "todaySummary": "오늘 {today}개 · 지난 미완료 {overdue}개 · 전체 {n}개", "logMode": "운동 결과 기록", "planMode": "운동 미리 계획", "planEntry": "운동 계획하기", "planHint": "결과 없이 날짜와 운동 구성을 저장하세요. 무게·반복수·세트는 목표값입니다.", "planSave": "예정 운동 저장", "planUpdate": "계획 수정 저장", "planSaved": "예정 운동을 저장했습니다.", "planUpdated": "운동 계획을 수정했습니다.", "plannedDate": "예정 날짜", "plannedCap": "예정 타임캡 (분, 선택)", "targetWeight": "목표 무게 (선택)", "allPending": "전체 미완료", "todayPlans": "오늘", "overduePlans": "지난 미완료", "upcomingPlans": "앞으로 할 운동", "newPlan": "새 운동 계획", "planCount": "미완료 {n}개", "noPlans": "예정된 운동이 없습니다", "noPlansHint": "새 운동 계획을 눌러 오늘 또는 앞으로 할 운동을 저장하세요.", "noPlanResults": "조건에 맞는 예정 운동이 없습니다.", "editPlan": "계획 수정", "performPlan": "운동 수행 / 결과 입력", "completePlan": "완료하고 히스토리에 저장", "planCompleted": "운동을 완료했습니다. 수고하셨어요! 💪", "planEditing": "계획 수정 중 · {title} · {date}", "planPerforming": "예정 운동 수행 중 · {title} · 예정일 {date}. 실제 수행 날짜와 결과를 저장해주세요.", "cancelPlan": "달력으로 돌아가기", "deletePlanAsk": "이 예정 운동을 삭제할까요? 완료된 운동 기록은 유지됩니다.", "planMissing": "이 계획은 이미 완료되었거나 변경되었습니다. 달력에서 다시 열어주세요.", "replaceDraft": "작성 중인 내용을 닫고 선택한 운동을 열까요? 저장하지 않은 입력은 사라집니다.", "importAllDone": "완료 기록 {n}개와 예정 운동 {p}개를 복원했습니다.", "addLift": "+ 종목 추가", "addSet": "+ 세트 추가", "allOfFamily": "전체", "awesome": "최고예요!", "baseIs": "% 기준: {lift} 1RM {w}", "baseMissing": "% 기준: {lift} 1RM 미등록 → %만 표시됩니다. 1RM & 비교 탭에서 등록하세요.", "baseMissingShort": "{lift} 1RM 미등록 · %만 표시", "baseShort": "{lift} 1RM 기준", "beatIt": "오늘 이 기록을 넘어보세요!", "bestCol": "최고 기록", "bestRecord": "최고 기록", "bestShort": "최고", "calendarView": "달력", "listView": "목록", "compareEmpty": "이 분류에는 아직 기록이나 1RM이 없습니다.", "compareIntro": "같은 계열 안에서 메인 종목 · 변형 · 스킬 · 풀/근력 종목을 나누어 최고 기록과 1RM을 비교합니다. 예: Snatch Balance는 스내치 스킬, Pause Snatch는 스내치 변형.", "compareTitle": "종목별 기록 비교", "customLiftAdd": "종목 추가", "customLiftAdded": "새 종목을 추가했습니다.", "customLiftExists": "같은 이름의 종목이 이미 있습니다.", "customLiftHint": "예: Snatch High Pull + Snatch", "customLiftIntro": "목록에 없는 종목을 계열과 분류를 정해 추가하면 기록·비교·계획에 사용할 수 있습니다.", "customLiftName": "종목 이름", "customLiftTitle": "나만의 종목 추가", "dayDone": "완료한 운동", "dayEmpty": "이 날짜에는 운동이 없습니다", "dayMaxTag": "당일 최고 (Max)", "dayMissed": "지난 미완료 운동", "dayPlanned": "해야 할 운동", "doneWord": "완료", "firstRx": "첫 Rx'd 달성", "ignore": "무시", "inUse": "사용 중", "lastDone": "최근", "legendMissed": "지난 미완료", "legendStrDone": "Strength 완료", "legendStrPlan": "Strength 예정", "legendWodDone": "WOD 완료", "legendWodPlan": "WOD 예정", "liftClass": "분류", "liftFamily": "종목 계열", "liftGroup": "스트렝스 분류", "logThisDay": "이 날짜에 결과 기록", "planThisDay": "이 날짜에 운동 계획", "mark_done": "완료", "mark_missed": "지난 미완료", "mark_planned": "예정", "maxMessage": "오늘 들어올린 당일 최고 무게를 1RM으로 저장할 수 있습니다.", "maxTitle": "오늘의 최고 무게", "newRM": "새 1RM", "newRecord": "새 기록", "noBaseShort": "1RM 미등록", "noCustomLifts": "추가한 종목이 없습니다.", "ofDayMaxTag": "당일 최고의 {p}", "prMessage": "축하합니다! 이전 기록을 뛰어넘었어요. 꾸준함이 만든 결과입니다.", "prTitle": "새로운 기록 달성! 🎉", "prevBest": "이전 최고", "prevRM": "이전 1RM", "prevRecords": "이전 기록 · {title} ({n}회)", "programAdded": "프로그램 일정 {n}개를 달력에 추가했습니다.", "programApply": "달력에 추가", "programApplyAsk": "예정 운동 {n}개를 {start}부터 달력에 추가할까요? 기존 기록과 일정은 유지됩니다.", "programBaseRule": "스내치·클린·저크 계열 변형 종목의 %는 항상 상위 종목(Snatch / Clean / Clean & Jerk) 1RM 기준으로 계산합니다. 스쿼트·프레스·데드리프트 계열은 해당 종목 1RM 기준입니다. 1RM이 없으면 %만 표시됩니다.", "programBuiltin": "5주 역도 피킹 프로그램 (weightlifting programm.txt)", "programDelete": "남은 일정 삭제", "programDeleteAsk": "이 프로그램의 남은 예정 운동 {n}개를 삭제할까요? 이미 완료한 기록은 유지됩니다.", "programDupDay": "Day {day}가 두 번 이상 나옵니다.", "programDupWarn": "같은 이름의 프로그램이 같은 시작일에 이미 있습니다. 중복으로 추가될 수 있습니다.", "programImport": "프로그램 가져오기", "programImported": "가져온 프로그램", "programIntro": "프로그램 텍스트를 날짜별 Strength 세션과 보조 운동(WOD)으로 변환해 달력에 넣습니다. 미리보기로 모든 줄이 어떻게 해석되는지 확인한 뒤 추가하세요.", "programInvalid": "프로그램을 해석할 수 없습니다. 형식을 확인해주세요.", "programLine": "원문", "programName": "프로그램 이름", "programNewLifts": "목록에 없는 종목을 새 종목으로 추가합니다: {list}", "programNoDays": "\"Monday - Day 1\" 형식의 날짜 줄을 찾지 못했습니다.", "programNone": "가져온 프로그램이 없습니다.", "programNotesCount": "코치 메모 {n}개 포함 (계획의 메모에서 확인)", "programPaste": "직접 붙여넣기 / txt 파일", "programPreview": "미리보기", "programRemaining": "남은 일정 {n}개 · {start} ~ {end}", "programSource": "프로그램", "programStart": "Day 1 시작일", "programSummary": "{days}일 · Strength 세션 {s}개 (종목 {lifts}개) · 보조 운동 WOD {w}개 · {start} ~ {end}", "programText": "프로그램 텍스트", "programTextHint": "Monday - Day 1\nSnatch - 75% x 1 x 3\nFront squat - 75% x 3 x 5\n4 sets; no rest:\n10 pull-ups", "programWeekdayWarn": "Day {day}는 원문에서 {wd}이지만 선택한 시작일의 요일과 다릅니다.", "qualityHint": "예: 완료, 1:25 / 1:27 / 1:26", "qualityResult": "결과 (선택)", "removeLift": "종목 삭제", "removeSet": "세트 삭제", "repsCol": "반복", "setsCol": "세트", "weightCol": "무게", "targetWeightCol": "목표 무게", "restDay": "휴식일", "rmBaseInfo": "프로그램의 % 계산은 이 종목이 아니라 {lift} 1RM을 기준으로 합니다.", "rmUpdated": "1RM을 업데이트했습니다.", "sameTitle": "같은 제목", "similarTitle": "비슷한 제목", "similarContent": "비슷한 운동 구성", "similarFound": "이전과 같거나 비슷한 WOD가 있어요", "selectPrev": "선택", "saveAsRMHint": "아직 1RM이 등록되지 않은 종목입니다.", "strengthFormHint": "한 세션에 여러 종목을 넣을 수 있습니다. % 를 입력하면 1RM 기준 무게가 자동 계산됩니다.", "timesDone": "{n}회 기록", "todayBtn": "오늘", "todayWorkouts": "오늘의 운동", "unlink": "선택 해제", "updateRM": "1RM 업데이트", "vsBase": "{lift} 1RM 대비", "liftRequired": "스트렝스 종목을 한 개 이상 추가해주세요.", "weightRequired": "수행한 무게를 입력해주세요.", "invalidPct": "퍼센트는 0.1~200 사이로 입력해주세요.", "programLoadFile": "txt 파일 불러오기", "programFileHint": "프로그램 txt 파일(예: weightlifting programm.txt)을 고르면 아래 칸에 내용이 들어갑니다. 그다음 미리보기를 누르세요.", "programFileLoaded": "{name} 파일을 불러왔습니다. 미리보기를 눌러 확인하세요.", "programFileTooBig": "파일이 너무 큽니다. 200KB 이하의 txt 파일을 선택하세요.", "programFileError": "파일을 읽을 수 없습니다. UTF-8 txt 파일인지 확인하세요.", "shared": "공유 창을 열었습니다. \"파일에 저장\"을 선택하면 보관됩니다.", "auth": "로그인 / 회원가입", "authIntro": "로그인하여 박스 코치 WOD와 개인 운동 기록을 안전하게 관리하세요.", "signIn": "로그인", "signUp": "회원가입", "signOut": "로그아웃", "name": "이름 / 닉네임", "nameHint": "박스에서 사용하는 이름", "email": "이메일", "password": "비밀번호", "passwordConfirm": "비밀번호 확인", "passwordMin": "비밀번호는 최소 6자 이상이어야 합니다.", "passwordMismatch": "비밀번호가 일치하지 않습니다.", "emailInvalid": "올바른 이메일 형식을 입력하세요.", "authNote": "🔒 모든 개인 기록은 회원님 본인만 열람 가능한 암호화 데이터베이스에 안전하게 보관됩니다.", "alreadyHaveAccount": "이미 계정이 있으신가요? 로그인", "needAccount": "계정이 없으신가요? 회원가입", "pendingApproval": "코치 승인 대기 중", "pendingApprovalMsg": "회원가입이 완료되었습니다. 박스 코치님의 승인 후 오늘의 WOD와 모든 기록 기능을 이용하실 수 있습니다.", "checkStatus": "승인 상태 새로고침", "coachAdmin": "코치 관리", "coachShort": "코치", "memberRole": "회원", "coachRole": "코치", "approved": "승인 완료", "pending": "승인 대기", "approve": "승인", "revoke": "승인 취소", "grantCoach": "코치 지정", "revokeCoach": "일반 회원으로 변경", "coachPublish": "오늘의 WOD / 프로그램 발행", "coachPrograms": "발행된 WOD 목록", "coachMembers": "박스 회원 승인 관리", "publishSuccess": "오늘의 WOD가 성공적으로 발행되었습니다!", "deleteProgramConfirm": "이 프로그램을 삭제하시겠습니까?", "coachWod": "코치 WOD", "todayCoachWod": "오늘의 코치 WOD", "loadCoachWod": "코치 WOD 새로고침", "useCoachWod": "오늘 이 WOD 기록하기", "syncOk": "클라우드 동기화 완료", "syncing": "클라우드 동기화 중...", "syncOffline": "오프라인 (로컬 보관)", "syncNow": "지금 클라우드 동기화", "restoreCloud": "클라우드 기록 불러오기", "confirmCloudRestore": "클라우드에 저장된 기록으로 기기의 운동 데이터를 동기화하시겠습니까?", "cloudRestoreOk": "클라우드에서 성공적으로 기록을 불러왔습니다.", "cloudSyncOk": "클라우드에 안전하게 저장되었습니다.", "loginSuccess": "로그인되었습니다.", "signUpSuccess": "회원가입이 완료되었습니다! 코치 승인 후 이용 가능합니다.", "loginRequired": "로그인이 필요합니다.", "noMembers": "등록된 회원이 없습니다.", "noCoachPrograms": "발행된 코치 프로그램이 없습니다.", "filterAll": "전체", "filterPending": "승인 대기", "filterApproved": "승인 완료", "coachProgramDesc": "모든 박스 회원들에게 표시될 운동 프로그램을 등록하세요.", "cloudSyncCardTitle": "클라우드 자동 동기화", "cloudSyncCardDesc": "모바일과 PC 어디서든 내 계정으로 로그인하면 최신 운동 기록이 자동 동기화됩니다."}, PROGRAM_TEXT="";
+const LANG='ko', T={"appTitle": "크로스핏 WOD & 스트렝스 트래커", "tagline": "오늘의 노력, 내일의 기록.", "local": "이 브라우저에 저장", "movementGuide": "WOD 동작 가이드", "liftingGuide": "역도 가이드 영상 보기", "add": "기록 추가", "history": "기록 히스토리", "strength": "1RM & 비교", "data": "데이터 관리", "session": "오늘의 트레이닝", "intro": "한 번의 반복도, 하나의 기록으로.", "introSub": "와드와 스트렝스를 기록하고 지난 나와 비교하세요.", "total": "누적 기록", "thisMonth": "이번 달", "rms": "등록한 1RM", "newEntry": "운동 기록하기", "date": "운동 날짜", "title": "WOD 제목", "titleHint": "예: Fran, Murph, 오늘의 박스 WOD (이전과 비슷하면 선택 안내가 나타납니다)", "content": "운동 구성", "contentHint": "예: 21-15-9 스러스터 · 풀업", "type": "운동 방식", "required": "필수", "previous": "같은 WOD의 이전 기록", "noPrevious": "아직 같은 제목의 기록이 없습니다. 첫 기록을 남겨보세요.", "titleStart": "제목을 입력하면 이전 기록이 여기에 표시됩니다.", "time": "완료 시간 (분:초)", "cap": "타임캡 도달 / 미완주", "capTime": "타임캡 (분)", "extraReps": "타임캡 시 추가 반복수 (+Reps)", "rounds": "라운드", "reps": "반복수", "duration": "제한 시간 (분)", "every": "주기 (분)", "custom": "직접 입력", "customEvery": "직접 입력 주기 (분)", "completed": "완주 여부", "success": "완주", "pass": "미완주", "roundReps": "라운드별 반복수", "roundRepsHint": "예: 12, 12, 10, 10", "work": "운동 시간 (초)", "rest": "휴식 시간 (초)", "scoreMode": "결과 기록 기준", "repsMode": "반복수 기준", "timeMode": "시간 기준", "totalReps": "총 반복수", "repHelp": "총 반복수 또는 라운드 수만큼의 반복수를 입력하세요. 둘 다 입력하면 합계가 일치해야 합니다.", "timeHelp": "최종 완료 시간 또는 라운드 수만큼의 시간을 입력하세요 (분:초, 쉼표 구분).", "roundTimes": "라운드별 완료 시간", "finalTime": "최종 완료 시간 (분:초)", "weight": "사용 무게", "unit": "무게 단위", "rxLabel": "수행 기준", "rxHint": "Rx’d: 원래 구성 그대로 · Scaled: 무게 또는 동작 조정", "notes": "메모", "notesHint": "페이스, 바벨 구성, 다음에 기억할 것…", "save": "기록 저장", "saved": "운동 기록을 저장했습니다. 수고하셨어요! 💪", "titleRequired": "WOD 제목을 입력해주세요", "invalid": "입력값을 확인해주세요.", "invalidTime": "시간을 분:초 형식으로 입력해주세요. 초는 00~59여야 합니다.", "invalidRounds": "라운드별 결과 개수와 총 라운드 수가 일치해야 합니다.", "invalidSum": "총 반복수와 라운드별 반복수 합계가 일치하지 않습니다.", "scoreRequired": "결과를 입력해주세요.", "lift": "스트렝스 종목", "sets": "세트 수", "latest": "최근 기록", "noLift": "이 종목의 첫 기록을 남겨보세요.", "rmQuick": "1RM 기준 목표 무게", "noRM": "이 종목의 1RM을 계산기 탭에서 등록해주세요.", "target": "목표 퍼센트 (%)", "useWeight": "이 무게 적용", "timer": "트레이닝 타이머", "timerHint": "선택한 운동 방식과 시간 설정을 사용합니다. 화면을 계속 열어두면 진행 상황을 확인하기 쉽습니다.", "ready": "준비", "running": "진행 중", "paused": "일시정지", "finished": "완료", "workPhase": "운동", "restPhase": "휴식", "start": "시작", "pause": "일시정지", "resume": "계속", "resetTimer": "타이머 재설정", "applyTime": "현재 시간으로 결과 입력", "timerApplied": "시간을 결과 칸에 입력했습니다.", "timerSetup": "설정을 변경한 뒤에는 타이머를 재설정하세요. 인터벌 마지막 라운드의 휴식은 생략합니다.", "resetAsk": "진행 중인 타이머를 재설정할까요?", "recent": "최근 트레이닝", "viewAll": "전체 보기", "empty": "아직 기록이 없습니다", "emptySub": "첫 운동을 저장하면 기록과 비교가 시작됩니다.", "search": "운동명 또는 메모 검색", "all": "전체", "allTypes": "모든 운동 방식", "noResults": "검색 조건에 맞는 기록이 없습니다.", "delete": "삭제", "deleteAsk": "이 기록을 삭제할까요? 삭제한 기록은 복구할 수 없습니다.", "deleted": "기록을 삭제했습니다.", "select": "선택", "deleteSelected": "선택한 기록 삭제", "selectedAsk": "선택한 {n}개 기록을 삭제할까요?", "historyIntro": "날짜순 기록에서 꾸준함을 확인하세요.", "rmIntro": "1RM을 등록하고 종목 계열별로 기록을 비교하세요.", "oneRM": "나의 1RM", "rmWeight": "1RM 무게", "saveRM": "1RM 저장", "savedRM": "1RM을 저장했습니다.", "deleteRM": "이 종목의 1RM 삭제", "deleteRMAsk": "이 종목의 1RM을 삭제할까요?", "notSet": "아직 등록되지 않음", "updated": "수정일", "rounding": "플레이트 반올림 간격", "exact": "소수점 1자리", "roundHint": "현재 표시 단위의 간격으로 반올림합니다. 저장된 1RM 원본은 유지됩니다.", "percentTable": "1RM 퍼센트표", "percentage": "퍼센트", "converter": "lb ↔ kg 변환기", "convertValue": "변환할 무게", "switchUnits": "단위 바꾸기", "dataIntro": "기록은 현재 브라우저에 보관됩니다. 파일로 백업해 안전하게 보관하세요.", "exportTitle": "엑셀로 내보내기", "exportDesc": "완료한 운동 기록을 UTF-8 BOM CSV로 다운로드합니다. 예정 운동은 전체 백업(JSON)에 포함됩니다.", "exportCSV": "CSV 다운로드", "importTitle": "엑셀 편집 후 복원", "importDesc": "CSV를 가져오면 완료한 운동 기록 전체가 파일의 행으로 교체됩니다. 파일에서 삭제한 행은 히스토리에서도 삭제됩니다. 예정 운동과 1RM은 유지됩니다.", "csvNote": "세부내용 열에는 운동 구성과 인터벌 설정을 보존하는 JSON이 들어갑니다. JSON의 content 값 또는 셀 전체를 일반 텍스트로 편집할 수 있습니다. 일반 텍스트로 바꾸면 인터벌 설정은 별도로 보존되지 않습니다.", "importCSV": "CSV 파일 선택", "importAsk": "검증 완료: {n}개 기록. 현재 운동 기록 {old}개를 이 파일로 교체할까요?", "imported": "{n}개 기록을 복원했습니다.", "invalidCSV": "CSV 형식이나 값이 올바르지 않습니다. 변경 사항은 저장되지 않았습니다.", "line": "행", "backupTitle": "전체 백업", "backupDesc": "완료한 운동 기록, 예정 운동, 모든 종목의 1RM을 JSON 파일 하나에 저장합니다. 기기나 언어판을 옮길 때 사용하세요.", "exportJSON": "전체 백업 다운로드", "importJSON": "전체 백업 복원", "restoreAsk": "완료 기록 {n}개, 예정 운동 {p}개, 1RM {r}개로 현재 데이터를 모두 교체할까요?", "invalidJSON": "올바른 트래커 백업 파일이 아닙니다.", "resetTitle": "전체 초기화", "resetDesc": "이 브라우저의 완료 기록, 예정 운동, 모든 1RM을 삭제합니다.", "resetAll": "모든 데이터 삭제", "resetAllAsk": "모든 완료 기록, 예정 운동, 1RM을 영구 삭제할까요? 먼저 전체 백업 파일을 내려받으세요.", "resetDone": "모든 데이터를 초기화했습니다.", "storageError": "브라우저 저장소를 사용할 수 없습니다. 저장 공간과 개인정보 보호 설정을 확인해주세요. 데이터 파일을 먼저 백업하세요.", "corrupt": "저장 데이터를 읽을 수 없습니다. 기존 데이터는 덮어쓰지 않았습니다. 데이터 관리에서 백업을 복원하거나 초기화해주세요.", "downloaded": "파일 다운로드를 시작했습니다.", "offline": "인터넷 없이도 기록할 수 있습니다. 가이드 영상은 인터넷 연결이 필요합니다.", "install": "홈 화면에 추가", "installHelp": "iPhone: Safari 공유 → 홈 화면에 추가. Android: Chrome 메뉴 → 홈 화면에 추가. 웹으로 이용할 때는 HTTPS 주소를 사용하세요.", "installButton": "앱 설치", "language": "언어 변경", "localeHelp": "같은 웹 주소의 언어판은 데이터를 공유합니다. 파일을 직접 열면 브라우저에 따라 저장소가 분리될 수 있으므로 전체 백업으로 옮겨주세요.", "count": "{n}개 기록", "rmCount": "{n}개 1RM", "cancel": "취소", "confirm": "확인", "confirmation": "확인해주세요", "close": "닫기", "details": "운동 상세", "noContent": "운동 구성 미입력", "minutes": "분", "seconds": "초", "timerError": "타이머의 시간과 라운드 설정을 확인해주세요.", "saveFail": "저장하지 못했습니다. 저장소 설정을 확인하고 다시 시도해주세요.", "previewLimit": "최근 5개 기록", "maxFile": "파일은 10MB 이하로 선택해주세요.", "repsWord": "회", "setsWord": "세트", "roundWord": "라운드", "capWord": "타임캡", "formIntro": "오늘의 운동을 입력하세요. 필수 항목은 *로 표시됩니다.", "liveTarget": "목표 중량", "percentHint": "50~100%를 5% 간격으로 표시합니다.", "backupReminder": "브라우저 데이터를 지우면 기록도 삭제됩니다. 정기적으로 백업해주세요.", "recordUnitHint": "단위를 바꾸면 입력된 무게도 자동 환산됩니다.", "timerChanged": "타이머는 시작할 때의 설정으로 계속 진행됩니다. 새 설정을 적용하려면 재설정하세요.", "todo": "달력", "todoIntro": "날짜를 눌러 그날 해야 할 운동과 완료한 운동을 확인하세요. WOD는 파란색, Strength는 빨간색, 지난 미완료는 회색입니다.", "viewPlans": "달력 보기", "todaySummary": "오늘 {today}개 · 지난 미완료 {overdue}개 · 전체 {n}개", "logMode": "운동 결과 기록", "planMode": "운동 미리 계획", "planEntry": "운동 계획하기", "planHint": "결과 없이 날짜와 운동 구성을 저장하세요. 무게·반복수·세트는 목표값입니다.", "planSave": "예정 운동 저장", "planUpdate": "계획 수정 저장", "planSaved": "예정 운동을 저장했습니다.", "planUpdated": "운동 계획을 수정했습니다.", "plannedDate": "예정 날짜", "plannedCap": "예정 타임캡 (분, 선택)", "targetWeight": "목표 무게 (선택)", "allPending": "전체 미완료", "todayPlans": "오늘", "overduePlans": "지난 미완료", "upcomingPlans": "앞으로 할 운동", "newPlan": "새 운동 계획", "planCount": "미완료 {n}개", "noPlans": "예정된 운동이 없습니다", "noPlansHint": "새 운동 계획을 눌러 오늘 또는 앞으로 할 운동을 저장하세요.", "noPlanResults": "조건에 맞는 예정 운동이 없습니다.", "editPlan": "계획 수정", "performPlan": "운동 수행 / 결과 입력", "completePlan": "완료하고 히스토리에 저장", "planCompleted": "운동을 완료했습니다. 수고하셨어요! 💪", "planEditing": "계획 수정 중 · {title} · {date}", "planPerforming": "예정 운동 수행 중 · {title} · 예정일 {date}. 실제 수행 날짜와 결과를 저장해주세요.", "cancelPlan": "달력으로 돌아가기", "deletePlanAsk": "이 예정 운동을 삭제할까요? 완료된 운동 기록은 유지됩니다.", "planMissing": "이 계획은 이미 완료되었거나 변경되었습니다. 달력에서 다시 열어주세요.", "replaceDraft": "작성 중인 내용을 닫고 선택한 운동을 열까요? 저장하지 않은 입력은 사라집니다.", "importAllDone": "완료 기록 {n}개와 예정 운동 {p}개를 복원했습니다.", "addLift": "+ 종목 추가", "addSet": "+ 세트 추가", "allOfFamily": "전체", "awesome": "최고예요!", "baseIs": "% 기준: {lift} 1RM {w}", "baseMissing": "% 기준: {lift} 1RM 미등록 → %만 표시됩니다. 1RM & 비교 탭에서 등록하세요.", "baseMissingShort": "{lift} 1RM 미등록 · %만 표시", "baseShort": "{lift} 1RM 기준", "beatIt": "오늘 이 기록을 넘어보세요!", "bestCol": "최고 기록", "bestRecord": "최고 기록", "bestShort": "최고", "calendarView": "달력", "listView": "목록", "compareEmpty": "이 분류에는 아직 기록이나 1RM이 없습니다.", "compareIntro": "같은 계열 안에서 메인 종목 · 변형 · 스킬 · 풀/근력 종목을 나누어 최고 기록과 1RM을 비교합니다. 예: Snatch Balance는 스내치 스킬, Pause Snatch는 스내치 변형.", "compareTitle": "종목별 기록 비교", "customLiftAdd": "종목 추가", "customLiftAdded": "새 종목을 추가했습니다.", "customLiftExists": "같은 이름의 종목이 이미 있습니다.", "customLiftHint": "예: Snatch High Pull + Snatch", "customLiftIntro": "목록에 없는 종목을 계열과 분류를 정해 추가하면 기록·비교·계획에 사용할 수 있습니다.", "customLiftName": "종목 이름", "customLiftTitle": "나만의 종목 추가", "dayDone": "완료한 운동", "dayEmpty": "이 날짜에는 운동이 없습니다", "dayMaxTag": "당일 최고 (Max)", "dayMissed": "지난 미완료 운동", "dayPlanned": "해야 할 운동", "doneWord": "완료", "firstRx": "첫 Rx'd 달성", "ignore": "무시", "inUse": "사용 중", "lastDone": "최근", "legendMissed": "지난 미완료", "legendStrDone": "Strength 완료", "legendStrPlan": "Strength 예정", "legendWodDone": "WOD 완료", "legendWodPlan": "WOD 예정", "liftClass": "분류", "liftFamily": "종목 계열", "liftGroup": "스트렝스 분류", "logThisDay": "이 날짜에 결과 기록", "planThisDay": "이 날짜에 운동 계획", "mark_done": "완료", "mark_missed": "지난 미완료", "mark_planned": "예정", "maxMessage": "오늘 들어올린 당일 최고 무게를 1RM으로 저장할 수 있습니다.", "maxTitle": "오늘의 최고 무게", "newRM": "새 1RM", "newRecord": "새 기록", "noBaseShort": "1RM 미등록", "noCustomLifts": "추가한 종목이 없습니다.", "ofDayMaxTag": "당일 최고의 {p}", "prMessage": "축하합니다! 이전 기록을 뛰어넘었어요. 꾸준함이 만든 결과입니다.", "prTitle": "새로운 기록 달성! 🎉", "prevBest": "이전 최고", "prevRM": "이전 1RM", "prevRecords": "이전 기록 · {title} ({n}회)", "programAdded": "프로그램 일정 {n}개를 달력에 추가했습니다.", "programApply": "달력에 추가", "programApplyAsk": "예정 운동 {n}개를 {start}부터 달력에 추가할까요? 기존 기록과 일정은 유지됩니다.", "programBaseRule": "스내치·클린·저크 계열 변형 종목의 %는 항상 상위 종목(Snatch / Clean / Clean & Jerk) 1RM 기준으로 계산합니다. 스쿼트·프레스·데드리프트 계열은 해당 종목 1RM 기준입니다. 1RM이 없으면 %만 표시됩니다.", "programBuiltin": "5주 역도 피킹 프로그램 (weightlifting programm.txt)", "programDelete": "남은 일정 삭제", "programDeleteAsk": "이 프로그램의 남은 예정 운동 {n}개를 삭제할까요? 이미 완료한 기록은 유지됩니다.", "programDupDay": "Day {day}가 두 번 이상 나옵니다.", "programDupWarn": "같은 이름의 프로그램이 같은 시작일에 이미 있습니다. 중복으로 추가될 수 있습니다.", "programImport": "프로그램 가져오기", "programImported": "가져온 프로그램", "programIntro": "프로그램 텍스트를 날짜별 Strength 세션과 보조 운동(WOD)으로 변환해 달력에 넣습니다. 미리보기로 모든 줄이 어떻게 해석되는지 확인한 뒤 추가하세요.", "programInvalid": "프로그램을 해석할 수 없습니다. 형식을 확인해주세요.", "programLine": "원문", "programName": "프로그램 이름", "programNewLifts": "목록에 없는 종목을 새 종목으로 추가합니다: {list}", "programNoDays": "\"Monday - Day 1\" 형식의 날짜 줄을 찾지 못했습니다.", "programNone": "가져온 프로그램이 없습니다.", "programNotesCount": "코치 메모 {n}개 포함 (계획의 메모에서 확인)", "programPaste": "직접 붙여넣기 / txt 파일", "programPreview": "미리보기", "programRemaining": "남은 일정 {n}개 · {start} ~ {end}", "programSource": "프로그램", "programStart": "Day 1 시작일", "programSummary": "{days}일 · Strength 세션 {s}개 (종목 {lifts}개) · 보조 운동 WOD {w}개 · {start} ~ {end}", "programText": "프로그램 텍스트", "programTextHint": "Monday - Day 1\nSnatch - 75% x 1 x 3\nFront squat - 75% x 3 x 5\n4 sets; no rest:\n10 pull-ups", "programWeekdayWarn": "Day {day}는 원문에서 {wd}이지만 선택한 시작일의 요일과 다릅니다.", "qualityHint": "예: 완료, 1:25 / 1:27 / 1:26", "qualityResult": "결과 (선택)", "removeLift": "종목 삭제", "removeSet": "세트 삭제", "repsCol": "반복", "setsCol": "세트", "weightCol": "무게", "targetWeightCol": "목표 무게", "restDay": "휴식일", "rmBaseInfo": "프로그램의 % 계산은 이 종목이 아니라 {lift} 1RM을 기준으로 합니다.", "rmUpdated": "1RM을 업데이트했습니다.", "sameTitle": "같은 제목", "similarTitle": "비슷한 제목", "similarContent": "비슷한 운동 구성", "similarFound": "이전과 같거나 비슷한 WOD가 있어요", "selectPrev": "선택", "saveAsRMHint": "아직 1RM이 등록되지 않은 종목입니다.", "strengthFormHint": "한 세션에 여러 종목을 넣을 수 있습니다. % 를 입력하면 1RM 기준 무게가 자동 계산됩니다.", "timesDone": "{n}회 기록", "todayBtn": "오늘", "todayWorkouts": "오늘의 운동", "unlink": "선택 해제", "updateRM": "1RM 업데이트", "vsBase": "{lift} 1RM 대비", "liftRequired": "스트렝스 종목을 한 개 이상 추가해주세요.", "weightRequired": "수행한 무게를 입력해주세요.", "invalidPct": "퍼센트는 0.1~200 사이로 입력해주세요.", "programLoadFile": "txt 파일 불러오기", "programFileHint": "프로그램 txt 파일(예: weightlifting programm.txt)을 고르면 아래 칸에 내용이 들어갑니다. 그다음 미리보기를 누르세요.", "programFileLoaded": "{name} 파일을 불러왔습니다. 미리보기를 눌러 확인하세요.", "programFileTooBig": "파일이 너무 큽니다. 200KB 이하의 txt 파일을 선택하세요.", "programFileError": "파일을 읽을 수 없습니다. UTF-8 txt 파일인지 확인하세요.", "shared": "공유 창을 열었습니다. \"파일에 저장\"을 선택하면 보관됩니다.", "auth": "로그인 / 회원가입", "authIntro": "로그인하여 박스 코치 WOD와 개인 운동 기록을 안전하게 관리하세요.", "signIn": "로그인", "signUp": "회원가입", "signOut": "로그아웃", "name": "이름 / 닉네임", "nameHint": "박스에서 사용하는 이름", "email": "이메일", "password": "비밀번호", "passwordConfirm": "비밀번호 확인", "passwordMin": "비밀번호는 최소 6자 이상이어야 합니다.", "passwordMismatch": "비밀번호가 일치하지 않습니다.", "emailInvalid": "올바른 이메일 형식을 입력하세요.", "authNote": "🔒 모든 개인 기록은 회원님 본인만 열람 가능한 암호화 데이터베이스에 안전하게 보관됩니다.", "alreadyHaveAccount": "이미 계정이 있으신가요? 로그인", "needAccount": "계정이 없으신가요? 회원가입", "pendingApproval": "코치 승인 대기 중", "pendingApprovalMsg": "회원가입이 완료되었습니다. 박스 코치님의 승인 후 오늘의 WOD와 모든 기록 기능을 이용하실 수 있습니다.", "checkStatus": "승인 상태 새로고침", "coachAdmin": "코치 관리", "coachShort": "코치", "memberRole": "회원", "coachRole": "코치", "approved": "승인 완료", "pending": "승인 대기", "approve": "승인", "revoke": "승인 취소", "grantCoach": "코치 지정", "revokeCoach": "일반 회원으로 변경", "coachPublish": "오늘의 WOD / 프로그램 발행", "coachPrograms": "발행된 WOD 목록", "coachMembers": "박스 회원 승인 관리", "publishSuccess": "오늘의 WOD가 성공적으로 발행되었습니다!", "deleteProgramConfirm": "이 프로그램을 삭제하시겠습니까?", "coachWod": "코치 WOD", "todayCoachWod": "오늘의 코치 WOD", "loadCoachWod": "코치 WOD 새로고침", "useCoachWod": "오늘 이 WOD 기록하기", "syncOk": "클라우드 동기화 완료", "syncing": "클라우드 동기화 중...", "syncOffline": "오프라인 (로컬 보관)", "syncNow": "지금 클라우드 동기화", "restoreCloud": "클라우드 기록 불러오기", "confirmCloudRestore": "클라우드에 저장된 기록으로 기기의 운동 데이터를 동기화하시겠습니까?", "cloudRestoreOk": "클라우드에서 성공적으로 기록을 불러왔습니다.", "cloudSyncOk": "클라우드에 안전하게 저장되었습니다.", "loginSuccess": "로그인되었습니다.", "signUpSuccess": "회원가입이 완료되었습니다! 코치 승인 후 이용 가능합니다.", "loginRequired": "로그인이 필요합니다.", "noMembers": "등록된 회원이 없습니다.", "noCoachPrograms": "발행된 코치 프로그램이 없습니다.", "filterAll": "전체", "filterPending": "승인 대기", "filterApproved": "승인 완료", "coachProgramDesc": "모든 박스 회원들에게 표시될 운동 프로그램을 등록하세요.", "cloudSyncCardTitle": "클라우드 자동 동기화", "cloudSyncCardDesc": "모바일과 PC 어디서든 내 계정으로 로그인하면 최신 운동 기록이 자동 동기화됩니다.", "gender": "성별", "genderSelect": "성별을 선택하세요", "male": "남성 👨", "female": "여성 👩", "genderMaleShort": "남", "genderFemaleShort": "여", "loginToContinue": "로그인 후 이용하실 수 있습니다.", "isPublic": "회원 공개 여부", "coachProgramPublicLabel": "전체 회원에게 공개 (ON)", "publicWod": "공개", "privateWod": "비공개", "togglePublic": "공개 전환", "togglePrivate": "비공개 전환", "planShareLabel": "박스 회원들과 이 운동 일정 공유하기", "planShareHint": "공개 설정 시 다른 회원들의 캘린더에도 이 일정이 표시됩니다.", "sharedPrograms": "회원 공유 프로그램", "sharedBy": "{name}님의 공유 운동", "useSharedProgram": "이 운동 기록하기", "deleteCoachAuth": "코치 권한 삭제", "deleteSharedConfirm": "이 공유 프로그램을 코치 권한으로 삭제하시겠습니까?", "logPublicLeaderboardLabel": "내 기록 박스 순위표(리더보드)에 공개", "logPublicLeaderboardHint": "체크 해제 시 나만 볼 수 있으며, 박스 회원 순위표에 나타나지 않습니다.", "privateRecord": "비공개 기록", "publicRecord": "공개 기록", "navTodoNum": "01", "navAddNum": "02", "navHistoryNum": "03", "navStrengthNum": "04", "navDataNum": "05", "navCoachNum": "06", "edit": "수정", "editLog": "운동 기록 수정", "editLogCoachDirect": "코치 권한으로 즉시 수정됩니다.", "editLogMemberNotice": "회원님의 기록 수정은 공정한 기록 관리를 위해 코치 승인 후 반영됩니다.", "requestEdit": "코치에게 수정 승인 요청", "editReason": "수정 사유 (선택)", "editReasonHint": "예: 시간 입력 오타, 라운드 수 정정", "editPending": "수정 승인 대기 중", "editPendingBadge": "⏳ 수정 승인 대기", "editPendingHint": "코치님이 확인 후 승인하면 수정된 기록으로 변경됩니다.", "coachEditRequests": "기록 수정 승인 대기 목록", "noEditRequests": "수정 승인 대기 중인 기록이 없습니다.", "approveEdit": "수정 승인", "rejectEdit": "반려", "editApproved": "기록 수정이 승인되었습니다.", "editRejected": "기록 수정이 반려되었습니다.", "editRequested": "코치님께 기록 수정 승인을 요청했습니다.", "leaderboard": "박스 순위표 (리더보드)", "viewLeaderboard": "🏆 박스 순위표", "rxdRankings": "🥇 Rx’d 순위", "scaledRankings": "🥈 Scaled 순위", "allGenders": "전체", "maleOnly": "남성 👨", "femaleOnly": "여성 👩", "myRank": "내 순위: {rank}위 ({grade})", "rank": "순위", "athlete": "선수 / 회원", "scoreCol": "기록", "noLeaderboardData": "해당 종목에 등록된 공개 기록이 아직 없습니다."}, PROGRAM_TEXT="";
 const KO=LANG==='ko', LOCALE=KO?'ko-KR':'en-US';
 const $=id=>document.getElementById(id);
 const t=(key,values={})=>Object.entries(values).reduce((s,[k,v])=>s.replaceAll('{'+k+'}',String(v)),T[key]??key);
@@ -587,7 +729,7 @@ const Supabase = {
   },
 
   get isCoach() {
-    return this.profile?.role === 'coach';
+    return String(this.profile?.role || '').toLowerCase() === 'coach';
   },
 
   get isApproved() {
@@ -652,7 +794,7 @@ const Supabase = {
     const cloudStatus = $('cloudStatusText');
     if (cloudStatus) {
       if (isLoggedIn) {
-        cloudStatus.textContent = `${this.user.email} (${isCoach ? t('coachRole') : t('memberRole')}, ${isApproved ? t('approved') : t('pending')})`;
+        cloudStatus.textContent = `${this.user?.email || ''} (${isCoach ? t('coachRole') : t('memberRole')}, ${isApproved ? t('approved') : t('pending')})`;
       } else {
         cloudStatus.textContent = t('loginRequired');
       }
@@ -688,10 +830,19 @@ const Supabase = {
     return data;
   },
 
-  async signUp(email, password, name) {
+
+  // Leaderboard & Program extensions for Requirements 0-6
+  async signUp(email, password, name, gender = 'M') {
     const res = await this.req('/auth/v1/signup', {
       method: 'POST',
-      body: JSON.stringify({ email, password, data: { name: name || email.split('@')[0] } })
+      body: JSON.stringify({
+        email,
+        password,
+        data: {
+          name: name || email.split('@')[0],
+          gender: gender || 'M'
+        }
+      })
     });
     if (res.access_token) {
       this.session = res;
@@ -701,6 +852,176 @@ const Supabase = {
     }
     return res;
   },
+
+  async publishProgram(title, startDate, unit, programText, isPublic = true) {
+    return await this.req('/rest/v1/coach_programs', {
+      method: 'POST',
+      headers: { 'Prefer': 'return=representation' },
+      body: JSON.stringify({
+        title,
+        start_date: startDate,
+        unit: unit || 'kg',
+        program_text: programText,
+        is_public: isPublic,
+        created_by: this.user?.id
+      })
+    });
+  },
+
+  async toggleCoachProgramPublic(id, isPublic) {
+    return await this.req(`/rest/v1/coach_programs?id=eq.${id}`, {
+      method: 'PATCH',
+      headers: { 'Prefer': 'return=representation' },
+      body: JSON.stringify({ is_public: isPublic })
+    });
+  },
+
+  async fetchSharedPrograms(date = null) {
+    const url = date ? `/rest/v1/shared_programs?start_date=eq.${date}&select=*` : `/rest/v1/shared_programs?select=*&order=start_date.desc,created_at.desc`;
+    try {
+      return await this.req(url);
+    } catch {
+      return [];
+    }
+  },
+
+  async publishSharedProgram(title, startDate, unit, programText) {
+    return await this.req('/rest/v1/shared_programs', {
+      method: 'POST',
+      headers: { 'Prefer': 'return=representation' },
+      body: JSON.stringify({
+        title,
+        start_date: startDate,
+        unit: unit || 'kg',
+        program_text: programText,
+        user_id: this.user?.id,
+        user_name: this.profile?.name || this.user?.email.split('@')[0],
+        gender: this.profile?.gender || 'M',
+        is_public: true
+      })
+    });
+  },
+
+  async deleteSharedProgram(id) {
+    return await this.req(`/rest/v1/shared_programs?id=eq.${id}`, {
+      method: 'DELETE'
+    });
+  },
+
+  async syncToLeaderboard(log, isPublic = true) {
+    if (!this.session || !this.isApproved) return;
+    const { score_seconds, score_reps, score_weight } = parseScoreValues(log);
+    try {
+      await this.req('/rest/v1/box_leaderboard', {
+        method: 'POST',
+        headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' },
+        body: JSON.stringify({
+          user_id: this.user.id,
+          user_name: this.profile?.name || this.user.email.split('@')[0],
+          gender: this.profile?.gender || 'M',
+          date: log.date,
+          title: log.title,
+          category: log.category || 'WOD',
+          workout_type: log.workoutType || 'FOR_TIME',
+          score: log.score,
+          score_seconds,
+          score_reps,
+          score_weight,
+          is_rxd: !!log.isRxd,
+          is_public: isPublic,
+          status: 'APPROVED',
+          notes: log.notes || ''
+        })
+      });
+    } catch (e) {
+      console.warn('Leaderboard sync error:', e);
+    }
+  },
+
+  async fetchLeaderboard(title, date = null) {
+    let url = `/rest/v1/box_leaderboard?title=eq.${encodeURIComponent(title)}&status=eq.APPROVED&is_public=eq.true&select=*`;
+    if (date) url += `&date=eq.${date}`;
+    try {
+      return await this.req(url);
+    } catch {
+      return [];
+    }
+  },
+
+  async requestLogEdit(logId, updatedData, reason = '') {
+    if (!this.session || !this.isApproved) return;
+    const r = state.logs.find(x => x.id === logId);
+    if (!r) return;
+    r.pendingEdit = { ...updatedData, reason, requestedAt: new Date().toISOString() };
+    commit(state);
+
+    const { score_seconds, score_reps, score_weight } = parseScoreValues({ ...r, ...updatedData });
+    try {
+      await this.req('/rest/v1/box_leaderboard', {
+        method: 'POST',
+        headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' },
+        body: JSON.stringify({
+          user_id: this.user.id,
+          user_name: this.profile?.name || this.user.email.split('@')[0],
+          gender: this.profile?.gender || 'M',
+          date: updatedData.date || r.date,
+          title: updatedData.title || r.title,
+          category: r.category || 'WOD',
+          workout_type: r.workoutType || 'FOR_TIME',
+          score: r.score,
+          score_seconds,
+          score_reps,
+          score_weight,
+          is_rxd: updatedData.isRxd !== undefined ? updatedData.isRxd : r.isRxd,
+          is_public: true,
+          status: 'PENDING_EDIT',
+          pending_edit: {
+            ...updatedData,
+            old_score: r.score,
+            old_is_rxd: r.isRxd,
+            reason
+          },
+          notes: updatedData.notes || r.notes || ''
+        })
+      });
+    } catch (e) {
+      console.warn('Edit request error:', e);
+    }
+  },
+
+  async fetchPendingEditRequests() {
+    try {
+      return await this.req('/rest/v1/box_leaderboard?status=eq.PENDING_EDIT&select=*');
+    } catch {
+      return [];
+    }
+  },
+
+  async approveLogEdit(requestId, newScore, newRxd, newNotes) {
+    return await this.req(`/rest/v1/box_leaderboard?id=eq.${requestId}`, {
+      method: 'PATCH',
+      headers: { 'Prefer': 'return=representation' },
+      body: JSON.stringify({
+        score: newScore,
+        is_rxd: newRxd,
+        notes: newNotes,
+        status: 'APPROVED',
+        pending_edit: null
+      })
+    });
+  },
+
+  async rejectLogEdit(requestId) {
+    return await this.req(`/rest/v1/box_leaderboard?id=eq.${requestId}`, {
+      method: 'PATCH',
+      headers: { 'Prefer': 'return=representation' },
+      body: JSON.stringify({
+        status: 'APPROVED',
+        pending_edit: null
+      })
+    });
+  },
+
 
   async signIn(email, password) {
     const res = await this.req('/auth/v1/token?grant_type=password', {
@@ -860,7 +1181,7 @@ let entryMode='log', activePlan=null, formDirty=false;
 let blocks=[], linkedTitle=null, suggestSource='title';
 const dismissedSuggest=new Set();
 let calCursor=localDate().slice(0,7), calSelected=localDate(), todoView='calendar';
-function showPage(page){if(!['add','todo','history','strength','data','coach'].includes(page))page='add';if(page==='coach'&&!Supabase.isCoach)page='add';document.querySelectorAll('.page').forEach(el=>el.hidden=el.id!=='page-'+page);document.querySelectorAll('[data-page]').forEach(b=>{b.classList.toggle('active',b.dataset.page===page);if(b.dataset.page===page)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});if(location.hash!=='#'+page)history.replaceState(null,'','#'+page);if(page==='history')renderHistory();if(page==='todo'){renderCalendar();renderPlans();loadCoachWodForSelectedDate();}if(page==='strength')renderCompare();if(page==='coach')renderCoachAdmin();window.scrollTo({top:0,behavior:'instant'});}
+function showPage(page){if(!['todo','add','history','strength','data','coach'].includes(page))page='todo';if(page==='coach'&&!Supabase.isCoach)page='todo';document.querySelectorAll('.page').forEach(el=>el.hidden=el.id!=='page-'+page);document.querySelectorAll('[data-page]').forEach(b=>{b.classList.toggle('active',b.dataset.page===page);if(b.dataset.page===page)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});if(location.hash!=='#'+page)history.replaceState(null,'','#'+page);if(page==='history')renderHistory();if(page==='todo'){renderCalendar();renderPlans();loadCoachWodForSelectedDate();}if(page==='strength')renderCompare();if(page==='coach')renderCoachAdmin();window.scrollTo({top:0,behavior:'instant'});}
 document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
 window.addEventListener('hashchange',()=>showPage(location.hash.slice(1)));document.querySelectorAll('a[href="#add"]').forEach(a=>a.addEventListener('click',()=>showPage('add')));
 
@@ -1017,14 +1338,22 @@ $('workoutForm').addEventListener('submit',e=>{
   if(entryMode==='plan'){
    const p=planRecord();if(!validPlan(p))throw {key:'invalid'};
    const editing=!!activePlan,plans=editing?state.plans.map(x=>x.id===activePlan.id?p:x):[...state.plans,p];
-   if(commit({...state,plans})){resetEntry('plan');$('todoFilter').value='all';$('todoCategory').value='';$('todoSearch').value='';calSelected=p.date;calCursor=p.date.slice(0,7);showPage('todo');notify(t(editing?'planUpdated':'planSaved'));}
+   const isSharedPlan = $('planSharePublic')?.checked ?? false;
+   if(commit({...state,plans})){
+     if(isSharedPlan && Supabase.session && Supabase.isApproved){
+       Supabase.publishSharedProgram(planTitle(p), p.date, p.weightUnit||'kg', p.content||p.title);
+     }
+     resetEntry('plan');$('todoFilter').value='all';$('todoCategory').value='';$('todoSearch').value='';calSelected=p.date;calCursor=p.date.slice(0,7);showPage('todo');notify(t(editing?'planUpdated':'planSaved'));
+   }
    return;
   }
   const logs=logRecords();if(!logs.every(l=>validLog(l)))throw {key:'invalid'};
   const fromPlan=!!activePlan,maxKeys=new Set(blocks.filter(b=>b.rows.some(r=>r.max)).map(b=>b.liftKey));
   const cele=evaluateCelebration(logs,state.logs,category==='STRENGTH'?maxKeys:new Set());
+  const isPublicLog = $('logPublicLeaderboard')?.checked ?? true;
   if(commit({...state,logs:[...state.logs,...logs],plans:activePlan?state.plans.filter(p=>p.id!==activePlan.id):state.plans})){
    formDirty=false;
+   for(const l of logs){ if(isPublicLog) Supabase.syncToLeaderboard(l, true); }
    if(fromPlan){resetEntry('log');$('historySearch').value='';$('categoryFilter').value='';$('typeFilter').value='';calSelected=logs[0].date;calCursor=calSelected.slice(0,7);setTodoView('calendar');showPage('todo');}
    if(cele)celebrate(cele);else notify(t(fromPlan?'planCompleted':'saved'));
   }
@@ -1046,6 +1375,8 @@ function applyEntryMode(){
  $('activePlanBanner').hidden=!activePlan;
  if(activePlan)$('activePlanText').textContent=t(plan?'planEditing':'planPerforming',{title:recordTitle(activePlan),date:displayDate(activePlan.date)});
  $('timerApply').hidden=plan||category==='STRENGTH'||!['FOR_TIME','INTERVAL_TABATA'].includes(type);
+ if($('planShareField'))$('planShareField').hidden=!plan;
+ if($('logPrivacyField'))$('logPrivacyField').hidden=plan;
 }
 function setEntryMode(mode){if(activePlan)return;entryMode=mode;applyEntryMode();if(category==='STRENGTH')renderBlocks();$('formError').hidden=true;updateTimerIdle();}
 $('entryLog').onclick=()=>setEntryMode('log');$('entryPlan').onclick=()=>setEntryMode('plan');
@@ -1210,7 +1541,7 @@ function liftGroupFilterOptions(){const sel=$('liftGroupFilter'),cur=sel.value;l
 function matchesLiftGroup(r,v){if(!v)return true;if(r.category!=='STRENGTH')return false;const l=liftInfo(logLiftKey(r));if(!l)return false;const [kind,f,c]=v.split(':');return l.family===f&&(kind==='f'||l.cls===c);}
 function renderRecent(){const logs=ordered().slice(0,3);$('recentList').innerHTML=logs.length?logs.map(r=>`<div class="mini-record"><div class="mini-record-top"><div><h3>${esc(recordTitle(r))}</h3><small>${esc(displayDate(r.date))} · ${esc(TYPES[r.workoutType])}</small></div>${badge(r)}</div><strong>${esc(shownScore(r))}</strong></div>`).join(''):emptyHTML();}
 function renderHistory(){const q=normalized($('historySearch').value),cat=$('categoryFilter').value,type=$('typeFilter').value,lg=$('liftGroupFilter').value;const list=ordered().filter(r=>(!cat||cat===r.category)&&(!type||type===r.workoutType)&&matchesLiftGroup(r,lg)&&(!q||normalized([r.title,recordTitle(r),r.notes].join(' ')).includes(q)));selected=new Set([...selected].filter(id=>list.some(r=>r.id===id)));$('historyCount').textContent=t('count',{n:list.length});$('deleteSelected').disabled=!selected.size;
- $('historyList').innerHTML=list.length?list.map(r=>`<article class="record"><div class="record-top"><div><div class="meta">${esc(displayDate(r.date))} · ${esc(TYPES[r.workoutType])}</div><h3>${esc(recordTitle(r))}${r.category==='STRENGTH'&&liftInfo(logLiftKey(r))?`<span class="cls-pill">${esc(liftGroup(logLiftKey(r)))}</span>`:''}</h3></div>${badge(r)}</div><div class="record-score">${esc(shownScore(r))}</div>${r.prescription?`<div class="item-note">${esc(t('programLine'))}: ${esc(r.prescription)}</div>`:''}${r.content?`<div class="record-content">${esc(r.content)}</div>`:''}<div class="record-settings">${esc(settingsText(r))}</div>${r.notes?`<p class="record-note">${esc(r.notes)}</p>`:''}<div class="record-bottom"><label class="check"><input type="checkbox" data-select="${esc(r.id)}" ${selected.has(r.id)?'checked':''}>${esc(t('select'))}</label><button class="danger small" data-delete="${esc(r.id)}">${esc(t('delete'))}</button></div></article>`).join(''):state.logs.length?`<div class="panel empty"><p>${esc(t('noResults'))}</p></div>`:emptyHTML();}
+ $('historyList').innerHTML=list.length?list.map(r=>`<article class="record"><div class="record-top"><div><div class="meta">${esc(displayDate(r.date))} · ${esc(TYPES[r.workoutType])}</div><h3>${esc(recordTitle(r))}${r.category==='STRENGTH'&&liftInfo(logLiftKey(r))?`<span class="cls-pill">${esc(liftGroup(logLiftKey(r)))}</span>`:''}</h3></div>${badge(r)}</div><div class="record-score">${esc(shownScore(r))}</div>${r.prescription?`<div class="item-note">${esc(t('programLine'))}: ${esc(r.prescription)}</div>`:''}${r.content?`<div class="record-content">${esc(r.content)}</div>`:''}<div class="record-settings">${esc(settingsText(r))}</div>${r.notes?`<p class="record-note">${esc(r.notes)}</p>`:''}<div class="record-bottom"><label class="check"><input type="checkbox" data-select="${esc(r.id)}" ${selected.has(r.id)?'checked':''}>${esc(t('select'))}</label><div class="history-actions">${r.pendingEdit?`<span class="pill warning">${esc(t('editPendingBadge'))}</span>`:''}<button type="button" class="small ghost" data-edit-log="${esc(r.id)}">${esc(t('edit'))}</button><button type="button" class="small secondary" data-view-lb="${esc(r.title)}" data-date="${esc(r.date)}">${esc(t('viewLeaderboard'))}</button><button class="danger small" data-delete="${esc(r.id)}">${esc(t('delete'))}</button></div></div></article>`).join(''):state.logs.length?`<div class="panel empty"><p>${esc(t('noResults'))}</p></div>`:emptyHTML();}
 for(const id of ['historySearch','categoryFilter','typeFilter','liftGroupFilter'])$(id).addEventListener(id==='historySearch'?'input':'change',renderHistory);
 $('historyList').addEventListener('change',e=>{if(e.target.dataset.select){e.target.checked?selected.add(e.target.dataset.select):selected.delete(e.target.dataset.select);$('deleteSelected').disabled=!selected.size;}});
 $('historyList').addEventListener('click',async e=>{const b=e.target.closest('[data-delete]');if(b&&await confirmAction(t('deleteAsk'))){if(commit({...state,logs:state.logs.filter(r=>r.id!==b.dataset.delete)}))notify(t('deleted'));}});
@@ -1299,7 +1630,7 @@ function refresh(){const month=localDate().slice(0,7);$('totalStat').textContent
 window.addEventListener('storage',e=>{if(e.key===KEY){try{const next=e.newValue?migrateState(JSON.parse(e.newValue)):{version:2,logs:[],profiles:{},plans:[],customLifts:{}};if(!validState(next))throw new Error();state=normalizeState(next);refresh();loadRM();}catch{warn('corrupt');storageBlocked=true;}}});
 $('date').value=localDate();$('todayLabel').textContent=new Date().toLocaleDateString(LOCALE,{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 familyOptions($('compareFamily'),'snatch');familyOptions($('customLiftFamily'),'snatch');classOptions();rmOptions();
-blocks=[blankBlock()];scoreFields();loadRM();updateConverter();refresh();showPage(location.hash.slice(1));
+blocks=[blankBlock()];scoreFields();loadRM();updateConverter();refresh();showPage(location.hash.slice(1)||'todo');
 let installPrompt=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;$('installButton').hidden=false;});$('installButton').onclick=async()=>{if(installPrompt){await installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;$('installButton').hidden=true;}};
 if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)&&(window.isSecureContext)){navigator.serviceWorker.register('./sw.js').catch(()=>{});}
 // Web builds: keep the screen on while the timer runs and ask the browser not to evict saved records.
@@ -1318,13 +1649,13 @@ if(!window.WodNative){
 /* ---------------- Coach Hub Admin ---------------- */
 async function renderCoachAdmin() {
   if (!Supabase.isCoach) {
-    showPage('add');
+    showPage('todo');
     return;
   }
   if ($('coachProgramDate') && !$('coachProgramDate').value) {
     $('coachProgramDate').value = localDate();
   }
-  await Promise.all([loadCoachMembers(), loadCoachPublishedPrograms()]);
+  await Promise.all([loadCoachMembers(), loadCoachPublishedPrograms(), loadCoachEditRequests()]);
 }
 
 async function loadCoachMembers() {
@@ -1383,10 +1714,13 @@ async function loadCoachPublishedPrograms() {
     container.innerHTML = cachedCoachPrograms.map(p => `
       <div class="coach-program-card">
         <div class="coach-program-meta">
-          <h4>${esc(p.title)} <span class="pill">${esc(p.start_date)}</span> <span class="pill">${esc(p.unit)}</span></h4>
+          <h4>${esc(p.title)} <span class="pill">${esc(p.start_date)}</span> <span class="pill">${esc(p.unit)}</span> <span class="pill ${p.is_public ? 'green' : 'gray'}">${esc(p.is_public ? t('publicWod') : t('privateWod'))}</span></h4>
           <p>${esc(p.program_text)}</p>
         </div>
-        <button type="button" class="danger small" data-delete-prog="${esc(p.id)}">${esc(t('delete'))}</button>
+        <div style="display:flex;gap:6px;align-items:center">
+          <button type="button" class="ghost small" data-toggle-prog="${esc(p.id)}" data-is-pub="${p.is_public ? '1' : '0'}">${esc(p.is_public ? t('togglePrivate') : t('togglePublic'))}</button>
+          <button type="button" class="danger small" data-delete-prog="${esc(p.id)}">${esc(t('delete'))}</button>
+        </div>
       </div>
     `).join('');
   } catch (e) {
@@ -1428,6 +1762,7 @@ function setAuthMode(mode) {
   $('tabSignUp').classList.toggle('active', mode === 'signUp');
   $('authNameField').hidden = mode !== 'signUp';
   $('authConfirmField').hidden = mode !== 'signUp';
+  if ($('authGenderField')) $('authGenderField').hidden = mode !== 'signUp';
   $('authSubmitBtn').textContent = t(mode === 'signIn' ? 'signIn' : 'signUp');
   $('authError').hidden = true;
 }
@@ -1519,7 +1854,8 @@ $('authForm')?.addEventListener('submit', async (e) => {
       notify(t('loginSuccess'));
       loadCoachWodForSelectedDate();
     } else {
-      const res = await Supabase.signUp(email, pass, name);
+      const genderVal = $('authGender')?.value || 'M';
+      const res = await Supabase.signUp(email, pass, name, genderVal);
       $('authDialog').close();
       if (res.access_token) {
         notify(t('signUpSuccess'));
@@ -1579,7 +1915,8 @@ $('coachProgramForm')?.addEventListener('submit', async (e) => {
   submitBtn.textContent = t('syncing');
 
   try {
-    await Supabase.publishProgram(title, date, unit, text);
+    const isPub = $('coachProgramPublic')?.checked ?? true;
+    await Supabase.publishProgram(title, date, unit, text, isPub);
     notify(t('publishSuccess'));
     $('coachProgramTitle').value = '';
     $('coachProgramText').value = '';
@@ -1594,6 +1931,19 @@ $('coachProgramForm')?.addEventListener('submit', async (e) => {
 });
 
 $('coachProgramsList')?.addEventListener('click', async (e) => {
+  const toggleBtn = e.target.closest('[data-toggle-prog]');
+  if (toggleBtn) {
+    toggleBtn.disabled = true;
+    try {
+      const nextPub = toggleBtn.dataset.isPub !== '1';
+      await Supabase.toggleCoachProgramPublic(toggleBtn.dataset.toggleProg, nextPub);
+      notify(t('saved'));
+      await loadCoachPublishedPrograms();
+    } catch (err) {
+      notify(err.message);
+    }
+    return;
+  }
   const btn = e.target.closest('[data-delete-prog]');
   if (!btn) return;
   if (!await confirmAction(t('deleteProgramConfirm'))) return;
@@ -1728,6 +2078,270 @@ if (Supabase.session) {
 } else if (!navigator.webdriver) {
   openAuthModal();
 }
+
+
+/* ---------------- Leaderboard & Edit Dialog Handlers (Req 0-6) ---------------- */
+let currentLbRecords = [];
+let currentLbGrade = 'rx';
+let currentLbGender = 'ALL';
+let currentLbTitle = '';
+let currentLbDate = '';
+
+async function openLeaderboardDialog(title, date = null) {
+  currentLbTitle = title;
+  currentLbDate = date || '';
+  $('lbTitle').textContent = `${t('leaderboard')}: ${title}`;
+  $('lbWodMeta').textContent = `${date ? displayDate(date) + ' · ' : ''}${title}`;
+  $('leaderboardContent').innerHTML = `<p class="subtle">${esc(t('syncing'))}</p>`;
+  $('myRankBanner').hidden = true;
+  $('leaderboardDialog').showModal();
+
+  try {
+    currentLbRecords = await Supabase.fetchLeaderboard(title, date);
+    renderLeaderboardView();
+  } catch (e) {
+    $('leaderboardContent').innerHTML = `<p class="error-banner">${esc(e.message)}</p>`;
+  }
+}
+
+function renderLeaderboardView() {
+  const isRx = currentLbGrade === 'rx';
+  let filtered = currentLbRecords.filter(r => r.is_rxd === isRx);
+  if (currentLbGender !== 'ALL') {
+    filtered = filtered.filter(r => (r.gender || 'M') === currentLbGender);
+  }
+
+  // Sort records
+  filtered.sort((a, b) => {
+    if (a.score_seconds !== null && b.score_seconds !== null) {
+      return a.score_seconds - b.score_seconds;
+    }
+    if (a.score_reps !== null && b.score_reps !== null) {
+      return b.score_reps - a.score_reps;
+    }
+    if (a.score_weight !== null && b.score_weight !== null) {
+      return b.score_weight - a.score_weight;
+    }
+    return a.score.localeCompare(b.score);
+  });
+
+  // Calculate ranks and check my rank
+  let myRankIndex = null;
+  const medals = ['🥇 1', '🥈 2', '🥉 3'];
+  let rows = '';
+  filtered.forEach((r, idx) => {
+    const isMe = r.user_id === Supabase.user?.id;
+    if (isMe) myRankIndex = idx + 1;
+    const rankLabel = idx < 3 ? medals[idx] : `${idx + 1}`;
+    const genderTag = r.gender === 'F' ? `<span class="gender-pill f">${t('genderFemaleShort')}</span>` : `<span class="gender-pill m">${t('genderMaleShort')}</span>`;
+    rows += `
+      <tr class="${isMe ? 'my-row' : ''}">
+        <td><span class="rank-badge">${rankLabel}</span></td>
+        <td><strong>${esc(r.user_name)}</strong> ${genderTag}</td>
+        <td><span class="pill ${r.is_rxd ? '' : 'scaled'}">${esc(r.score)}</span></td>
+        <td><small class="subtle">${esc(r.notes || '')}</small></td>
+      </tr>
+    `;
+  });
+
+  if (myRankIndex !== null) {
+    $('myRankBanner').hidden = false;
+    $('myRankBanner').innerHTML = `🏆 ${esc(t('myRank', { rank: myRankIndex, grade: isRx ? "Rx’d" : "Scaled" }))}`;
+  } else {
+    $('myRankBanner').hidden = true;
+  }
+
+  if (!filtered.length) {
+    $('leaderboardContent').innerHTML = `<p class="subtle spaced">${esc(t('noLeaderboardData'))}</p>`;
+    return;
+  }
+
+  $('leaderboardContent').innerHTML = `
+    <table class="lb-table">
+      <thead>
+        <tr>
+          <th style="width:65px">${esc(t('rank'))}</th>
+          <th>${esc(t('athlete'))}</th>
+          <th>${esc(t('scoreCol'))}</th>
+          <th>${esc(t('notes'))}</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows}
+      </tbody>
+    </table>
+  `;
+}
+
+// Leaderboard Dialog Controls
+$('closeLbBtn')?.addEventListener('click', () => $('leaderboardDialog').close());
+$('lbTabRxd')?.addEventListener('click', () => {
+  $('lbTabRxd').classList.add('active');
+  $('lbTabScaled').classList.remove('active');
+  currentLbGrade = 'rx';
+  renderLeaderboardView();
+});
+$('lbTabScaled')?.addEventListener('click', () => {
+  $('lbTabScaled').classList.add('active');
+  $('lbTabRxd').classList.remove('active');
+  currentLbGrade = 'scaled';
+  renderLeaderboardView();
+});
+document.querySelectorAll('.lb-gender-toggle button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.lb-gender-toggle button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentLbGender = btn.dataset.gender;
+    renderLeaderboardView();
+  });
+});
+
+// Edit Log Dialog Controls
+function openEditLogDialog(logId) {
+  const r = state.logs.find(x => x.id === logId);
+  if (!r) return;
+  $('editLogId').value = r.id;
+  $('editLogDate').value = r.date;
+  $('editLogTitleInput').value = r.title;
+  $('editLogRx').value = r.isRxd ? 'rx' : 'scaled';
+  $('editLogScore').value = r.score;
+  $('editLogReason').value = r.pendingEdit?.reason || '';
+
+  if (Supabase.isCoach) {
+    $('editLogHint').textContent = t('editLogCoachDirect');
+    $('submitEditLogBtn').textContent = t('save');
+  } else {
+    $('editLogHint').textContent = t('editLogMemberNotice');
+    $('submitEditLogBtn').textContent = t('requestEdit');
+  }
+  $('editLogDialog').showModal();
+}
+
+$('closeEditLogBtn')?.addEventListener('click', () => $('editLogDialog').close());
+$('cancelEditLogBtn')?.addEventListener('click', () => $('editLogDialog').close());
+
+$('editLogForm')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const id = $('editLogId').value;
+  const r = state.logs.find(x => x.id === id);
+  if (!r) return;
+
+  const date = $('editLogDate').value;
+  const title = $('editLogTitleInput').value.trim();
+  const isRxd = $('editLogRx').value === 'rx';
+  const score = $('editLogScore').value.trim();
+  const reason = $('editLogReason').value.trim();
+
+  $('editLogDialog').close();
+
+  if (Supabase.isCoach) {
+    // Coach edits directly
+    r.date = date;
+    r.title = title;
+    r.isRxd = isRxd;
+    r.score = score;
+    delete r.pendingEdit;
+    commit(state);
+    Supabase.syncToLeaderboard(r, true);
+    notify(t('editApproved'));
+  } else {
+    // Member requests coach approval
+    await Supabase.requestLogEdit(id, { date, title, isRxd, score }, reason);
+    notify(t('editRequested'));
+    renderHistory();
+  }
+});
+
+// Coach Hub: Load and handle Edit Requests (Requirement 6A)
+async function loadCoachEditRequests() {
+  const container = $('coachEditRequestsList');
+  if (!container || !Supabase.isCoach) return;
+  container.innerHTML = `<p class="subtle">${esc(t('syncing'))}</p>`;
+  try {
+    const list = await Supabase.fetchPendingEditRequests();
+    $('editRequestsCount').textContent = list.length;
+    if (!list.length) {
+      container.innerHTML = `<p class="subtle">${esc(t('noEditRequests'))}</p>`;
+      return;
+    }
+    container.innerHTML = list.map(req => {
+      const p = req.pending_edit || {};
+      const genderTag = req.gender === 'F' ? `<span class="gender-pill f">${t('genderFemaleShort')}</span>` : `<span class="gender-pill m">${t('genderMaleShort')}</span>`;
+      return `
+        <div class="edit-req-card">
+          <div class="edit-req-meta">
+            <h4>${esc(req.user_name)} ${genderTag} · <strong>${esc(req.title)}</strong> (${esc(req.date)})</h4>
+            <p>기존: <strong>${esc(req.score)}</strong> (${req.is_rxd ? 'Rx’d' : 'Scaled'}) ➔ 변경: <strong style="color:var(--accent)">${esc(p.score || '')}</strong> (${p.isRxd ? 'Rx’d' : 'Scaled'})</p>
+            ${p.reason ? `<p style="margin-top:4px;color:var(--muted)">사유: ${esc(p.reason)}</p>` : ''}
+          </div>
+          <div class="edit-req-actions">
+            <button type="button" class="primary small" data-approve-edit="${esc(req.id)}">${esc(t('approveEdit'))}</button>
+            <button type="button" class="ghost small" data-reject-edit="${esc(req.id)}">${esc(t('rejectEdit'))}</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  } catch (err) {
+    container.innerHTML = `<p class="error-banner">${esc(err.message)}</p>`;
+  }
+}
+
+$('coachEditRequestsList')?.addEventListener('click', async (e) => {
+  const approveBtn = e.target.closest('[data-approve-edit]');
+  if (approveBtn) {
+    approveBtn.disabled = true;
+    try {
+      const list = await Supabase.fetchPendingEditRequests();
+      const req = list.find(x => x.id === approveBtn.dataset.approveEdit);
+      if (req && req.pending_edit) {
+        await Supabase.approveLogEdit(req.id, req.pending_edit.score, req.pending_edit.isRxd, req.pending_edit.notes || req.notes);
+        notify(t('editApproved'));
+        await loadCoachEditRequests();
+      }
+    } catch (err) {
+      notify(err.message);
+    }
+    return;
+  }
+  const rejectBtn = e.target.closest('[data-reject-edit]');
+  if (rejectBtn) {
+    rejectBtn.disabled = true;
+    try {
+      await Supabase.rejectLogEdit(rejectBtn.dataset.rejectEdit);
+      notify(t('editRejected'));
+      await loadCoachEditRequests();
+    } catch (err) {
+      notify(err.message);
+    }
+    return;
+  }
+});
+
+// History List Event Delegation for Edit & Leaderboard
+$('historyList')?.addEventListener('click', e => {
+  const editBtn = e.target.closest('[data-edit-log]');
+  if (editBtn) {
+    openEditLogDialog(editBtn.dataset.editLog);
+    return;
+  }
+  const lbBtn = e.target.closest('[data-view-lb]');
+  if (lbBtn) {
+    openLeaderboardDialog(lbBtn.dataset.viewLb, lbBtn.dataset.date);
+    return;
+  }
+});
+
+// Gender selector in Signup Form
+$('genderM')?.addEventListener('click', () => {
+  $('genderM').classList.add('active');
+  $('genderF').classList.remove('active');
+  $('authGender').value = 'M';
+});
+$('genderF')?.addEventListener('click', () => {
+  $('genderF').classList.add('active');
+  $('genderM').classList.remove('active');
+  $('authGender').value = 'F';
+});
 
 </script>
 </body></html>
