@@ -773,6 +773,8 @@ let coachPrograms = [];
 let sharedPrograms = [];
 let cachedMembers = [];
 let cachedCoachPrograms = [];
+// Program groups the coach has expanded; re-rendering the list must not collapse them.
+const openProgramGroups = new Set();
 let currentMemberFilter = 'all';
 
 let hideBoxWod = localStorage.getItem('crossfit_wod_hide_box_wod') === 'true';
@@ -2313,7 +2315,7 @@ async function loadCoachPublishedPrograms() {
           <span><strong>${esc(key)}</strong><br><span class="help">${esc(t('programGroupCount', { n: rows.length, start: displayDate(dates[0]), end: displayDate(dates[dates.length - 1]) }))}</span></span>
           <button type="button" class="danger small" data-del-prog-group="${esc(key)}">${esc(t('deleteProgramGroup'))}</button>
         </div>
-        <details class="spaced"><summary class="help">${esc(t('showProgramEntries', { n: rows.length }))}</summary>${rows.map(card).join('')}</details>`;
+        <details class="spaced" data-group="${esc(key)}"${openProgramGroups.has(key) ? ' open' : ''}><summary class="help">${esc(t('showProgramEntries', { n: rows.length }))}</summary>${rows.map(card).join('')}</details>`;
       } else {
         html += `<h3 class="help spaced">${esc(t('singlePublishes'))}</h3>${rows.map(card).join('')}`;
       }
@@ -2673,6 +2675,13 @@ $('coachProgramForm')?.addEventListener('submit', async (e) => {
   }
 });
 setCoachPubMode('single');
+
+$('coachProgramsList')?.addEventListener('toggle', (e) => {
+  const d = e.target;
+  if (!d || d.tagName !== 'DETAILS' || !d.dataset.group) return;
+  if (d.open) openProgramGroups.add(d.dataset.group);
+  else openProgramGroups.delete(d.dataset.group);
+}, true);
 
 $('coachProgramsList')?.addEventListener('click', async (e) => {
   const toggleBtn = e.target.closest('[data-toggle-prog]');
