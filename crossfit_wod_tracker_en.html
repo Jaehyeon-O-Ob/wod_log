@@ -580,6 +580,7 @@ body.auth-locked .shell,body.auth-locked .bottom-nav{filter:blur(14px);pointer-e
   </div>
   <div id="leaderboardContent" class="leaderboard-table-wrap"></div>
 </dialog>
+<script src="./cloud.js"></script>
 <script>
 
 function parseScoreValues(log) {
@@ -758,7 +759,7 @@ function validState(s){
 }
 const normalizeState=s=>({version:2,logs:s.logs,profiles:s.profiles,plans:s.plans??[],customLifts:s.customLifts??{}});
 function warn(key){$('storageWarning').textContent=t(key);$('storageWarning').hidden=false;}
-try{const raw=localStorage.getItem(KEY);if(raw){const parsed=migrateState(JSON.parse(raw));if(!validState(parsed))throw new Error('corrupt');state=normalizeState(parsed);}else{localStorage.setItem(KEY,JSON.stringify(state));}}catch(e){storageBlocked=true;warn(e.message==='corrupt'||e instanceof SyntaxError?'corrupt':'storageError');}
+
 let toastTimeout;
 function notify(message){$('toast').textContent=message;$('toast').hidden=false;clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>$('toast').hidden=true,5000);}
 function confirmAction(message){return new Promise(resolve=>{const d=$('confirmDialog');d.returnValue='cancel';$('dialogMessage').textContent=message;d.addEventListener('close',()=>resolve(d.returnValue==='confirm'),{once:true});d.showModal();});}
@@ -777,7 +778,8 @@ let cachedCoachPrograms = [];
 const openProgramGroups = new Set();
 let currentMemberFilter = 'all';
 
-let hideBoxWod = localStorage.getItem('crossfit_wod_hide_box_wod') === 'true';
+let hideBoxWod = false;
+try { hideBoxWod = localStorage.getItem('crossfit_wod_hide_box_wod') === 'true'; } catch {}
 
 function getProgramCategory(p) {
   if (!p) return 'WOD';
@@ -817,651 +819,16 @@ function toggleBoxWodVisibility() {
   renderCoachWodBanner();
 }
 
-const Supabase = {
-  url: SUPABASE_URL,
-  key: SUPABASE_KEY,
-  session: null,
-  profile: null,
-  syncTimeout: null,
+const Supabase = createWodCloud({url: SUPABASE_URL, key: SUPABASE_KEY});
 
-  init() {
-    try {
-      const s = localStorage.getItem(SB_SESSION_KEY);
-      if (s) this.session = JSON.parse(s);
-      const p = localStorage.getItem(SB_PROFILE_KEY);
-      if (p) this.profile = JSON.parse(p);
-    } catch {
-      this.session = null;
-      this.profile = null;
-    }
-    this.updateUI();
-  },
-
-  get token() {
-    return this.session?.access_token || '';
-  },
-
-  get user() {
-    return this.session?.user || null;
-  },
-
-  get isCoach() {
-    return String(this.profile?.role || '').toLowerCase() === 'coach';
-  },
-
-  get isApproved() {
-    return this.profile?.approved === true || this.isCoach;
-  },
-
-  setSyncStatus(status) {
-    const dots = document.querySelectorAll('.sync-dot');
-    dots.forEach(d => {
-      d.classList.remove('synced', 'syncing', 'offline');
-      d.classList.add(status);
-    });
-    const sideText = $('syncTextSide');
-    if (sideText) {
-      sideText.textContent = status === 'synced' ? t('syncOk') : status === 'syncing' ? t('syncing') : t('syncOffline');
-    }
-  },
-
-  updateUI() {
-    const isLoggedIn = !!this.session;
-    const isCoach = this.isCoach;
-    const isApproved = this.isApproved;
-
-    if (!navigator.webdriver) {
-      if (!isLoggedIn || !isApproved) {
-        document.body.classList.add('auth-locked');
-      } else {
-        document.body.classList.remove('auth-locked');
-      }
-    }
-    if ($('closeAuthBtn')) $('closeAuthBtn').hidden = !isLoggedIn;
-
-    document.querySelectorAll('.coach-only').forEach(el => el.hidden = !isCoach);
-    const bottomNav = document.querySelector('.bottom-nav');
-    if (bottomNav) bottomNav.classList.toggle('has-coach', isCoach);
-
-    if (!isCoach) {
-      if (location.hash === '#coach' || ($('page-coach') && !$('page-coach').hidden)) {
-        if (typeof showPage === 'function') showPage('todo');
-      }
-    }
-
-    if ($('userBadgeSide')) $('userBadgeSide').hidden = !isLoggedIn;
-    if ($('authPromptSide')) $('authPromptSide').hidden = isLoggedIn;
-    if ($('userBadgeTop')) $('userBadgeTop').hidden = !isLoggedIn;
-    if ($('loginBtnTop')) $('loginBtnTop').hidden = isLoggedIn;
-
-    if (isLoggedIn) {
-      const name = this.profile?.name || this.user?.email?.split('@')[0] || t('memberRole');
-      const role = isCoach ? t('coachRole') : t('memberRole');
-      if ($('userNameSide')) $('userNameSide').textContent = name;
-      if ($('userRoleSide')) {
-        $('userRoleSide').textContent = role;
-        $('userRoleSide').className = `role-pill ${isCoach ? 'coach' : 'member'}`;
-      }
-      if ($('userNameTop')) $('userNameTop').textContent = name;
-      if ($('userRoleTop')) {
-        $('userRoleTop').textContent = role;
-        $('userRoleTop').className = `role-pill ${isCoach ? 'coach' : 'member'}`;
-      }
-      this.setSyncStatus('synced');
-
-      const approvalDlg = $('approvalDialog');
-      if (approvalDlg) {
-        if (!isApproved) {
-          if (!approvalDlg.open) approvalDlg.showModal();
-        } else {
-          if (approvalDlg.open) approvalDlg.close();
-        }
-      }
-    } else {
-      const approvalDlg = $('approvalDialog');
-      if (approvalDlg && approvalDlg.open) approvalDlg.close();
-      this.setSyncStatus('offline');
-    }
-
-    const cloudStatus = $('cloudStatusText');
-    if (cloudStatus) {
-      if (isLoggedIn) {
-        cloudStatus.textContent = `${this.user?.email || ''} (${isCoach ? t('coachRole') : t('memberRole')}, ${isApproved ? t('approved') : t('pending')})`;
-      } else {
-        cloudStatus.textContent = t('loginRequired');
-      }
-    }
-  },
-
-  async req(endpoint, options = {}) {
-    const headers = {
-      'apikey': this.key,
-      'Content-Type': 'application/json',
-      ...(this.token ? { 'Authorization': `Bearer ${this.token}` } : {}),
-      ...(options.headers || {})
-    };
-    let res;
-    try {
-      res = await fetch(`${this.url}${endpoint}`, { ...options, headers });
-    } catch {
-      this.setSyncStatus('offline');
-      throw new Error(t('syncOffline'));
-    }
-    let data = null;
-    const text = await res.text();
-    if (text) {
-      try { data = JSON.parse(text); } catch { data = text; }
-    }
-    if (!res.ok) {
-      const msg = data?.msg || data?.message || data?.error_description || res.statusText || 'API Error';
-      const err = new Error(msg);
-      err.status = res.status;
-      err.data = data;
-      throw err;
-    }
-    return data;
-  },
-
-
-  // Leaderboard & Program extensions for Requirements 0-6
-  async signUp(email, password, name, gender = 'M') {
-    const res = await this.req('/auth/v1/signup', {
-      method: 'POST',
-      body: JSON.stringify({
-        email,
-        password,
-        data: {
-          name: name || email.split('@')[0],
-          gender: gender || 'M'
-        }
-      })
-    });
-    if (res.access_token) {
-      this.session = res;
-      localStorage.setItem(SB_SESSION_KEY, JSON.stringify(res));
-      await this.fetchProfile();
-      await this.syncPullOrPush();
-    }
-    return res;
-  },
-
-  // Insert rows, retrying without optional columns the project has not migrated yet.
-  async insertRows(table, payload) {
-    let body = payload;
-    const optional = new Set(['items', 'category']);
-    this.droppedColumns = [];
-    for (;;) {
-      try {
-        return await this.req(`/rest/v1/${table}`, {
-          method: 'POST',
-          headers: { 'Prefer': 'return=representation' },
-          body: JSON.stringify(body)
-        });
-      } catch (e) {
-        const msg = String(e.message || '');
-        const miss = [...optional].find(c => msg.includes(c));
-        if (!miss) throw e;
-        optional.delete(miss);
-        this.droppedColumns.push(miss);
-        console.warn(`[wodlog] '${miss}' column is missing on ${table}; retrying without it. Run the migration.`);
-        const strip = r => { const c = { ...r }; delete c[miss]; return c; };
-        body = Array.isArray(body) ? body.map(strip) : strip(body);
-      }
-    }
-  },
-
-  async publishProgram(title, startDate, unit, programText, isPublic = true, category = 'WOD', items = null) {
-    return await this.insertRows('coach_programs', {
-      title,
-      start_date: startDate,
-      unit: unit || 'kg',
-      program_text: programText,
-      category: category || 'WOD',
-      items: items && items.length ? items : null,
-      is_public: isPublic,
-      created_by: this.user?.id
-    });
-  },
-
-  async batchPublishCoachPrograms(rows) {
-    if (!rows || !rows.length) return [];
-    return await this.insertRows('coach_programs', rows.map(p => ({
-      title: p.title,
-      start_date: p.start_date,
-      unit: p.unit || 'kg',
-      program_text: p.program_text,
-      category: p.category || (p.title && p.title.includes('STRENGTH') ? 'STRENGTH' : 'WOD'),
-      items: p.items && p.items.length ? p.items : null,
-      is_public: p.is_public !== false,
-      created_by: this.user?.id
-    })));
-  },
-
-  async toggleCoachProgramPublic(id, isPublic) {
-    return await this.req(`/rest/v1/coach_programs?id=eq.${id}`, {
-      method: 'PATCH',
-      headers: { 'Prefer': 'return=representation' },
-      body: JSON.stringify({ is_public: isPublic })
-    });
-  },
-
-  async fetchSharedPrograms(date = null) {
-    const url = date ? `/rest/v1/shared_programs?start_date=eq.${date}&select=*` : `/rest/v1/shared_programs?select=*&order=start_date.desc,created_at.desc`;
-    try {
-      return await this.req(url);
-    } catch {
-      return [];
-    }
-  },
-
-  async publishSharedProgram(title, startDate, unit, programText, category = 'WOD', items = null) {
-    return await this.insertRows('shared_programs', {
-      title,
-      start_date: startDate,
-      unit: unit || 'kg',
-      program_text: programText,
-      category: category || 'WOD',
-      items: items && items.length ? items : null,
-      user_id: this.user?.id,
-      user_name: this.profile?.name || this.user?.email.split('@')[0],
-      gender: this.profile?.gender || 'M',
-      is_public: true
-    });
-  },
-
-  async batchPublishSharedPrograms(rows) {
-    if (!rows || !rows.length) return [];
-    return await this.insertRows('shared_programs', rows.map(p => ({
-      title: p.title,
-      start_date: p.start_date,
-      unit: p.unit || 'kg',
-      program_text: p.program_text,
-      category: p.category || (p.title && p.title.includes('STRENGTH') ? 'STRENGTH' : 'WOD'),
-      items: p.items && p.items.length ? p.items : null,
-      user_id: this.user?.id,
-      user_name: this.profile?.name || this.user?.email.split('@')[0],
-      gender: this.profile?.gender || 'M',
-      is_public: p.is_public !== false
-    })));
-  },
-
-  async deleteSharedProgram(id) {
-    return await this.req(`/rest/v1/shared_programs?id=eq.${id}`, {
-      method: 'DELETE'
-    });
-  },
-
-  async syncToLeaderboard(log, isPublic = true) {
-    if (!this.session || !this.isApproved) return;
-    const { score_seconds, score_reps, score_weight } = parseScoreValues(log);
-    try {
-      await this.req('/rest/v1/box_leaderboard', {
-        method: 'POST',
-        headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' },
-        body: JSON.stringify({
-          user_id: this.user.id,
-          user_name: this.profile?.name || this.user.email.split('@')[0],
-          gender: this.profile?.gender || 'M',
-          date: log.date,
-          title: log.title,
-          category: log.category || 'WOD',
-          workout_type: log.workoutType || 'FOR_TIME',
-          score: log.score,
-          score_seconds,
-          score_reps,
-          score_weight,
-          is_rxd: !!log.isRxd,
-          is_public: isPublic,
-          status: 'APPROVED',
-          notes: log.notes || ''
-        })
-      });
-    } catch (e) {
-      console.warn('Leaderboard sync error:', e);
-    }
-  },
-
-  async fetchLeaderboard(title, date = null) {
-    let url = `/rest/v1/box_leaderboard?title=eq.${encodeURIComponent(title)}&status=eq.APPROVED&is_public=eq.true&select=*`;
-    if (date) url += `&date=eq.${date}`;
-    try {
-      return await this.req(url);
-    } catch {
-      return [];
-    }
-  },
-
-  async sync1RMToLeaderboard(liftKey, weight, unit, isPublic = true) {
-    if (!this.session || !this.isApproved) return;
-    const info = liftInfo(liftKey);
-    const liftEn = info?.en || liftKey;
-    const liftTitle = `1RM · ${liftEn}`;
-    const score_weight = toKg(weight, unit || 'lb');
-    try {
-      await this.req('/rest/v1/box_leaderboard', {
-        method: 'POST',
-        headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' },
-        body: JSON.stringify({
-          user_id: this.user.id,
-          user_name: this.profile?.name || this.user.email.split('@')[0],
-          gender: this.profile?.gender || 'M',
-          date: localDate(),
-          title: liftTitle,
-          category: '1RM',
-          workout_type: 'STRENGTH_MAX',
-          score: `${fmt(weight)} ${unit}`,
-          score_seconds: null,
-          score_reps: null,
-          score_weight,
-          is_rxd: true,
-          is_public: isPublic,
-          status: 'APPROVED',
-          notes: ''
-        })
-      });
-    } catch (e) {
-      console.warn('1RM sync error:', e);
-    }
-  },
-
-  async delete1RMFromLeaderboard(liftKey) {
-    if (!this.session) return;
-    const info = liftInfo(liftKey);
-    const liftEn = info?.en || liftKey;
-    const liftTitle = `1RM · ${liftEn}`;
-    try {
-      await this.req(`/rest/v1/box_leaderboard?user_id=eq.${this.user.id}&category=eq.1RM&title=eq.${encodeURIComponent(liftTitle)}`, {
-        method: 'DELETE'
-      });
-    } catch (e) {
-      console.warn('1RM delete error:', e);
-    }
-  },
-
-  async fetch1RMLeaderboard(liftKey) {
-    const info = liftInfo(liftKey);
-    const liftEn = info?.en || liftKey;
-    const liftTitle = `1RM · ${liftEn}`;
-    const url = `/rest/v1/box_leaderboard?title=eq.${encodeURIComponent(liftTitle)}&category=eq.1RM&status=eq.APPROVED&is_public=eq.true&select=*`;
-    try {
-      return await this.req(url);
-    } catch {
-      return [];
-    }
-  },
-
-  async requestLogEdit(logId, updatedData, reason = '') {
-    if (!this.session || !this.isApproved) return;
-    const r = state.logs.find(x => x.id === logId);
-    if (!r) return;
-    r.pendingEdit = { ...updatedData, reason, requestedAt: new Date().toISOString() };
-    commit(state);
-
-    const { score_seconds, score_reps, score_weight } = parseScoreValues({ ...r, ...updatedData });
-    try {
-      await this.req('/rest/v1/box_leaderboard', {
-        method: 'POST',
-        headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' },
-        body: JSON.stringify({
-          user_id: this.user.id,
-          user_name: this.profile?.name || this.user.email.split('@')[0],
-          gender: this.profile?.gender || 'M',
-          date: updatedData.date || r.date,
-          title: updatedData.title || r.title,
-          category: r.category || 'WOD',
-          workout_type: r.workoutType || 'FOR_TIME',
-          score: r.score,
-          score_seconds,
-          score_reps,
-          score_weight,
-          is_rxd: updatedData.isRxd !== undefined ? updatedData.isRxd : r.isRxd,
-          is_public: true,
-          status: 'PENDING_EDIT',
-          pending_edit: {
-            ...updatedData,
-            old_score: r.score,
-            old_is_rxd: r.isRxd,
-            reason
-          },
-          notes: updatedData.notes || r.notes || ''
-        })
-      });
-    } catch (e) {
-      console.warn('Edit request error:', e);
-    }
-  },
-
-  async fetchPendingEditRequests() {
-    try {
-      return await this.req('/rest/v1/box_leaderboard?status=eq.PENDING_EDIT&select=*');
-    } catch {
-      return [];
-    }
-  },
-
-  async approveLogEdit(requestId, newScore, newRxd, newNotes) {
-    return await this.req(`/rest/v1/box_leaderboard?id=eq.${requestId}`, {
-      method: 'PATCH',
-      headers: { 'Prefer': 'return=representation' },
-      body: JSON.stringify({
-        score: newScore,
-        is_rxd: newRxd,
-        notes: newNotes,
-        status: 'APPROVED',
-        pending_edit: null
-      })
-    });
-  },
-
-  async rejectLogEdit(requestId) {
-    return await this.req(`/rest/v1/box_leaderboard?id=eq.${requestId}`, {
-      method: 'PATCH',
-      headers: { 'Prefer': 'return=representation' },
-      body: JSON.stringify({
-        status: 'APPROVED',
-        pending_edit: null
-      })
-    });
-  },
-
-
-  async signIn(email, password) {
-    const res = await this.req('/auth/v1/token?grant_type=password', {
-      method: 'POST',
-      body: JSON.stringify({ email, password })
-    });
-    this.session = res;
-    localStorage.setItem(SB_SESSION_KEY, JSON.stringify(res));
-    await this.fetchProfile();
-    await this.syncPullOrPush();
-    return res;
-  },
-
-  async signOut() {
-    clearTimeout(this.syncTimeout);
-    this.syncTimeout = null;
-    try {
-      if (this.token) {
-        await this.req('/auth/v1/logout', { method: 'POST' });
-      }
-    } catch {}
-    this.session = null;
-    this.profile = null;
-    localStorage.removeItem(SB_SESSION_KEY);
-    localStorage.removeItem(SB_PROFILE_KEY);
-    localStorage.removeItem(KEY);
-    state = { version: 2, logs: [], profiles: {}, plans: [], customLifts: {} };
-    coachPrograms = [];
-    sharedPrograms = [];
-    cachedMembers = [];
-    cachedCoachPrograms = [];
-    if ($('membersList')) $('membersList').innerHTML = '';
-    if ($('coachProgramsList')) $('coachProgramsList').innerHTML = '';
-    if ($('coachEditRequestsList')) $('coachEditRequestsList').innerHTML = '';
-    if (typeof resetEntry === 'function') resetEntry('log');
-    if (typeof showPage === 'function') showPage('todo');
-    refresh();
-    this.updateUI();
-  },
-
-  async fetchProfile() {
-    if (!this.user?.id) return null;
-    try {
-      const list = await this.req(`/rest/v1/profiles?id=eq.${this.user.id}&select=*`);
-      if (Array.isArray(list) && list.length > 0) {
-        this.profile = list[0];
-        localStorage.setItem(SB_PROFILE_KEY, JSON.stringify(this.profile));
-      } else {
-        this.profile = null;
-        localStorage.removeItem(SB_PROFILE_KEY);
-        await this.signOut();
-        return null;
-      }
-    } catch (e) {
-      console.warn('Profile fetch error:', e);
-    }
-    this.updateUI();
-    return this.profile;
-  },
-
-  scheduleSync() {
-    if (!this.session || !this.isApproved) return;
-    this.setSyncStatus('syncing');
-    clearTimeout(this.syncTimeout);
-    this.syncTimeout = setTimeout(async () => {
-      try {
-        await this.req('/rest/v1/member_data?on_conflict=user_id', {
-          method: 'POST',
-          headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' },
-          body: JSON.stringify({
-            user_id: this.user.id,
-            data: state,
-            updated_at: new Date().toISOString()
-          })
-        });
-        this.setSyncStatus('synced');
-      } catch (e) {
-        console.warn('Cloud sync error:', e);
-        this.setSyncStatus('offline');
-      }
-    }, 1500);
-  },
-
-  async syncPullOrPush() {
-    if (!this.session || !this.isApproved) return;
-    this.setSyncStatus('syncing');
-    try {
-      const list = await this.req(`/rest/v1/member_data?user_id=eq.${this.user.id}&select=*`);
-      if (Array.isArray(list) && list.length > 0 && list[0].data) {
-        state = normalizeState(migrateState(list[0].data));
-        localStorage.setItem(KEY, JSON.stringify(state));
-        refresh();
-      } else {
-        state = { version: 2, logs: [], profiles: {}, plans: [], customLifts: {} };
-        localStorage.setItem(KEY, JSON.stringify(state));
-        refresh();
-        await this.req('/rest/v1/member_data?on_conflict=user_id', {
-          method: 'POST',
-          headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' },
-          body: JSON.stringify({
-            user_id: this.user.id,
-            data: state,
-            updated_at: new Date().toISOString()
-          })
-        });
-      }
-      this.setSyncStatus('synced');
-    } catch (err) {
-      console.warn('syncPullOrPush error:', err);
-      this.setSyncStatus('offline');
-    }
-  },
-
-  async fetchMembers() {
-    return await this.req('/rest/v1/profiles?select=*&order=created_at.desc');
-  },
-
-  async updateMember(userId, patch) {
-    return await this.req(`/rest/v1/profiles?id=eq.${userId}`, {
-      method: 'PATCH',
-      headers: { 'Prefer': 'return=representation' },
-      body: JSON.stringify(patch)
-    });
-  },
-
-  async demoteCoach(userId) {
-    try {
-      await this.req('/rest/v1/rpc/change_member_role', {
-        method: 'POST',
-        body: JSON.stringify({ target_user_id: userId, new_role: 'member' })
-      });
-    } catch (e) {
-      await this.updateMember(userId, { role: 'member' });
-    }
-    const m = cachedMembers.find(x => x.id === userId);
-    if (m) m.role = 'member';
-    renderMembersList();
-    return true;
-  },
-
-  async makeCoach(userId) {
-    try {
-      await this.req('/rest/v1/rpc/change_member_role', {
-        method: 'POST',
-        body: JSON.stringify({ target_user_id: userId, new_role: 'coach' })
-      });
-    } catch (e) {
-      await this.updateMember(userId, { role: 'coach', approved: true });
-    }
-    const m = cachedMembers.find(x => x.id === userId);
-    if (m) { m.role = 'coach'; m.approved = true; }
-    renderMembersList();
-    return true;
-  },
-
-  async deleteMember(userId) {
-    let ok = false;
-    try {
-      await this.req('/rest/v1/rpc/delete_member', {
-        method: 'POST',
-        body: JSON.stringify({ target_user_id: userId })
-      });
-      ok = true;
-    } catch (rpcErr) {
-      console.warn('RPC delete_member failed, trying direct DELETE:', rpcErr);
-      try {
-        await this.req(`/rest/v1/profiles?id=eq.${userId}`, { method: 'DELETE' });
-        ok = true;
-      } catch {}
-    }
-    try {
-      await this.req(`/rest/v1/box_leaderboard?user_id=eq.${userId}`, { method: 'DELETE' });
-      await this.req(`/rest/v1/shared_programs?user_id=eq.${userId}`, { method: 'DELETE' });
-      await this.req(`/rest/v1/member_data?user_id=eq.${userId}`, { method: 'DELETE' });
-    } catch {}
-    cachedMembers = cachedMembers.filter(m => m.id !== userId);
-    renderMembersList();
-    return ok;
-  },
-
-  async fetchCoachPrograms() {
-    return await this.req('/rest/v1/coach_programs?select=*&order=start_date.desc,created_at.desc');
-  },
-
-  async deleteCoachPrograms(ids) {
-    const list = (ids || []).filter(id => /^[0-9a-fA-F-]{36}$/.test(id));
-    if (!list.length) return null;
-    return await this.req(`/rest/v1/coach_programs?id=in.(${list.join(',')})`, { method: 'DELETE' });
-  },
-
-  async deleteCoachProgram(id) {
-    return await this.req(`/rest/v1/coach_programs?id=eq.${id}`, {
-      method: 'DELETE'
-    });
-  }
-};
-
-function commit(next,recover=false){if(storageBlocked&&!recover){notify(t('saveFail'));return false;}try{next=normalizeState(next);localStorage.setItem(KEY,JSON.stringify(next));state=next;storageBlocked=false;$('storageWarning').hidden=true;refresh();Supabase.scheduleSync();return true;}catch{warn('storageError');notify(t('saveFail'));return false;}}
+function commit(next,recover=false){
+ if(storageBlocked&&!recover){notify(t('saveFail'));return false;}
+ try{next=normalizeState(next);if(!validState(next))throw new Error(t('invalid'));next=Supabase.saveLocal(next,recover);state=next;storageBlocked=false;$('storageWarning').hidden=true;}
+ catch(error){notify(error.message||t('saveFail'));return false;}
+ Supabase.scheduleSync();
+ try{refresh();}catch(error){console.error('Screen refresh failed',error);notify(LANG==='ko'?'기록은 저장했지만 화면을 갱신하지 못했습니다. 새로고침해주세요.':'Records were saved, but the screen could not refresh. Reload the page.');}
+ return true;
+}
 function ordered(){return [...state.logs].sort((a,b)=>b.date.localeCompare(a.date)||b.createdAt.localeCompare(a.createdAt));}
 
 /* ---------------- Display helpers ---------------- */
@@ -1521,7 +888,7 @@ let blocks=[], linkedTitle=null, suggestSource='title';
 const dismissedSuggest=new Set();
 let calCursor=localDate().slice(0,7), calSelected=localDate(), todoView='calendar';
 function showPage(page){
-  if (!navigator.webdriver) {
+
     if (!Supabase.session) {
       document.body.classList.add('auth-locked');
       openAuthModal();
@@ -1533,7 +900,7 @@ function showPage(page){
       if (ad && !ad.open) ad.showModal();
       return;
     }
-  }
+
   if(!['todo','add','history','strength','data','coach'].includes(page))page='todo';
   if(page==='coach'&&!Supabase.isCoach)page='todo';
   document.querySelectorAll('.page').forEach(el=>el.hidden=el.id!=='page-'+page);document.querySelectorAll('[data-page]').forEach(b=>{b.classList.toggle('active',b.dataset.page===page);if(b.dataset.page===page)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});if(location.hash!=='#'+page)history.replaceState(null,'','#'+page);if(page==='history')renderHistory();if(page==='todo'){renderCalendar();renderPlans();loadCoachWodForSelectedDate();}if(page==='strength'){renderAllRMs();renderCompare();}if(page==='coach')renderCoachAdmin();window.scrollTo({top:0,behavior:'instant'});}
@@ -1687,7 +1054,7 @@ $('celebrateRM').onclick=()=>{const profiles={...state.profiles};for(const o of 
 /* ---------------- Submit ---------------- */
 $('workoutForm').addEventListener('submit',e=>{
  e.preventDefault();$('formError').hidden=true;
- if(!Supabase.session&&!navigator.webdriver){openAuthModal();notify(t('loginRequired'));return;}
+ if(!Supabase.session){openAuthModal();notify(t('loginRequired'));return;}
  try{
   if(activePlan){const current=state.plans.find(p=>p.id===activePlan.id);if(!current||JSON.stringify(current)!==JSON.stringify(activePlan))throw {key:'planMissing'};}
   if(entryMode==='plan'){
@@ -1696,7 +1063,7 @@ $('workoutForm').addEventListener('submit',e=>{
    const isSharedPlan = $('planSharePublic')?.checked ?? false;
    if(commit({...state,plans})){
      if(isSharedPlan && Supabase.session && Supabase.isApproved){
-       Supabase.publishSharedProgram(planTitle(p), p.date, p.weightUnit||'kg', p.content||p.title);
+       Supabase.publishSharedProgram(planTitle(p), p.date, p.weightUnit||'kg', p.content||p.title, p.category, p.items || null).catch(error=>Supabase.report(error));
      }
      resetEntry('plan');$('todoFilter').value='all';$('todoCategory').value='';$('todoSearch').value='';calSelected=p.date;calCursor=p.date.slice(0,7);showPage('todo');notify(t(editing?'planUpdated':'planSaved'));
    }
@@ -1706,9 +1073,9 @@ $('workoutForm').addEventListener('submit',e=>{
   const fromPlan=!!activePlan,maxKeys=new Set(blocks.filter(b=>b.rows.some(r=>r.max)).map(b=>b.liftKey));
   const cele=evaluateCelebration(logs,state.logs,category==='STRENGTH'?maxKeys:new Set());
   const isPublicLog = category==='WOD' && ($('logPublicLeaderboard')?.checked ?? true);
+  for(const log of logs)log.isPublic=isPublicLog;
   if(commit({...state,logs:[...state.logs,...logs],plans:activePlan?state.plans.filter(p=>p.id!==activePlan.id):state.plans})){
    formDirty=false;
-   for(const l of logs){ if(isPublicLog && l.category==='WOD') Supabase.syncToLeaderboard(l, true); }
    if(fromPlan){resetEntry('log');$('historySearch').value='';$('categoryFilter').value='';$('typeFilter').value='';calSelected=logs[0].date;calCursor=calSelected.slice(0,7);setTodoView('calendar');showPage('todo');}
    if(cele)celebrate(cele);else notify(t(fromPlan?'planCompleted':'saved'));
   }
@@ -2148,9 +1515,6 @@ $('allRMsList')?.addEventListener('click',async e=>{
       const profiles={...state.profiles};
       delete profiles[k];
       if(commit({...state,profiles})){
-        if(Supabase.session&&Supabase.isApproved){
-          Supabase.delete1RMFromLeaderboard(k);
-        }
         loadRM();
         renderAllRMs();
         renderCompare();
@@ -2163,8 +1527,8 @@ function loadRM(){const key=$('rmLift').value,p=state.profiles[key];$('rmWeight'
 function updateCalc(){const n=Number($('rmWeight').value),unit=$('rmUnit').value,percent=Number($('calcPercent').value),step=Number($('rounding').value);const valid=$('rmWeight').value!==''&&n>0&&n<=100000&&percent>0&&percent<=200;const lb=convert(n,unit,'lb'),kg=convert(n,unit,'kg');$('calcResult').innerHTML=valid?`<p>${esc(t('liveTarget'))} · ${percent}%</p><strong>${fmt(rounded(n*percent/100,step))} ${unit}</strong><p>≈ ${fmt(rounded(convert(n,unit,otherUnit(unit))*percent/100,step))} ${otherUnit(unit)}</p>`:`<p>${esc(t('noRM'))}</p>`;$('percentTable').innerHTML=Array.from({length:11},(_,i)=>50+i*5).map(p=>`<tr class="${p===percent?'highlight':''}"><td>${p}%</td><td>${valid?fmt(rounded(lb*p/100,step)):'—'}</td><td>${valid?fmt(rounded(kg*p/100,step)):'—'}</td></tr>`).join('');}
 $('rmLift').onchange=loadRM;for(const id of ['rmWeight','calcPercent','rounding'])$(id).addEventListener('input',updateCalc);
 $('rmUnit').onchange=()=>{if($('rmWeight').value!==''&&finite(Number($('rmWeight').value)))$('rmWeight').value=String(Number(convert(Number($('rmWeight').value),oldRmUnit,$('rmUnit').value).toFixed(8)));oldRmUnit=$('rmUnit').value;updateCalc();};
-$('rmForm').onsubmit=async e=>{e.preventDefault();const weight=Number($('rmWeight').value);if(!finite(weight,.1,100000))return;const key=$('rmLift').value,unit=$('rmUnit').value,isPublic=$('rmPublicLeaderboard')?.checked??true;const profiles={...state.profiles,[key]:{weight,unit,updatedAt:localDate(),isPublic}};if(commit({...state,profiles})){if(Supabase.session&&Supabase.isApproved){await Supabase.sync1RMToLeaderboard(key,weight,unit,isPublic);}loadRM();renderAllRMs();renderCompare();notify(t('savedRM'));}};
-$('deleteRM').onclick=async()=>{const key=$('rmLift').value;if(await confirmAction(t('deleteRMAsk'))){const profiles={...state.profiles};delete profiles[key];if(commit({...state,profiles})){if(Supabase.session&&Supabase.isApproved){Supabase.delete1RMFromLeaderboard(key);}loadRM();renderAllRMs();renderCompare();notify(t('deleted'));}}};
+$('rmForm').onsubmit=async e=>{e.preventDefault();const weight=Number($('rmWeight').value);if(!finite(weight,.1,100000))return;const key=$('rmLift').value,unit=$('rmUnit').value,isPublic=$('rmPublicLeaderboard')?.checked??true;const profiles={...state.profiles,[key]:{weight,unit,updatedAt:localDate(),isPublic}};if(commit({...state,profiles})){loadRM();renderAllRMs();renderCompare();notify(t('savedRM'));}};
+$('deleteRM').onclick=async()=>{const key=$('rmLift').value;if(await confirmAction(t('deleteRMAsk'))){const profiles={...state.profiles};delete profiles[key];if(commit({...state,profiles})){loadRM();renderAllRMs();renderCompare();notify(t('deleted'));}}};
 function familyOptions(sel,cur){sel.innerHTML=Object.keys(FAMILIES).map(f=>`<option value="${f}">${esc(FAMILIES[f][KO?1:0])}</option>`).join('');sel.value=cur&&Object.hasOwn(FAMILIES,cur)?cur:'snatch';}
 function renderCompare(){const fam=$('compareFamily').value||'snatch',keys=allLiftKeys().filter(k=>liftInfo(k).family===fam),logsBy=new Map();
  for(const r of state.logs)if(r.category==='STRENGTH'){const k=logLiftKey(r);if(k&&keys.includes(k)){if(!logsBy.has(k))logsBy.set(k,[]);logsBy.get(k).push(r);}}
@@ -2232,40 +1596,30 @@ async function readFile(input){const file=input.files[0];if(!file)return null;if
 $('importCSV').onchange=async()=>{try{const source=await readFile($('importCSV'));if(source===null)return;const logs=importCsvText(source);if(await confirmAction(t('importAsk',{n:logs.length,old:state.logs.length}))){if(commit({...state,logs},true))notify(t('imported',{n:logs.length}));}}catch(e){notify(t('invalidCSV')+' '+e.message);}finally{$('importCSV').value='';}};
 $('importJSON').onchange=async()=>{try{const source=await readFile($('importJSON'));if(source===null)return;const data=migrateState(JSON.parse(source));if(!validState(data))throw new Error('invalid');if(await confirmAction(t('restoreAsk',{n:data.logs.length,p:(data.plans??[]).length,r:Object.keys(data.profiles).length}))){if(commit(normalizeState(data),true)){resetEntry('log');rmOptions();loadRM();notify(t('importAllDone',{n:data.logs.length,p:(data.plans??[]).length}));}}}catch{notify(t('invalidJSON'));}finally{$('importJSON').value='';}};
 $('resetAll').onclick=async()=>{
-  if(await confirmAction(t('resetAllAsk'))){
-    const blank = {version:2,logs:[],profiles:{},plans:[],customLifts:{}};
-    if(commit(blank,true)){
-      selected.clear();
-      resetEntry('log');
-      rmOptions();
-      loadRM();
-      if(Supabase.session && Supabase.isApproved) {
-        try {
-          await Supabase.req('/rest/v1/member_data?on_conflict=user_id', {
-            method: 'POST',
-            headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' },
-            body: JSON.stringify({
-              user_id: Supabase.user.id,
-              data: blank,
-              updated_at: new Date().toISOString()
-            })
-          });
-        } catch {}
-      }
-      notify(t('resetDone'));
-    }
-  }
+ if(!await confirmAction(t('resetAllAsk')))return;
+ if(!commit(Supabase.emptyState(),true))return;
+ selected.clear();resetEntry('log');loadRM();
+ try{await Supabase.flush();notify(t('resetDone'));}catch(error){Supabase.report(error);}
 };
 
 /* ---------------- Refresh & boot ---------------- */
 function refresh(){const month=localDate().slice(0,7);$('totalStat').textContent=state.logs.length;$('monthStat').textContent=state.logs.filter(r=>r.date.startsWith(month)).length;$('rmStat').textContent=Object.keys(state.profiles).length;$('exportCount').textContent=t('count',{n:state.logs.length});
  rmOptions();liftGroupFilterOptions();renderRecent();renderHistory();renderPlans();renderCalendar();renderProgramList();renderCustomLifts();renderAllRMs();renderCompare();
  if(linkedTitle&&!wodGroups().some(g=>g.key===linkedTitle))linkedTitle=null;renderLinked();renderSuggest();if(category==='STRENGTH')renderBlocks();}
-window.addEventListener('storage',e=>{if(e.key===KEY){try{const next=e.newValue?migrateState(JSON.parse(e.newValue)):{version:2,logs:[],profiles:{},plans:[],customLifts:{}};if(!validState(next))throw new Error();state=normalizeState(next);refresh();loadRM();}catch{warn('corrupt');storageBlocked=true;}}});
-$('date').value=localDate();$('todayLabel').textContent=new Date().toLocaleDateString(LOCALE,{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-familyOptions($('compareFamily'),'snatch');familyOptions($('customLiftFamily'),'snatch');classOptions();rmOptions();
-Supabase.init();
-blocks=[blankBlock()];scoreFields();loadRM();updateConverter();refresh();showPage(location.hash.slice(1)||'todo');
+window.addEventListener('storage',e=>{
+ try{
+  if(e.key===SB_SESSION_KEY){
+   const next=e.newValue?JSON.parse(e.newValue):null;
+   if(next?.user?.id!==Supabase.user?.id){location.reload();return;}
+   Supabase.session=next;
+  }
+  if(Supabase.user&&e.key===Supabase.cacheKey()&&e.newValue){
+   const next=JSON.parse(e.newValue);
+   if(!validState(next.data))throw new Error(t('corrupt'));
+   Supabase.cache=next;state=normalizeState(next.data);refresh();loadRM();
+  }
+ }catch(error){Supabase.report(error);}
+});
 let installPrompt=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;$('installButton').hidden=false;});$('installButton').onclick=async()=>{if(installPrompt){await installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;$('installButton').hidden=true;}};
 if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)&&(window.isSecureContext)){navigator.serviceWorker.register('./sw.js').catch(()=>{});}
 // Web builds: keep the screen on while the timer runs and ask the browser not to evict saved records.
@@ -2399,19 +1753,14 @@ async function loadCoachPublishedPrograms() {
 }
 
 async function loadCoachWodForSelectedDate() {
-  if (!Supabase.isApproved) return;
-  try {
-    const [cp, sp] = await Promise.all([
-      Supabase.fetchCoachPrograms().catch(() => []),
-      Supabase.fetchSharedPrograms().catch(() => [])
-    ]);
-    coachPrograms = cp || [];
-    sharedPrograms = sp || [];
-  } catch {
-    // offline or error
-  }
-  renderCoachWodBanner();
-  renderCalendar();
+ if(!Supabase.isApproved)return;
+ const epoch=Supabase.epoch;
+ try{
+  const [cp,sp]=await Promise.all([Supabase.fetchCoachPrograms(),Supabase.fetchSharedPrograms()]);
+  if(epoch!==Supabase.epoch)return;
+  coachPrograms=cp||[];sharedPrograms=sp||[];
+  renderCoachWodBanner();renderCalendar();
+ }catch(error){if(epoch===Supabase.epoch)Supabase.report(error);}
 }
 
 function renderCoachWodBanner() {
@@ -2460,10 +1809,10 @@ $('closeAuthBtn')?.addEventListener('click', () => {
 });
 
 $('authDialog')?.addEventListener('cancel', e => {
-  if (!Supabase.session && !navigator.webdriver) e.preventDefault();
+  if (!Supabase.session) e.preventDefault();
 });
 $('approvalDialog')?.addEventListener('cancel', e => {
-  if (!Supabase.isApproved && !navigator.webdriver) e.preventDefault();
+  if (!Supabase.isApproved) e.preventDefault();
 });
 
 const doSignOutUser = async () => {
@@ -2474,10 +1823,10 @@ const doSignOutUser = async () => {
   renderCalendar();
   showPage('todo');
   notify(t('signOut'));
-  if (!navigator.webdriver) {
+
     document.body.classList.add('auth-locked');
     openAuthModal();
-  }
+
 };
 $('logoutBtnTop')?.addEventListener('click', doSignOutUser);
 $('logoutBtnSide')?.addEventListener('click', doSignOutUser);
@@ -2496,7 +1845,7 @@ $('checkApprovalBtn')?.addEventListener('click', async () => {
       notify(t('loginSuccess'));
       resetEntry('log');
       showPage('todo');
-      Supabase.syncPullOrPush();
+      await Supabase.syncPullOrPush();
       loadCoachWodForSelectedDate();
     } else {
       notify(t('pendingApprovalMsg'));
@@ -2556,7 +1905,8 @@ $('authForm')?.addEventListener('submit', async (e) => {
         notify(t('signUpSuccess'));
         loadCoachWodForSelectedDate();
       } else {
-        notify(t('pendingApprovalMsg'));
+        openAuthModal();
+        notify(LANG==='ko'?'가입한 이메일의 인증 링크를 확인한 후 로그인해주세요.':'Confirm your email using the link, then sign in.');
       }
     }
   } catch (err) {
@@ -2578,7 +1928,7 @@ $('loadCoachWodBtn')?.addEventListener('click', async () => {
   $('loadCoachWodBtn').disabled = true;
   try {
     await loadCoachWodForSelectedDate();
-    notify(t('loadCoachWod'));
+    if(Supabase.syncStatus!=='offline')notify(t('loadCoachWod'));
   } finally {
     $('loadCoachWodBtn').disabled = false;
   }
@@ -2891,70 +2241,22 @@ document.querySelectorAll('.member-filters button').forEach(b => {
 });
 $('refreshMembersBtn')?.addEventListener('click', loadCoachMembers);
 
-$('cloudSyncNowBtn')?.addEventListener('click', async () => {
-  if (!Supabase.session) {
-    openAuthModal();
-    return;
-  }
-  $('cloudSyncNowBtn').disabled = true;
-  Supabase.setSyncStatus('syncing');
-  try {
-    await Supabase.req('/rest/v1/member_data?on_conflict=user_id', {
-      method: 'POST',
-      headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' },
-      body: JSON.stringify({
-        user_id: Supabase.user.id,
-        data: state,
-        updated_at: new Date().toISOString()
-      })
-    });
-    Supabase.setSyncStatus('synced');
-    notify(t('cloudSyncOk'));
-  } catch (err) {
-    notify(err.message);
-  } finally {
-    $('cloudSyncNowBtn').disabled = false;
-  }
+$('cloudSyncNowBtn')?.addEventListener('click',async()=>{
+ if(!Supabase.session){openAuthModal();return;}
+ $('cloudSyncNowBtn').disabled=true;
+ try{if(Supabase.cache?.dirty)await Supabase.flush();else await Supabase.syncPullOrPush();notify(t('cloudSyncOk'));}
+ catch(error){Supabase.report(error);}
+ finally{$('cloudSyncNowBtn').disabled=false;}
 });
-
-$('cloudRestoreBtn')?.addEventListener('click', async () => {
-  if (!Supabase.session) {
-    openAuthModal();
-    return;
-  }
-  if (!await confirmAction(t('confirmCloudRestore'))) return;
-  $('cloudRestoreBtn').disabled = true;
-  try {
-    const list = await Supabase.req(`/rest/v1/member_data?user_id=eq.${Supabase.user.id}&select=*`);
-    if (Array.isArray(list) && list.length > 0 && list[0].data) {
-      state = normalizeState(migrateState(list[0].data));
-      localStorage.setItem(KEY, JSON.stringify(state));
-      refresh();
-      notify(t('cloudRestoreOk'));
-    } else {
-      notify(t('noData') || 'No data');
-    }
-  } catch (err) {
-    notify(err.message);
-  } finally {
-    $('cloudRestoreBtn').disabled = false;
-  }
+$('cloudRestoreBtn')?.addEventListener('click',async()=>{
+ if(!Supabase.session){openAuthModal();return;}
+ if(!await confirmAction(t('confirmCloudRestore')))return;
+ $('cloudRestoreBtn').disabled=true;
+ try{await Supabase.restoreCloud();notify(t('cloudRestoreOk'));}
+ catch(error){Supabase.report(error);}
+ finally{$('cloudRestoreBtn').disabled=false;}
 });
-
-// Boot Supabase session check & Box WOD toggle
-updateBoxWodBtn();
-$('toggleBoxWodBtn')?.addEventListener('click', toggleBoxWodVisibility);
-
-Supabase.init();
-if (Supabase.session) {
-  Supabase.fetchProfile().then(() => {
-    Supabase.syncPullOrPush();
-    loadCoachWodForSelectedDate();
-  });
-} else if (!navigator.webdriver) {
-  openAuthModal();
-}
-
+$('toggleBoxWodBtn')?.addEventListener('click',toggleBoxWodVisibility);
 
 /* ---------------- Leaderboard & Edit Dialog Handlers (Req 0-6) ---------------- */
 let currentLbRecords = [];
@@ -3020,17 +2322,19 @@ function renderLeaderboardView() {
     filtered = filtered.filter(r => (r.gender || 'M') === currentLbGender);
   }
 
-  // Sort records
-  filtered.sort((a, b) => {
-    if (a.score_seconds !== null && b.score_seconds !== null) {
-      return a.score_seconds - b.score_seconds;
+  filtered.sort((a,b)=>{
+    if(a.workout_type==='AMRAP'&&b.workout_type==='AMRAP'){
+      const ar=a.score.match(/(\d+)R\s*\+\s*(\d+)/i),br=b.score.match(/(\d+)R\s*\+\s*(\d+)/i);
+      if(ar&&br)return Number(br[1])-Number(ar[1])||Number(br[2])-Number(ar[2]);
     }
-    if (a.score_reps !== null && b.score_reps !== null) {
-      return b.score_reps - a.score_reps;
+    if(a.workout_type==='FOR_TIME'&&b.workout_type==='FOR_TIME'){
+      const ac=/^CAP /i.test(a.score),bc=/^CAP /i.test(b.score);
+      if(ac!==bc)return ac?1:-1;
+      if(ac)return (b.score_reps||0)-(a.score_reps||0);
     }
-    if (a.score_weight !== null && b.score_weight !== null) {
-      return b.score_weight - a.score_weight;
-    }
+    if(a.score_seconds!=null&&b.score_seconds!=null)return a.score_seconds-b.score_seconds;
+    if(a.score_reps!=null&&b.score_reps!=null)return b.score_reps-a.score_reps;
+    if(a.score_weight!=null&&b.score_weight!=null)return b.score_weight-a.score_weight;
     return a.score.localeCompare(b.score);
   });
 
@@ -3202,36 +2506,23 @@ function openEditLogDialog(logId) {
 $('closeEditLogBtn')?.addEventListener('click', () => $('editLogDialog').close());
 $('cancelEditLogBtn')?.addEventListener('click', () => $('editLogDialog').close());
 
-$('editLogForm')?.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const id = $('editLogId').value;
-  const r = state.logs.find(x => x.id === id);
-  if (!r) return;
-
-  const date = $('editLogDate').value;
-  const title = $('editLogTitleInput').value.trim();
-  const isRxd = $('editLogRx').value === 'rx';
-  const score = $('editLogScore').value.trim();
-  const reason = $('editLogReason').value.trim();
-
-  $('editLogDialog').close();
-
-  if (Supabase.isCoach) {
-    // Coach edits directly
-    r.date = date;
-    r.title = title;
-    r.isRxd = isRxd;
-    r.score = score;
-    delete r.pendingEdit;
-    commit(state);
-    Supabase.syncToLeaderboard(r, true);
-    notify(t('editApproved'));
-  } else {
-    // Member requests coach approval
-    await Supabase.requestLogEdit(id, { date, title, isRxd, score }, reason);
-    notify(t('editRequested'));
-    renderHistory();
+$('editLogForm')?.addEventListener('submit',async e=>{
+ e.preventDefault();
+ const id=$('editLogId').value,r=state.logs.find(x=>x.id===id);if(!r)return;
+ const data={date:$('editLogDate').value,title:$('editLogTitleInput').value.trim(),isRxd:$('editLogRx').value==='rx',score:$('editLogScore').value.trim()};
+ if(!validLog({...r,...data})){notify(t('invalid'));return;}
+ const button=$('submitEditLogBtn');button.disabled=true;
+ try{
+  if(Supabase.isCoach){
+   const next={...r,...data};delete next.pendingEdit;
+   if(!commit({...state,logs:state.logs.map(log=>log.id===id?next:log)}))return;
+   await Supabase.flush();notify(t('editApproved'));
+  }else{
+   await Supabase.requestLogEdit(id,data,$('editLogReason').value.trim());notify(t('editRequested'));
   }
+  $('editLogDialog').close();
+ }catch(error){Supabase.report(error);}
+ finally{button.disabled=false;}
 });
 
 // Coach Hub: Load and handle Edit Requests (Requirement 6A)
@@ -3325,5 +2616,24 @@ $('genderF')?.addEventListener('click', () => {
   $('authGender').value = 'F';
 });
 
+
+// Boot only after every handler and state variable has been initialized.
+$('date').value=localDate();$('todayLabel').textContent=new Date().toLocaleDateString(LOCALE,{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+familyOptions($('compareFamily'),'snatch');familyOptions($('customLiftFamily'),'snatch');classOptions();rmOptions();
+Supabase.init();
+blocks=[blankBlock()];scoreFields();loadRM();updateConverter();updateBoxWodBtn();
+try{refresh();showPage(location.hash.slice(1)||'todo');}catch(error){Supabase.report(error);}
+let reconnecting=null;
+async function reconnectCloud(){
+ if(!Supabase.session||reconnecting)return reconnecting;
+ reconnecting=(async()=>{
+  try{await Supabase.fetchProfile();await Supabase.syncPullOrPush();await loadCoachWodForSelectedDate();}
+  catch(error){Supabase.report(error);}
+ })();
+ try{await reconnecting;}finally{reconnecting=null;}
+}
+window.addEventListener('online',reconnectCloud);
+window.addEventListener('focus',reconnectCloud);
+void reconnectCloud();
 </script>
 </body></html>
