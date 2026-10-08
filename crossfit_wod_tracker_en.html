@@ -120,6 +120,15 @@
 .auth-dialog{max-width:440px;width:90%}
 .approval-dialog{max-width:440px;width:90%;text-align:center}
 body.auth-locked .shell,body.auth-locked .bottom-nav{filter:blur(14px);pointer-events:none;user-select:none;opacity:0.25}
+.toggle-box-wod-btn{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 10px;cursor:pointer;transition:all .15s ease}
+.toggle-box-wod-btn:hover{background:#f4f4f0;border-color:#ccc}
+.toggle-box-wod-btn.is-hidden{background:#fef2f2;border-color:#fca5a5;color:#b91c1c}
+.box-wod-hidden-banner{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;background:#fef2f2;border:1px dashed #fca5a5;border-radius:10px;font-size:12px;color:#991b1b;margin-bottom:12px}
+.day-card.coach-str{border-left:4px solid #d9342b;background:#fff8f7}
+.day-card.coach-wod{border-left:4px solid #2563eb;background:#f0f5ff}
+.day-card.shared-str{border-left:4px solid #ea580c;background:#fffaf5}
+.day-card.shared-wod{border-left:4px solid #0284c7;background:#f0f9ff}
+
 
 
 /* Leaderboard & Edit requests */
@@ -269,6 +278,7 @@ body.auth-locked .shell,body.auth-locked .bottom-nav{filter:blur(14px);pointer-e
     <div id="coachWodBanner" class="coach-wod-banner" hidden>
       <div class="coach-wod-header">
         <span class="role-pill coach" data-t="coachWod"></span>
+        <span class="cat-pill wod" style="margin-left:4px">WOD</span>
         <h3 id="coachWodTitle"></h3>
         <button type="button" id="loadCoachWodBtn" class="ghost small" data-t="loadCoachWod"></button>
       </div>
@@ -279,7 +289,11 @@ body.auth-locked .shell,body.auth-locked .bottom-nav{filter:blur(14px);pointer-e
     </div>
     <div class="cal-toolbar">
       <div class="segmented view-toggle" role="group" aria-label="Calendar / List"><button id="viewCalendar" type="button" class="active" aria-pressed="true" data-t="calendarView"></button><button id="viewList" type="button" aria-pressed="false" data-t="listView"></button></div>
-      <div class="actions"><button id="newPlan" class="primary small" data-t="newPlan"></button><button id="toggleProgram" class="small" data-t="programImport"></button></div>
+      <div class="actions">
+        <button type="button" id="toggleBoxWodBtn" class="toggle-box-wod-btn small" title="박스 와드 숨김/보기"><span>🙈 <span data-t="hideBoxWod"></span></span></button>
+        <button id="newPlan" class="primary small" data-t="newPlan"></button>
+        <button id="toggleProgram" class="small" data-t="programImport"></button>
+      </div>
     </div>
     <section id="programPanel" class="panel program-panel" hidden>
       <h2 data-t="programImport"></h2><p class="subtle" data-t="programIntro"></p>
@@ -349,7 +363,7 @@ body.auth-locked .shell,body.auth-locked .bottom-nav{filter:blur(14px);pointer-e
     </div>
     <div class="panel data-card"><span class="step">01 / CSV</span><h2 data-t="exportTitle"></h2><p class="subtle" data-t="exportDesc"></p><span class="pill" id="exportCount"></span><button id="exportCSV" class="primary" data-t="exportCSV"></button></div><div class="panel data-card"><span class="step">02 / CSV</span><h2 data-t="importTitle"></h2><p class="subtle" data-t="importDesc"></p><p class="help" data-t="csvNote"></p><label class="file-label" for="importCSV" data-t="importCSV"></label><input id="importCSV" type="file" accept=".csv,text/csv"></div><div class="panel data-card"><span class="step">03 / JSON</span><h2 data-t="backupTitle"></h2><p class="subtle" data-t="backupDesc"></p><button id="exportJSON" class="secondary" data-t="exportJSON"></button><label class="file-label" for="importJSON" data-t="importJSON"></label><input id="importJSON" type="file" accept=".json,application/json"></div><div class="panel data-card"><span class="step">04 / RESET</span><h2 data-t="resetTitle"></h2><p class="subtle" data-t="resetDesc"></p><button id="resetAll" class="danger" data-t="resetAll"></button></div></div><div class="panel data-info"><h2 data-t="install"></h2><p class="subtle" data-t="installHelp"></p><button id="installButton" class="primary spaced" hidden data-t="installButton"></button><p class="help spaced" data-t="localeHelp"></p><p class="help" data-t="backupReminder"></p></div></section>
 
-  <section id="page-coach" class="page" hidden>
+  <section id="page-coach" class="page coach-only" hidden>
     <div class="page-head">
       <div>
         <div class="eyebrow">COACH MANAGEMENT HUB</div>
@@ -365,7 +379,7 @@ body.auth-locked .shell,body.auth-locked .bottom-nav{filter:blur(14px);pointer-e
           <span class="role-pill coach">COACH</span>
         </div>
         <form id="coachProgramForm" class="spaced">
-          <div class="row">
+          <div class="row three">
             <div class="field">
               <label for="coachProgramDate" data-t="date"></label>
               <input id="coachProgramDate" type="date" required>
@@ -375,6 +389,13 @@ body.auth-locked .shell,body.auth-locked .bottom-nav{filter:blur(14px);pointer-e
               <select id="coachProgramUnit">
                 <option value="kg">kg</option>
                 <option value="lb">lb</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="coachProgramCategory" data-t="coachCategory"></label>
+              <select id="coachProgramCategory">
+                <option value="WOD">WOD</option>
+                <option value="STRENGTH">STRENGTH</option>
               </select>
             </div>
           </div>
@@ -560,7 +581,7 @@ function parseScoreValues(log) {
 }
 
 'use strict';
-const LANG='en', T={"appTitle": "CrossFit WOD & Strength Tracker", "tagline": "Today's effort. Tomorrow's benchmark.", "local": "Saved in this browser", "movementGuide": "WOD movement guide", "liftingGuide": "Weightlifting video guide", "add": "Add workout", "history": "Workout history", "strength": "1RM & Compare", "data": "Manage data", "session": "TODAY'S TRAINING", "intro": "Every rep has a story.", "introSub": "Log your WODs and strength work. Meet your past self.", "total": "Total workouts", "thisMonth": "This month", "rms": "Saved 1RMs", "newEntry": "Log your training", "date": "Workout date", "title": "WOD title", "titleHint": "e.g. Fran, Murph, today’s box WOD (similar past WODs will be suggested)", "content": "Workout details", "contentHint": "e.g. 21-15-9 thrusters · pull-ups", "type": "Workout type", "required": "Required", "previous": "Previous results for this WOD", "noPrevious": "No matching workouts yet. Set your first benchmark.", "titleStart": "Enter a title to see your previous results here.", "time": "Finish time (mm:ss)", "cap": "Time cap reached / unfinished", "capTime": "Time cap (minutes)", "extraReps": "Extra reps at time cap (+Reps)", "rounds": "Rounds", "reps": "Reps", "duration": "Time limit (minutes)", "every": "Every (minutes)", "custom": "Custom", "customEvery": "Custom interval (minutes)", "completed": "Completion", "success": "Success", "pass": "Incomplete / pass", "roundReps": "Reps per round", "roundRepsHint": "e.g. 12, 12, 10, 10", "work": "Work (seconds)", "rest": "Rest (seconds)", "scoreMode": "Score format", "repsMode": "Reps", "timeMode": "Time", "totalReps": "Total reps", "repHelp": "Enter total reps or one rep count per round. If you enter both, their totals must match.", "timeHelp": "Enter a final finish time or one time per round (mm:ss, separated by commas).", "roundTimes": "Finish times per round", "finalTime": "Final finish time (mm:ss)", "weight": "Weight used", "unit": "Weight unit", "rxLabel": "Workout standard", "rxHint": "Rx’d: as prescribed · Scaled: adjusted weight or movement", "notes": "Notes", "notesHint": "Pacing, barbell setup, something to remember…", "save": "Save workout", "saved": "Workout saved. Great work! 💪", "titleRequired": "Please enter a WOD title", "invalid": "Please check your entries.", "invalidTime": "Enter time as mm:ss, with seconds between 00 and 59.", "invalidRounds": "The number of round results must match the total rounds.", "invalidSum": "Total reps must match the sum of the per-round reps.", "scoreRequired": "Please enter a result.", "lift": "Strength movement", "sets": "Sets", "latest": "Latest result", "noLift": "Log your first session for this movement.", "rmQuick": "Target weight from your 1RM", "noRM": "Save a 1RM for this movement in the calculator tab.", "target": "Target percentage (%)", "useWeight": "Use this weight", "timer": "Training timer", "timerHint": "Uses your selected workout type and time settings. Keep the page open to follow your progress.", "ready": "Ready", "running": "Running", "paused": "Paused", "finished": "Finished", "workPhase": "Work", "restPhase": "Rest", "start": "Start", "pause": "Pause", "resume": "Resume", "resetTimer": "Reset timer", "applyTime": "Use elapsed time as result", "timerApplied": "Time added to the result field.", "timerSetup": "Reset the timer after changing settings. The final interval skips the rest period.", "resetAsk": "Reset the active timer?", "recent": "Recent training", "viewAll": "View all", "empty": "Your log starts here", "emptySub": "Save your first workout to start tracking and comparing.", "search": "Search workout titles or notes", "all": "All", "allTypes": "All workout types", "noResults": "No workouts match your filters.", "delete": "Delete", "deleteAsk": "Delete this workout? This cannot be undone.", "deleted": "Workout deleted.", "select": "Select", "deleteSelected": "Delete selected", "selectedAsk": "Delete the {n} selected workouts?", "historyIntro": "A timeline of the work you put in.", "rmIntro": "Save 1RMs and compare lifts within each family.", "oneRM": "Your one-rep max", "rmWeight": "1RM weight", "saveRM": "Save 1RM", "savedRM": "1RM saved.", "deleteRM": "Delete this movement's 1RM", "deleteRMAsk": "Delete the 1RM for this movement?", "notSet": "Not saved yet", "updated": "Updated", "rounding": "Plate rounding increment", "exact": "One decimal place", "roundHint": "Rounds in the displayed unit. Your original saved 1RM stays unchanged.", "percentTable": "1RM percentage table", "percentage": "Percentage", "converter": "lb ↔ kg converter", "convertValue": "Weight to convert", "switchUnits": "Switch units", "dataIntro": "Your data stays in this browser. Download a backup to keep it safe.", "exportTitle": "Export to Excel", "exportDesc": "Download completed workouts as a UTF-8 BOM CSV. Planned workouts are included in the full JSON backup.", "exportCSV": "Download CSV", "importTitle": "Restore edited CSV", "importDesc": "Importing replaces all completed workouts with the rows in your file. Removed rows disappear from history. Your planned workouts and 1RMs are preserved.", "csvNote": "The Details column contains JSON to preserve workout content and interval settings. Edit its content value, or replace the entire cell with plain text. Replacing it with plain text will discard the interval settings.", "importCSV": "Choose CSV file", "importAsk": "Validated {n} workouts. Replace your {old} current workouts with this file?", "imported": "Restored {n} workouts.", "invalidCSV": "Invalid CSV format or values. No changes were saved.", "line": "Row", "backupTitle": "Complete backup", "backupDesc": "Save completed workouts, planned workouts and all movement 1RMs in one JSON file. Use it to move between devices or language versions.", "exportJSON": "Download full backup", "importJSON": "Restore full backup", "restoreAsk": "Replace all current data with {n} completed workouts, {p} planned workouts and {r} 1RMs?", "invalidJSON": "This is not a valid tracker backup.", "resetTitle": "Start fresh", "resetDesc": "Remove all completed workouts, planned workouts and 1RMs from this browser.", "resetAll": "Delete all data", "resetAllAsk": "Permanently delete all completed workouts, planned workouts and 1RMs? Download a full backup first.", "resetDone": "All data cleared.", "storageError": "Browser storage is unavailable. Check free space and privacy settings. Download a backup of your data first.", "corrupt": "Saved data could not be read. Existing data has not been overwritten. Restore a backup or reset in Manage data.", "downloaded": "Download started.", "offline": "Log workouts without the internet. Video guides require an internet connection.", "install": "Add to your home screen", "installHelp": "iPhone: Safari Share → Add to Home Screen. Android: Chrome menu → Add to Home screen. Use an HTTPS address when hosted online.", "installButton": "Install app", "language": "Change language", "localeHelp": "Language versions on the same web origin share data. When opened as local files, browser storage may be separate; use a full backup to transfer data.", "count": "{n} workouts", "rmCount": "{n} 1RMs", "cancel": "Cancel", "confirm": "Confirm", "confirmation": "Please confirm", "close": "Close", "details": "Workout details", "noContent": "No workout details", "minutes": "min", "seconds": "sec", "timerError": "Check the timer duration and rounds.", "saveFail": "Could not save. Check your browser storage settings and try again.", "previewLimit": "Latest 5 results", "maxFile": "Choose a file no larger than 10 MB.", "repsWord": "reps", "setsWord": "sets", "roundWord": "rounds", "capWord": "CAP", "formIntro": "Enter today's session. Required fields are marked with *.", "liveTarget": "Target weight", "percentHint": "50–100% in 5% steps.", "backupReminder": "Clearing browser data also clears your log. Back up regularly.", "recordUnitHint": "Switching units also converts the entered weight.", "timerChanged": "The timer keeps its starting settings. Reset it to apply your changes.", "todo": "Calendar", "todoIntro": "Tap a date to see what to do and what you completed. WOD is blue, Strength is red and missed workouts are gray.", "viewPlans": "Open calendar", "todaySummary": "Today {today} · Overdue {overdue} · Total {n}", "logMode": "Log results", "planMode": "Plan a workout", "planEntry": "Plan your training", "planHint": "Save a date and workout details without results. Weight, reps and sets are your targets.", "planSave": "Save planned workout", "planUpdate": "Save plan changes", "planSaved": "Planned workout saved.", "planUpdated": "Workout plan updated.", "plannedDate": "Scheduled date", "plannedCap": "Planned time cap (minutes, optional)", "targetWeight": "Target weight (optional)", "allPending": "All pending", "todayPlans": "Today", "overduePlans": "Overdue", "upcomingPlans": "Upcoming", "newPlan": "New workout plan", "planCount": "{n} pending", "noPlans": "No workouts planned yet", "noPlansHint": "Choose New workout plan to schedule a workout for today or a future date.", "noPlanResults": "No planned workouts match your filters.", "editPlan": "Edit plan", "performPlan": "Do workout / enter results", "completePlan": "Complete & save to history", "planCompleted": "Workout completed. Great work! 💪", "planEditing": "Editing plan · {title} · {date}", "planPerforming": "Working from plan · {title} · Scheduled {date}. Save your actual workout date and results.", "cancelPlan": "Back to calendar", "deletePlanAsk": "Delete this planned workout? Completed workout logs will be kept.", "planMissing": "This plan was already completed or changed. Open it again from the calendar.", "replaceDraft": "Close the current form and open the selected workout? Unsaved entries will be lost.", "importAllDone": "Restored {n} completed workouts and {p} planned workouts.", "addLift": "+ Add lift", "addSet": "+ Add set", "allOfFamily": "all", "awesome": "Awesome!", "baseIs": "% based on {lift} 1RM {w}", "baseMissing": "% based on {lift} 1RM, not set yet, so only % is shown. Add it in the 1RM & Compare tab.", "baseMissingShort": "{lift} 1RM not set · % only", "baseShort": "Based on {lift} 1RM", "beatIt": "Try to beat it today!", "bestCol": "Best", "bestRecord": "Best", "bestShort": "Best", "calendarView": "Calendar", "listView": "List", "compareEmpty": "No records or 1RMs in this family yet.", "compareIntro": "Compare bests and 1RMs within a lift family, split into main lift, variations, skills and pulls/strength. E.g. Snatch Balance is a snatch skill; Pause Snatch is a snatch variation.", "compareTitle": "Compare lifts", "customLiftAdd": "Add lift", "customLiftAdded": "Lift added.", "customLiftExists": "A lift with this name already exists.", "customLiftHint": "e.g. Snatch High Pull + Snatch", "customLiftIntro": "Add any missing lift with its family and class to use it in logs, plans and comparisons.", "customLiftName": "Lift name", "customLiftTitle": "Add your own lift", "dayDone": "Completed", "dayEmpty": "No workouts on this day", "dayMaxTag": "Max for day", "dayMissed": "Missed (not done)", "dayPlanned": "To do", "doneWord": "Done", "firstRx": "First Rx'd", "ignore": "Dismiss", "inUse": "In use", "lastDone": "last", "legendMissed": "Missed", "legendStrDone": "Strength done", "legendStrPlan": "Strength planned", "legendWodDone": "WOD done", "legendWodPlan": "WOD planned", "liftClass": "Class", "liftFamily": "Lift family", "liftGroup": "Strength class", "logThisDay": "Log results for this day", "planThisDay": "Plan a workout for this day", "mark_done": "done", "mark_missed": "missed", "mark_planned": "planned", "maxMessage": "You can save today’s heaviest single as your 1RM.", "maxTitle": "Today’s max", "newRM": "New 1RM", "newRecord": "New record", "noBaseShort": "1RM not set", "noCustomLifts": "No custom lifts yet.", "ofDayMaxTag": "{p} of day max", "prMessage": "Congratulations! You beat your previous best. Consistency pays off.", "prTitle": "New personal record! 🎉", "prevBest": "Previous best", "prevRM": "Previous 1RM", "prevRecords": "Previous results · {title} ({n})", "programAdded": "Added {n} program workouts to the calendar.", "programApply": "Add to calendar", "programApplyAsk": "Add {n} planned workouts to the calendar starting {start}? Existing logs and plans are kept.", "programBaseRule": "Percentages for snatch, clean and jerk variations always use the parent lift (Snatch / Clean / Clean & Jerk) 1RM. Squat, press and deadlift lifts use their own 1RM. Without a 1RM only the % is shown.", "programBuiltin": "5-week weightlifting peak program (weightlifting programm.txt)", "programDelete": "Delete remaining", "programDeleteAsk": "Delete the {n} remaining planned workouts of this program? Completed logs are kept.", "programDupDay": "Day {day} appears more than once.", "programDupWarn": "A program with this name already starts on this date. It may be added twice.", "programImport": "Import program", "programImported": "Imported programs", "programIntro": "Turns a program text into dated Strength sessions and accessory WODs on the calendar. Use the preview to check how every line is interpreted before adding.", "programInvalid": "The program could not be read. Please check the format.", "programLine": "Program", "programName": "Program name", "programNewLifts": "Lifts not in the list will be added as new lifts: {list}", "programNoDays": "No day headers such as \"Monday - Day 1\" were found.", "programNone": "No imported programs.", "programNotesCount": "Includes {n} coach notes (see plan notes)", "programPaste": "Paste text / txt file", "programPreview": "Preview", "programRemaining": "{n} remaining · {start} – {end}", "programSource": "Program", "programStart": "Day 1 start date", "programSummary": "{days} days · {s} strength sessions ({lifts} lifts) · {w} accessory WODs · {start} – {end}", "programText": "Program text", "programTextHint": "Monday - Day 1\nSnatch - 75% x 1 x 3\nFront squat - 75% x 3 x 5\n4 sets; no rest:\n10 pull-ups", "programWeekdayWarn": "Day {day} is a {wd} in the text but the chosen start date falls on a different weekday.", "qualityHint": "e.g. Done, 1:25 / 1:27 / 1:26", "qualityResult": "Result (optional)", "removeLift": "Remove lift", "removeSet": "Remove set", "repsCol": "Reps", "setsCol": "Sets", "weightCol": "Weight", "targetWeightCol": "Target", "restDay": "Rest day", "rmBaseInfo": "Program percentages for this lift use the {lift} 1RM, not this lift.", "rmUpdated": "1RM updated.", "sameTitle": "Same title", "similarTitle": "Similar title", "similarContent": "Similar workout", "similarFound": "A same or similar WOD was logged before", "selectPrev": "Select", "saveAsRMHint": "No 1RM saved for this lift yet.", "strengthFormHint": "A session can contain several lifts. Enter a % to calculate the weight from your 1RM.", "timesDone": "{n} logs", "todayBtn": "Today", "todayWorkouts": "Today’s workouts", "unlink": "Unselect", "updateRM": "Update 1RM", "vsBase": "vs {lift} 1RM", "liftRequired": "Add at least one strength lift.", "weightRequired": "Enter the weight you lifted.", "invalidPct": "Enter a percentage between 0.1 and 200.", "programLoadFile": "Load txt file", "programFileHint": "Choose a program txt file (e.g. weightlifting programm.txt) to fill the box below, then choose Preview.", "programFileLoaded": "Loaded {name}. Choose Preview to check it.", "programFileTooBig": "The file is too large. Choose a txt file of 200 KB or less.", "programFileError": "Could not read the file. Make sure it is a UTF-8 txt file.", "shared": "Share sheet opened. Choose \"Save to Files\" to keep it.", "auth": "Sign In / Register", "authIntro": "Sign in to access coach WODs and securely sync your training logs.", "signIn": "Sign In", "signUp": "Sign Up", "signOut": "Sign Out", "name": "Name / Nickname", "nameHint": "Your box name", "email": "Email", "password": "Password", "passwordConfirm": "Confirm Password", "passwordMin": "Password must be at least 6 characters.", "passwordMismatch": "Passwords do not match.", "emailInvalid": "Please enter a valid email address.", "authNote": "🔒 All training records are encrypted and accessible only by you.", "alreadyHaveAccount": "Already have an account? Sign in", "needAccount": "Need an account? Sign up", "pendingApproval": "Pending Coach Approval", "pendingApprovalMsg": "Your account has been created. Once the coach approves your registration, daily WODs and all tracking features will unlock.", "checkStatus": "Check Status", "coachAdmin": "Coach Hub", "coachShort": "Coach", "memberRole": "Member", "coachRole": "Coach", "approved": "Approved", "pending": "Pending", "approve": "Approve", "revoke": "Revoke", "grantCoach": "Make Coach", "revokeCoach": "Demote to Member", "coachPublish": "Publish Today's WOD", "coachPrograms": "Published Programs", "coachMembers": "Member Approvals", "publishSuccess": "Today's WOD published successfully!", "deleteProgramConfirm": "Delete this published program?", "coachWod": "Coach WOD", "todayCoachWod": "Today's Coach WOD", "loadCoachWod": "Refresh Coach WOD", "useCoachWod": "Log this WOD Today", "syncOk": "Cloud Synced", "syncing": "Syncing to Cloud...", "syncOffline": "Offline (Saved locally)", "syncNow": "Sync to Cloud Now", "restoreCloud": "Restore from Cloud", "confirmCloudRestore": "Restore your workout data from the cloud?", "cloudRestoreOk": "Successfully restored workout data from cloud.", "cloudSyncOk": "Safely synced to cloud.", "loginSuccess": "Signed in successfully.", "signUpSuccess": "Registration successful! Awaiting coach approval.", "loginRequired": "Sign in required.", "noMembers": "No members registered yet.", "noCoachPrograms": "No published programs yet.", "filterAll": "All", "filterPending": "Pending", "filterApproved": "Approved", "coachProgramDesc": "Publish workout programs for all box members to view.", "cloudSyncCardTitle": "Cloud Auto-Sync", "cloudSyncCardDesc": "Access your latest workout logs seamlessly across mobile and desktop devices.", "gender": "Gender", "genderSelect": "Select gender", "male": "Male 👨", "female": "Female 👩", "genderMaleShort": "M", "genderFemaleShort": "F", "loginToContinue": "Please sign in to continue.", "isPublic": "Public to Members", "coachProgramPublicLabel": "Public to all members (ON)", "publicWod": "Public", "privateWod": "Private", "togglePublic": "Make Public", "togglePrivate": "Make Private", "planShareLabel": "Share this workout with box members", "planShareHint": "When shared, other members can view and log this workout.", "sharedPrograms": "Member Shared Workouts", "sharedBy": "Shared by {name}", "useSharedProgram": "Log This Workout", "deleteCoachAuth": "Delete as Coach", "deleteSharedConfirm": "Delete this shared workout with Coach authority?", "logPublicLeaderboardLabel": "Share my score on the box leaderboard", "logPublicLeaderboardHint": "If unchecked, your record remains private to you and will not appear on rankings.", "privateRecord": "Private Record", "publicRecord": "Public Record", "navTodoNum": "01", "navAddNum": "02", "navHistoryNum": "03", "navStrengthNum": "04", "navDataNum": "05", "navCoachNum": "06", "edit": "Edit", "editLog": "Edit Workout Record", "editLogCoachDirect": "Updated immediately with Coach authority.", "editLogMemberNotice": "For fair scoring, member record edits take effect upon coach approval.", "requestEdit": "Request Coach Approval", "editReason": "Reason for Edit (Optional)", "editReasonHint": "e.g. Typo in finish time, round correction", "editPending": "Pending Edit Approval", "editPendingBadge": "⏳ Edit Pending", "editPendingHint": "Your changes will take effect once the coach approves.", "coachEditRequests": "Record Edit Requests", "noEditRequests": "No pending edit requests.", "approveEdit": "Approve Edit", "rejectEdit": "Reject", "editApproved": "Record edit approved.", "editRejected": "Record edit rejected.", "editRequested": "Edit approval requested to coach.", "leaderboard": "Box Leaderboard", "viewLeaderboard": "🏆 Box Leaderboard", "rxdRankings": "🥇 Rx’d Rankings", "scaledRankings": "🥈 Scaled Rankings", "allGenders": "All", "maleOnly": "Male 👨", "femaleOnly": "Female 👩", "myRank": "My Rank: #{rank} ({grade})", "rank": "Rank", "athlete": "Athlete", "scoreCol": "Score", "noLeaderboardData": "No public records found for this workout yet.", "reject": "Reject", "rejectConfirm": "Reject and delete registration for {name}?", "deleteMember": "Delete Member", "deleteMemberConfirm": "Permanently delete member {name}? (They will be permanently blocked from accessing the site)", "memberDeleted": "Member deleted successfully.", "programShareLabel": "Share this program on the Box Calendar for all members", "programShareHint": "When checked, days from this program will be published to the Box Calendar for all members. When unchecked, it only saves to your personal calendar.", "programSharedWithBox": "{n} days from this program have been published to the Box Calendar!", "allRMsTitle": "All My 1RMs (PR Dashboard)", "allRMsIntro": "View all your personal records (1RM) at a glance and load them into the calculator.", "quickAddRM": "+ Add 1RM", "noAllRMs": "No 1RMs recorded yet. Select a lift below, enter your 1RM, and click [Save 1RM]!", "loadIntoCalc": "Load Calculator"}, PROGRAM_TEXT="";
+const LANG='en', T={"appTitle": "CrossFit WOD & Strength Tracker", "tagline": "Today's effort. Tomorrow's benchmark.", "local": "Saved in this browser", "movementGuide": "WOD movement guide", "liftingGuide": "Weightlifting video guide", "add": "Add workout", "history": "Workout history", "strength": "1RM & Compare", "data": "Manage data", "session": "TODAY'S TRAINING", "intro": "Every rep has a story.", "introSub": "Log your WODs and strength work. Meet your past self.", "total": "Total workouts", "thisMonth": "This month", "rms": "Saved 1RMs", "newEntry": "Log your training", "date": "Workout date", "title": "WOD title", "titleHint": "e.g. Fran, Murph, today’s box WOD (similar past WODs will be suggested)", "content": "Workout details", "contentHint": "e.g. 21-15-9 thrusters · pull-ups", "type": "Workout type", "required": "Required", "previous": "Previous results for this WOD", "noPrevious": "No matching workouts yet. Set your first benchmark.", "titleStart": "Enter a title to see your previous results here.", "time": "Finish time (mm:ss)", "cap": "Time cap reached / unfinished", "capTime": "Time cap (minutes)", "extraReps": "Extra reps at time cap (+Reps)", "rounds": "Rounds", "reps": "Reps", "duration": "Time limit (minutes)", "every": "Every (minutes)", "custom": "Custom", "customEvery": "Custom interval (minutes)", "completed": "Completion", "success": "Success", "pass": "Incomplete / pass", "roundReps": "Reps per round", "roundRepsHint": "e.g. 12, 12, 10, 10", "work": "Work (seconds)", "rest": "Rest (seconds)", "scoreMode": "Score format", "repsMode": "Reps", "timeMode": "Time", "totalReps": "Total reps", "repHelp": "Enter total reps or one rep count per round. If you enter both, their totals must match.", "timeHelp": "Enter a final finish time or one time per round (mm:ss, separated by commas).", "roundTimes": "Finish times per round", "finalTime": "Final finish time (mm:ss)", "weight": "Weight used", "unit": "Weight unit", "rxLabel": "Workout standard", "rxHint": "Rx’d: as prescribed · Scaled: adjusted weight or movement", "notes": "Notes", "notesHint": "Pacing, barbell setup, something to remember…", "save": "Save workout", "saved": "Workout saved. Great work! 💪", "titleRequired": "Please enter a WOD title", "invalid": "Please check your entries.", "invalidTime": "Enter time as mm:ss, with seconds between 00 and 59.", "invalidRounds": "The number of round results must match the total rounds.", "invalidSum": "Total reps must match the sum of the per-round reps.", "scoreRequired": "Please enter a result.", "lift": "Strength movement", "sets": "Sets", "latest": "Latest result", "noLift": "Log your first session for this movement.", "rmQuick": "Target weight from your 1RM", "noRM": "Save a 1RM for this movement in the calculator tab.", "target": "Target percentage (%)", "useWeight": "Use this weight", "timer": "Training timer", "timerHint": "Uses your selected workout type and time settings. Keep the page open to follow your progress.", "ready": "Ready", "running": "Running", "paused": "Paused", "finished": "Finished", "workPhase": "Work", "restPhase": "Rest", "start": "Start", "pause": "Pause", "resume": "Resume", "resetTimer": "Reset timer", "applyTime": "Use elapsed time as result", "timerApplied": "Time added to the result field.", "timerSetup": "Reset the timer after changing settings. The final interval skips the rest period.", "resetAsk": "Reset the active timer?", "recent": "Recent training", "viewAll": "View all", "empty": "Your log starts here", "emptySub": "Save your first workout to start tracking and comparing.", "search": "Search workout titles or notes", "all": "All", "allTypes": "All workout types", "noResults": "No workouts match your filters.", "delete": "Delete", "deleteAsk": "Delete this workout? This cannot be undone.", "deleted": "Workout deleted.", "select": "Select", "deleteSelected": "Delete selected", "selectedAsk": "Delete the {n} selected workouts?", "historyIntro": "A timeline of the work you put in.", "rmIntro": "Save 1RMs and compare lifts within each family.", "oneRM": "Your one-rep max", "rmWeight": "1RM weight", "saveRM": "Save 1RM", "savedRM": "1RM saved.", "deleteRM": "Delete this movement's 1RM", "deleteRMAsk": "Delete the 1RM for this movement?", "notSet": "Not saved yet", "updated": "Updated", "rounding": "Plate rounding increment", "exact": "One decimal place", "roundHint": "Rounds in the displayed unit. Your original saved 1RM stays unchanged.", "percentTable": "1RM percentage table", "percentage": "Percentage", "converter": "lb ↔ kg converter", "convertValue": "Weight to convert", "switchUnits": "Switch units", "dataIntro": "Your data stays in this browser. Download a backup to keep it safe.", "exportTitle": "Export to Excel", "exportDesc": "Download completed workouts as a UTF-8 BOM CSV. Planned workouts are included in the full JSON backup.", "exportCSV": "Download CSV", "importTitle": "Restore edited CSV", "importDesc": "Importing replaces all completed workouts with the rows in your file. Removed rows disappear from history. Your planned workouts and 1RMs are preserved.", "csvNote": "The Details column contains JSON to preserve workout content and interval settings. Edit its content value, or replace the entire cell with plain text. Replacing it with plain text will discard the interval settings.", "importCSV": "Choose CSV file", "importAsk": "Validated {n} workouts. Replace your {old} current workouts with this file?", "imported": "Restored {n} workouts.", "invalidCSV": "Invalid CSV format or values. No changes were saved.", "line": "Row", "backupTitle": "Complete backup", "backupDesc": "Save completed workouts, planned workouts and all movement 1RMs in one JSON file. Use it to move between devices or language versions.", "exportJSON": "Download full backup", "importJSON": "Restore full backup", "restoreAsk": "Replace all current data with {n} completed workouts, {p} planned workouts and {r} 1RMs?", "invalidJSON": "This is not a valid tracker backup.", "resetTitle": "Reset Account Data", "resetDesc": "Clear all completed workouts, planned workouts and 1RMs for your account from both the cloud and this device.", "resetAll": "Clear All Records", "resetAllAsk": "Permanently reset all completed workouts, planned workouts, and 1RMs for your account? Download a backup file first if needed.", "resetDone": "All account workout data has been cleared.", "storageError": "Browser storage is unavailable. Check free space and privacy settings. Download a backup of your data first.", "corrupt": "Saved data could not be read. Existing data has not been overwritten. Restore a backup or reset in Manage data.", "downloaded": "Download started.", "offline": "Log workouts without the internet. Video guides require an internet connection.", "install": "Add to your home screen", "installHelp": "iPhone: Safari Share → Add to Home Screen. Android: Chrome menu → Add to Home screen. Use an HTTPS address when hosted online.", "installButton": "Install app", "language": "Change language", "localeHelp": "Language versions on the same web origin share data. When opened as local files, browser storage may be separate; use a full backup to transfer data.", "count": "{n} workouts", "rmCount": "{n} 1RMs", "cancel": "Cancel", "confirm": "Confirm", "confirmation": "Please confirm", "close": "Close", "details": "Workout details", "noContent": "No workout details", "minutes": "min", "seconds": "sec", "timerError": "Check the timer duration and rounds.", "saveFail": "Could not save. Check your browser storage settings and try again.", "previewLimit": "Latest 5 results", "maxFile": "Choose a file no larger than 10 MB.", "repsWord": "reps", "setsWord": "sets", "roundWord": "rounds", "capWord": "CAP", "formIntro": "Enter today's session. Required fields are marked with *.", "liveTarget": "Target weight", "percentHint": "50–100% in 5% steps.", "backupReminder": "Clearing browser data also clears your log. Back up regularly.", "recordUnitHint": "Switching units also converts the entered weight.", "timerChanged": "The timer keeps its starting settings. Reset it to apply your changes.", "todo": "Calendar", "todoIntro": "Tap a date to see what to do and what you completed. WOD is blue, Strength is red and missed workouts are gray.", "viewPlans": "Open calendar", "todaySummary": "Today {today} · Overdue {overdue} · Total {n}", "logMode": "Log results", "planMode": "Plan a workout", "planEntry": "Plan your training", "planHint": "Save a date and workout details without results. Weight, reps and sets are your targets.", "planSave": "Save planned workout", "planUpdate": "Save plan changes", "planSaved": "Planned workout saved.", "planUpdated": "Workout plan updated.", "plannedDate": "Scheduled date", "plannedCap": "Planned time cap (minutes, optional)", "targetWeight": "Target weight (optional)", "allPending": "All pending", "todayPlans": "Today", "overduePlans": "Overdue", "upcomingPlans": "Upcoming", "newPlan": "New workout plan", "planCount": "{n} pending", "noPlans": "No workouts planned yet", "noPlansHint": "Choose New workout plan to schedule a workout for today or a future date.", "noPlanResults": "No planned workouts match your filters.", "editPlan": "Edit plan", "performPlan": "Do workout / enter results", "completePlan": "Complete & save to history", "planCompleted": "Workout completed. Great work! 💪", "planEditing": "Editing plan · {title} · {date}", "planPerforming": "Working from plan · {title} · Scheduled {date}. Save your actual workout date and results.", "cancelPlan": "Back to calendar", "deletePlanAsk": "Delete this planned workout? Completed workout logs will be kept.", "planMissing": "This plan was already completed or changed. Open it again from the calendar.", "replaceDraft": "Close the current form and open the selected workout? Unsaved entries will be lost.", "importAllDone": "Restored {n} completed workouts and {p} planned workouts.", "addLift": "+ Add lift", "addSet": "+ Add set", "allOfFamily": "all", "awesome": "Awesome!", "baseIs": "% based on {lift} 1RM {w}", "baseMissing": "% based on {lift} 1RM, not set yet, so only % is shown. Add it in the 1RM & Compare tab.", "baseMissingShort": "{lift} 1RM not set · % only", "baseShort": "Based on {lift} 1RM", "beatIt": "Try to beat it today!", "bestCol": "Best", "bestRecord": "Best", "bestShort": "Best", "calendarView": "Calendar", "listView": "List", "compareEmpty": "No records or 1RMs in this family yet.", "compareIntro": "Compare bests and 1RMs within a lift family, split into main lift, variations, skills and pulls/strength. E.g. Snatch Balance is a snatch skill; Pause Snatch is a snatch variation.", "compareTitle": "Compare lifts", "customLiftAdd": "Add lift", "customLiftAdded": "Lift added.", "customLiftExists": "A lift with this name already exists.", "customLiftHint": "e.g. Snatch High Pull + Snatch", "customLiftIntro": "Add any missing lift with its family and class to use it in logs, plans and comparisons.", "customLiftName": "Lift name", "customLiftTitle": "Add your own lift", "dayDone": "Completed", "dayEmpty": "No workouts on this day", "dayMaxTag": "Max for day", "dayMissed": "Missed (not done)", "dayPlanned": "To do", "doneWord": "Done", "firstRx": "First Rx'd", "ignore": "Dismiss", "inUse": "In use", "lastDone": "last", "legendMissed": "Missed", "legendStrDone": "Strength done", "legendStrPlan": "Strength planned", "legendWodDone": "WOD done", "legendWodPlan": "WOD planned", "liftClass": "Class", "liftFamily": "Lift family", "liftGroup": "Strength class", "logThisDay": "Log results for this day", "planThisDay": "Plan a workout for this day", "mark_done": "done", "mark_missed": "missed", "mark_planned": "planned", "maxMessage": "You can save today’s heaviest single as your 1RM.", "maxTitle": "Today’s max", "newRM": "New 1RM", "newRecord": "New record", "noBaseShort": "1RM not set", "noCustomLifts": "No custom lifts yet.", "ofDayMaxTag": "{p} of day max", "prMessage": "Congratulations! You beat your previous best. Consistency pays off.", "prTitle": "New personal record! 🎉", "prevBest": "Previous best", "prevRM": "Previous 1RM", "prevRecords": "Previous results · {title} ({n})", "programAdded": "Added {n} program workouts to the calendar.", "programApply": "Add to calendar", "programApplyAsk": "Add {n} planned workouts to the calendar starting {start}? Existing logs and plans are kept.", "programBaseRule": "Percentages for snatch, clean and jerk variations always use the parent lift (Snatch / Clean / Clean & Jerk) 1RM. Squat, press and deadlift lifts use their own 1RM. Without a 1RM only the % is shown.", "programBuiltin": "5-week weightlifting peak program (weightlifting programm.txt)", "programDelete": "Delete remaining", "programDeleteAsk": "Delete the {n} remaining planned workouts of this program? Completed logs are kept.", "programDupDay": "Day {day} appears more than once.", "programDupWarn": "A program with this name already starts on this date. It may be added twice.", "programImport": "Import program", "programImported": "Imported programs", "programIntro": "Turns a program text into dated Strength sessions and accessory WODs on the calendar. Use the preview to check how every line is interpreted before adding.", "programInvalid": "The program could not be read. Please check the format.", "programLine": "Program", "programName": "Program name", "programNewLifts": "Lifts not in the list will be added as new lifts: {list}", "programNoDays": "No day headers such as \"Monday - Day 1\" were found.", "programNone": "No imported programs.", "programNotesCount": "Includes {n} coach notes (see plan notes)", "programPaste": "Paste text / txt file", "programPreview": "Preview", "programRemaining": "{n} remaining · {start} – {end}", "programSource": "Program", "programStart": "Day 1 start date", "programSummary": "{days} days · {s} strength sessions ({lifts} lifts) · {w} accessory WODs · {start} – {end}", "programText": "Program text", "programTextHint": "Monday - Day 1\nSnatch - 75% x 1 x 3\nFront squat - 75% x 3 x 5\n4 sets; no rest:\n10 pull-ups", "programWeekdayWarn": "Day {day} is a {wd} in the text but the chosen start date falls on a different weekday.", "qualityHint": "e.g. Done, 1:25 / 1:27 / 1:26", "qualityResult": "Result (optional)", "removeLift": "Remove lift", "removeSet": "Remove set", "repsCol": "Reps", "setsCol": "Sets", "weightCol": "Weight", "targetWeightCol": "Target", "restDay": "Rest day", "rmBaseInfo": "Program percentages for this lift use the {lift} 1RM, not this lift.", "rmUpdated": "1RM updated.", "sameTitle": "Same title", "similarTitle": "Similar title", "similarContent": "Similar workout", "similarFound": "A same or similar WOD was logged before", "selectPrev": "Select", "saveAsRMHint": "No 1RM saved for this lift yet.", "strengthFormHint": "A session can contain several lifts. Enter a % to calculate the weight from your 1RM.", "timesDone": "{n} logs", "todayBtn": "Today", "todayWorkouts": "Today’s workouts", "unlink": "Unselect", "updateRM": "Update 1RM", "vsBase": "vs {lift} 1RM", "liftRequired": "Add at least one strength lift.", "weightRequired": "Enter the weight you lifted.", "invalidPct": "Enter a percentage between 0.1 and 200.", "programLoadFile": "Load txt file", "programFileHint": "Choose a program txt file (e.g. weightlifting programm.txt) to fill the box below, then choose Preview.", "programFileLoaded": "Loaded {name}. Choose Preview to check it.", "programFileTooBig": "The file is too large. Choose a txt file of 200 KB or less.", "programFileError": "Could not read the file. Make sure it is a UTF-8 txt file.", "shared": "Share sheet opened. Choose \"Save to Files\" to keep it.", "auth": "Sign In / Register", "authIntro": "Sign in to access coach WODs and securely sync your training logs.", "signIn": "Sign In", "signUp": "Sign Up", "signOut": "Sign Out", "name": "Name / Nickname", "nameHint": "Your box name", "email": "Email", "password": "Password", "passwordConfirm": "Confirm Password", "passwordMin": "Password must be at least 6 characters.", "passwordMismatch": "Passwords do not match.", "emailInvalid": "Please enter a valid email address.", "authNote": "🔒 All training records are encrypted and accessible only by you.", "alreadyHaveAccount": "Already have an account? Sign in", "needAccount": "Need an account? Sign up", "pendingApproval": "Pending Coach Approval", "pendingApprovalMsg": "Your account has been created. Once the coach approves your registration, daily WODs and all tracking features will unlock.", "checkStatus": "Check Status", "coachAdmin": "Coach Hub", "coachShort": "Coach", "memberRole": "Member", "coachRole": "Coach", "approved": "Approved", "pending": "Pending", "approve": "Approve", "revoke": "Revoke", "grantCoach": "Make Coach", "revokeCoach": "Demote to Member", "coachPublish": "Publish Today's WOD", "coachPrograms": "Published Programs", "coachMembers": "Member Approvals", "publishSuccess": "Today's WOD published successfully!", "deleteProgramConfirm": "Delete this published program?", "coachWod": "Coach WOD", "coachStrength": "Coach STRENGTH", "todayCoachWod": "Today's Coach WOD", "loadCoachWod": "Refresh Coach WOD", "useCoachWod": "Log this WOD Today", "useCoachStrength": "Log this STRENGTH Today", "sharedStrength": "Shared STRENGTH", "hideBoxWod": "Hide Box Workouts", "showBoxWod": "Show Box Workouts", "boxWodHiddenNotify": "Box workouts are now hidden from the calendar.", "boxWodShownNotify": "Box workouts are now visible on the calendar.", "boxWodHiddenNotice": "Box workouts (WOD & STRENGTH) are currently hidden.", "coachCategory": "Category", "categoryWod": "WOD", "categoryStrength": "STRENGTH", "syncOk": "Cloud Synced", "syncing": "Syncing to Cloud...", "syncOffline": "Offline (Saved locally)", "syncNow": "Sync to Cloud Now", "restoreCloud": "Restore from Cloud", "confirmCloudRestore": "Restore your workout data from the cloud?", "cloudRestoreOk": "Successfully restored workout data from cloud.", "cloudSyncOk": "Safely synced to cloud.", "loginSuccess": "Signed in successfully.", "signUpSuccess": "Registration successful! Awaiting coach approval.", "loginRequired": "Sign in required.", "noMembers": "No members registered yet.", "noCoachPrograms": "No published programs yet.", "filterAll": "All", "filterPending": "Pending", "filterApproved": "Approved", "coachProgramDesc": "Publish workout programs for all box members to view.", "cloudSyncCardTitle": "Cloud Auto-Sync", "cloudSyncCardDesc": "Access your latest workout logs seamlessly across mobile and desktop devices.", "gender": "Gender", "genderSelect": "Select gender", "male": "Male 👨", "female": "Female 👩", "genderMaleShort": "M", "genderFemaleShort": "F", "loginToContinue": "Please sign in to continue.", "isPublic": "Public to Members", "coachProgramPublicLabel": "Public to all members (ON)", "publicWod": "Public", "privateWod": "Private", "togglePublic": "Make Public", "togglePrivate": "Make Private", "planShareLabel": "Share this workout with box members", "planShareHint": "When shared, other members can view and log this workout.", "sharedPrograms": "Member Shared Workouts", "sharedBy": "Shared by {name}", "useSharedProgram": "Log This Workout", "deleteCoachAuth": "Delete as Coach", "deleteSharedConfirm": "Delete this shared workout with Coach authority?", "logPublicLeaderboardLabel": "Share my score on the box leaderboard", "logPublicLeaderboardHint": "If unchecked, your record remains private to you and will not appear on rankings.", "privateRecord": "Private Record", "publicRecord": "Public Record", "navTodoNum": "01", "navAddNum": "02", "navHistoryNum": "03", "navStrengthNum": "04", "navDataNum": "05", "navCoachNum": "06", "edit": "Edit", "editLog": "Edit Workout Record", "editLogCoachDirect": "Updated immediately with Coach authority.", "editLogMemberNotice": "For fair scoring, member record edits take effect upon coach approval.", "requestEdit": "Request Coach Approval", "editReason": "Reason for Edit (Optional)", "editReasonHint": "e.g. Typo in finish time, round correction", "editPending": "Pending Edit Approval", "editPendingBadge": "⏳ Edit Pending", "editPendingHint": "Your changes will take effect once the coach approves.", "coachEditRequests": "Record Edit Requests", "noEditRequests": "No pending edit requests.", "approveEdit": "Approve Edit", "rejectEdit": "Reject", "editApproved": "Record edit approved.", "editRejected": "Record edit rejected.", "editRequested": "Edit approval requested to coach.", "leaderboard": "Box Leaderboard", "viewLeaderboard": "🏆 Box Leaderboard", "rxdRankings": "🥇 Rx’d Rankings", "scaledRankings": "🥈 Scaled Rankings", "allGenders": "All", "maleOnly": "Male 👨", "femaleOnly": "Female 👩", "myRank": "My Rank: #{rank} ({grade})", "rank": "Rank", "athlete": "Athlete", "scoreCol": "Score", "noLeaderboardData": "No public records found for this workout yet.", "reject": "Reject", "rejectConfirm": "Reject and delete registration for {name}?", "deleteMember": "Delete Member", "deleteMemberConfirm": "Permanently delete member {name}? (They will be permanently blocked from accessing the site)", "memberDeleted": "Member deleted successfully.", "programShareLabel": "Share this program on the Box Calendar for all members", "programShareHint": "When checked, days from this program will be published to the Box Calendar for all members. When unchecked, it only saves to your personal calendar.", "programSharedWithBox": "{n} days from this program have been published to the Box Calendar!", "allRMsTitle": "All My 1RMs (PR Dashboard)", "allRMsIntro": "View all your personal records (1RM) at a glance and load them into the calculator.", "quickAddRM": "+ Add 1RM", "noAllRMs": "No 1RMs recorded yet. Select a lift below, enter your 1RM, and click [Save 1RM]!", "loadIntoCalc": "Load Calculator"}, PROGRAM_TEXT="";
 const KO=LANG==='ko', LOCALE=KO?'ko-KR':'en-US';
 const $=id=>document.getElementById(id);
 const t=(key,values={})=>Object.entries(values).reduce((s,[k,v])=>s.replaceAll('{'+k+'}',String(v)),T[key]??key);
@@ -733,6 +754,46 @@ let cachedMembers = [];
 let cachedCoachPrograms = [];
 let currentMemberFilter = 'all';
 
+let hideBoxWod = localStorage.getItem('crossfit_wod_hide_box_wod') === 'true';
+
+function getProgramCategory(p) {
+  if (!p) return 'WOD';
+  if (p.category === 'STRENGTH') return 'STRENGTH';
+  if (p.category === 'WOD') return 'WOD';
+  const title = (p.title || '').toUpperCase();
+  if (title.includes('· STRENGTH') || title.includes('[STRENGTH]') || title.endsWith('STRENGTH')) return 'STRENGTH';
+  if (title.includes('· WOD') || title.includes('[WOD]')) return 'WOD';
+  return 'WOD';
+}
+
+function cleanProgramTitle(title) {
+  if (!title) return '';
+  return title.replace(/\s*·\s*STRENGTH/gi, '')
+              .replace(/\s*·\s*WOD/gi, '')
+              .replace(/\[STRENGTH\]/gi, '')
+              .replace(/\[WOD\]/gi, '')
+              .trim();
+}
+
+function updateBoxWodBtn() {
+  const btn = $('toggleBoxWodBtn');
+  if (!btn) return;
+  btn.classList.toggle('is-hidden', hideBoxWod);
+  btn.setAttribute('aria-pressed', String(hideBoxWod));
+  const label = hideBoxWod ? (t('showBoxWod') || '박스 와드 보기') : (t('hideBoxWod') || '박스 와드 숨김');
+  btn.innerHTML = `<span>${hideBoxWod ? '👁️' : '🙈'} <span>${esc(label)}</span></span>`;
+  btn.title = label;
+}
+
+function toggleBoxWodVisibility() {
+  hideBoxWod = !hideBoxWod;
+  localStorage.setItem('crossfit_wod_hide_box_wod', String(hideBoxWod));
+  updateBoxWodBtn();
+  notify(hideBoxWod ? (t('boxWodHiddenNotify') || '박스 와드/스트렝스를 캘린더에서 숨겼습니다.') : (t('boxWodShownNotify') || '박스 와드/스트렝스를 캘린더에 표시합니다.'));
+  renderCalendar();
+  renderCoachWodBanner();
+}
+
 const Supabase = {
   url: SUPABASE_URL,
   key: SUPABASE_KEY,
@@ -798,6 +859,12 @@ const Supabase = {
     document.querySelectorAll('.coach-only').forEach(el => el.hidden = !isCoach);
     const bottomNav = document.querySelector('.bottom-nav');
     if (bottomNav) bottomNav.classList.toggle('has-coach', isCoach);
+
+    if (!isCoach) {
+      if (location.hash === '#coach' || ($('page-coach') && !$('page-coach').hidden)) {
+        if (typeof showPage === 'function') showPage('todo');
+      }
+    }
 
     if ($('userBadgeSide')) $('userBadgeSide').hidden = !isLoggedIn;
     if ($('authPromptSide')) $('authPromptSide').hidden = isLoggedIn;
@@ -895,35 +962,66 @@ const Supabase = {
     return res;
   },
 
-  async publishProgram(title, startDate, unit, programText, isPublic = true) {
-    return await this.req('/rest/v1/coach_programs', {
-      method: 'POST',
-      headers: { 'Prefer': 'return=representation' },
-      body: JSON.stringify({
-        title,
-        start_date: startDate,
-        unit: unit || 'kg',
-        program_text: programText,
-        is_public: isPublic,
-        created_by: this.user?.id
-      })
-    });
+  async publishProgram(title, startDate, unit, programText, isPublic = true, category = 'WOD') {
+    const payload = {
+      title,
+      start_date: startDate,
+      unit: unit || 'kg',
+      program_text: programText,
+      category: category || 'WOD',
+      is_public: isPublic,
+      created_by: this.user?.id
+    };
+    try {
+      return await this.req('/rest/v1/coach_programs', {
+        method: 'POST',
+        headers: { 'Prefer': 'return=representation' },
+        body: JSON.stringify(payload)
+      });
+    } catch (e) {
+      if (e.message && e.message.includes('category')) {
+        delete payload.category;
+        return await this.req('/rest/v1/coach_programs', {
+          method: 'POST',
+          headers: { 'Prefer': 'return=representation' },
+          body: JSON.stringify(payload)
+        });
+      }
+      throw e;
+    }
   },
 
   async batchPublishCoachPrograms(items) {
     if (!items || !items.length) return [];
-    return await this.req('/rest/v1/coach_programs', {
-      method: 'POST',
-      headers: { 'Prefer': 'return=representation' },
-      body: JSON.stringify(items.map(p => ({
-        title: p.title,
-        start_date: p.start_date,
-        unit: p.unit || 'kg',
-        program_text: p.program_text,
-        is_public: p.is_public !== false,
-        created_by: this.user?.id
-      })))
-    });
+    const payload = items.map(p => ({
+      title: p.title,
+      start_date: p.start_date,
+      unit: p.unit || 'kg',
+      program_text: p.program_text,
+      category: p.category || (p.title && p.title.includes('STRENGTH') ? 'STRENGTH' : 'WOD'),
+      is_public: p.is_public !== false,
+      created_by: this.user?.id
+    }));
+    try {
+      return await this.req('/rest/v1/coach_programs', {
+        method: 'POST',
+        headers: { 'Prefer': 'return=representation' },
+        body: JSON.stringify(payload)
+      });
+    } catch (e) {
+      if (e.message && e.message.includes('category')) {
+        return await this.req('/rest/v1/coach_programs', {
+          method: 'POST',
+          headers: { 'Prefer': 'return=representation' },
+          body: JSON.stringify(payload.map(p => {
+            const copy = { ...p };
+            delete copy.category;
+            return copy;
+          }))
+        });
+      }
+      throw e;
+    }
   },
 
   async toggleCoachProgramPublic(id, isPublic) {
@@ -943,39 +1041,70 @@ const Supabase = {
     }
   },
 
-  async publishSharedProgram(title, startDate, unit, programText) {
-    return await this.req('/rest/v1/shared_programs', {
-      method: 'POST',
-      headers: { 'Prefer': 'return=representation' },
-      body: JSON.stringify({
-        title,
-        start_date: startDate,
-        unit: unit || 'kg',
-        program_text: programText,
-        user_id: this.user?.id,
-        user_name: this.profile?.name || this.user?.email.split('@')[0],
-        gender: this.profile?.gender || 'M',
-        is_public: true
-      })
-    });
+  async publishSharedProgram(title, startDate, unit, programText, category = 'WOD') {
+    const payload = {
+      title,
+      start_date: startDate,
+      unit: unit || 'kg',
+      program_text: programText,
+      category: category || 'WOD',
+      user_id: this.user?.id,
+      user_name: this.profile?.name || this.user?.email.split('@')[0],
+      gender: this.profile?.gender || 'M',
+      is_public: true
+    };
+    try {
+      return await this.req('/rest/v1/shared_programs', {
+        method: 'POST',
+        headers: { 'Prefer': 'return=representation' },
+        body: JSON.stringify(payload)
+      });
+    } catch (e) {
+      if (e.message && e.message.includes('category')) {
+        delete payload.category;
+        return await this.req('/rest/v1/shared_programs', {
+          method: 'POST',
+          headers: { 'Prefer': 'return=representation' },
+          body: JSON.stringify(payload)
+        });
+      }
+      throw e;
+    }
   },
 
   async batchPublishSharedPrograms(items) {
     if (!items || !items.length) return [];
-    return await this.req('/rest/v1/shared_programs', {
-      method: 'POST',
-      headers: { 'Prefer': 'return=representation' },
-      body: JSON.stringify(items.map(p => ({
-        title: p.title,
-        start_date: p.start_date,
-        unit: p.unit || 'kg',
-        program_text: p.program_text,
-        user_id: this.user?.id,
-        user_name: this.profile?.name || this.user?.email.split('@')[0],
-        gender: this.profile?.gender || 'M',
-        is_public: p.is_public !== false
-      })))
-    });
+    const payload = items.map(p => ({
+      title: p.title,
+      start_date: p.start_date,
+      unit: p.unit || 'kg',
+      program_text: p.program_text,
+      category: p.category || (p.title && p.title.includes('STRENGTH') ? 'STRENGTH' : 'WOD'),
+      user_id: this.user?.id,
+      user_name: this.profile?.name || this.user?.email.split('@')[0],
+      gender: this.profile?.gender || 'M',
+      is_public: p.is_public !== false
+    }));
+    try {
+      return await this.req('/rest/v1/shared_programs', {
+        method: 'POST',
+        headers: { 'Prefer': 'return=representation' },
+        body: JSON.stringify(payload)
+      });
+    } catch (e) {
+      if (e.message && e.message.includes('category')) {
+        return await this.req('/rest/v1/shared_programs', {
+          method: 'POST',
+          headers: { 'Prefer': 'return=representation' },
+          body: JSON.stringify(payload.map(p => {
+            const copy = { ...p };
+            delete copy.category;
+            return copy;
+          }))
+        });
+      }
+      throw e;
+    }
   },
 
   async deleteSharedProgram(id) {
@@ -1112,6 +1241,8 @@ const Supabase = {
   },
 
   async signOut() {
+    clearTimeout(this.syncTimeout);
+    this.syncTimeout = null;
     try {
       if (this.token) {
         await this.req('/auth/v1/logout', { method: 'POST' });
@@ -1125,6 +1256,13 @@ const Supabase = {
     state = { version: 2, logs: [], profiles: {}, plans: [], customLifts: {} };
     coachPrograms = [];
     sharedPrograms = [];
+    cachedMembers = [];
+    cachedCoachPrograms = [];
+    if ($('membersList')) $('membersList').innerHTML = '';
+    if ($('coachProgramsList')) $('coachProgramsList').innerHTML = '';
+    if ($('coachEditRequestsList')) $('coachEditRequestsList').innerHTML = '';
+    if (typeof resetEntry === 'function') resetEntry('log');
+    if (typeof showPage === 'function') showPage('todo');
     refresh();
     this.updateUI();
   },
@@ -1599,14 +1737,41 @@ function renderPlans(){
 }
 for(const id of ['todoSearch','todoFilter','todoCategory'])$(id).addEventListener(id==='todoSearch'?'input':'change',renderPlans);
 async function planAction(e){
+  if(e.target.closest('#unhideBoxWodBtn')){toggleBoxWodVisibility();return;}
   const b=e.target.closest('button');if(!b)return;
   if(b.dataset.performPlan)await openPlan(b.dataset.performPlan,'log');
   if(b.dataset.editPlan)await openPlan(b.dataset.editPlan,'plan');
   if(b.dataset.deletePlan&&await confirmAction(t('deletePlanAsk'))){if(commit({...state,plans:state.plans.filter(p=>p.id!==b.dataset.deletePlan)})){if(activePlan?.id===b.dataset.deletePlan)resetEntry('log');notify(t('deleted'));}}
   if(b.dataset.dayPlan&&await canReplaceEntry()){resetEntry('plan');$('date').value=b.dataset.dayPlan;showPage('add');}
   if(b.dataset.dayLog&&await canReplaceEntry()){resetEntry('log');$('date').value=b.dataset.dayLog;showPage('add');}
-  if(b.dataset.coachLog&&await canReplaceEntry()){const cp=coachPrograms.find(p=>p.id===b.dataset.coachLog);if(cp){resetEntry('log');$('date').value=cp.start_date;$('wodTitle').value=cp.title;$('content').value=cp.program_text;$('weightUnit').value=cp.unit||'kg';showPage('add');notify(t('useCoachWod'));}}
-  if(b.dataset.sharedLog&&await canReplaceEntry()){const sp=sharedPrograms.find(p=>p.id===b.dataset.sharedLog);if(sp){resetEntry('log');$('date').value=sp.start_date;$('wodTitle').value=sp.title;$('content').value=sp.program_text;$('weightUnit').value=sp.unit||'kg';showPage('add');notify(t('useCoachWod'));}}
+  if(b.dataset.coachLog&&await canReplaceEntry()){
+    const cp=coachPrograms.find(p=>p.id===b.dataset.coachLog);
+    if(cp){
+      const cat=getProgramCategory(cp);
+      resetEntry('log');
+      setCategory(cat);
+      $('date').value=cp.start_date;
+      $('wodTitle').value=cleanProgramTitle(cp.title);
+      $('content').value=cp.program_text;
+      $('weightUnit').value=cp.unit||'kg';
+      showPage('add');
+      notify(cat==='STRENGTH'?(t('useCoachStrength')||'코치 스트렝스를 불러왔습니다.'):t('useCoachWod'));
+    }
+  }
+  if(b.dataset.sharedLog&&await canReplaceEntry()){
+    const sp=sharedPrograms.find(p=>p.id===b.dataset.sharedLog);
+    if(sp){
+      const cat=getProgramCategory(sp);
+      resetEntry('log');
+      setCategory(cat);
+      $('date').value=sp.start_date;
+      $('wodTitle').value=cleanProgramTitle(sp.title);
+      $('content').value=sp.program_text;
+      $('weightUnit').value=sp.unit||'kg';
+      showPage('add');
+      notify(cat==='STRENGTH'?(t('useCoachStrength')||'공유 스트렝스를 불러왔습니다.'):t('useCoachWod'));
+    }
+  }
   if(b.dataset.delCoachProg&&await confirmAction(t('deleteProgramConfirm'))){await Supabase.deleteCoachProgram(b.dataset.delCoachProg);notify(t('deleted'));await loadCoachWodForSelectedDate();}
   if(b.dataset.delSharedProg&&await confirmAction(t('deleteProgramConfirm'))){await Supabase.deleteSharedProgram(b.dataset.delSharedProg);notify(t('deleted'));await loadCoachWodForSelectedDate();}
 }
@@ -1615,7 +1780,26 @@ $('todoList').addEventListener('click',planAction);$('dayPanel').addEventListene
 /* ---------------- Calendar ---------------- */
 function setTodoView(view){todoView=view;$('calendarView').hidden=view!=='calendar';$('listView').hidden=view!=='list';$('viewCalendar').classList.toggle('active',view==='calendar');$('viewList').classList.toggle('active',view==='list');$('viewCalendar').setAttribute('aria-pressed',String(view==='calendar'));$('viewList').setAttribute('aria-pressed',String(view==='list'));}
 $('viewCalendar').onclick=()=>{setTodoView('calendar');renderCalendar();};$('viewList').onclick=()=>{setTodoView('list');renderPlans();};
-function dayMarks(d,e,today){const marks=[],sessions=new Set();if(coachPrograms.some(p=>p.start_date===d)||sharedPrograms.some(s=>s.start_date===d))marks.push({cat:'wod',st:'coach'});for(const l of e.logs){if(l.category==='WOD')marks.push({cat:'wod',st:'done'});else{const k=l.sessionId||l.plannedWorkoutId||'adhoc';if(!sessions.has(k)){sessions.add(k);marks.push({cat:'str',st:'done'});}}}for(const p of e.plans)marks.push({cat:p.category==='WOD'?'wod':'str',st:d<today?'missed':'planned'});return marks.sort((a,b)=>(a.cat==='str'?0:1)-(b.cat==='str'?0:1));}
+function dayMarks(d,e,today){
+  const marks=[],sessions=new Set();
+  if(!hideBoxWod){
+    const cps=coachPrograms.filter(p=>p.start_date===d);
+    const sps=sharedPrograms.filter(s=>s.start_date===d);
+    const hasCoachStr=cps.some(p=>getProgramCategory(p)==='STRENGTH')||sps.some(s=>getProgramCategory(s)==='STRENGTH');
+    const hasCoachWod=cps.some(p=>getProgramCategory(p)==='WOD')||sps.some(s=>getProgramCategory(s)==='WOD');
+    if(hasCoachStr)marks.push({cat:'str',st:'coach'});
+    if(hasCoachWod)marks.push({cat:'wod',st:'coach'});
+  }
+  for(const l of e.logs){
+    if(l.category==='WOD')marks.push({cat:'wod',st:'done'});
+    else{
+      const k=l.sessionId||l.plannedWorkoutId||'adhoc';
+      if(!sessions.has(k)){sessions.add(k);marks.push({cat:'str',st:'done'});}
+    }
+  }
+  for(const p of e.plans)marks.push({cat:p.category==='WOD'?'wod':'str',st:d<today?'missed':'planned'});
+  return marks.sort((a,b)=>(a.cat==='str'?0:1)-(b.cat==='str'?0:1));
+}
 function marksLabel(marks){if(!marks.length)return t('dayEmpty');const n={};for(const m of marks){const k=`${m.cat==='wod'?'WOD':'Strength'} ${t('mark_'+m.st)}`;n[k]=(n[k]||0)+1;}return Object.entries(n).map(([k,v])=>`${k} ${v}`).join(', ');}
 function renderCalendar(){
  const [y,m]=calCursor.split('-').map(Number),today=localDate(),first=new Date(y,m-1,1),offset=(first.getDay()+6)%7,days=new Date(y,m,0).getDate(),total=Math.ceil((offset+days)/7)*7;
@@ -1627,22 +1811,37 @@ function renderCalendar(){
   html+=`<button type="button" class="cal-day${dt.getMonth()!==m-1?' out':''}${d===today?' today':''}${d===calSelected?' selected':''}" data-date="${d}" aria-pressed="${d===calSelected}" aria-label="${esc(displayDate(d)+': '+marksLabel(marks))}"><span class="cal-num">${dt.getDate()}</span><span class="cal-marks">${shown.slice(0,3).map(mk=>`<i class="mark ${mk.cat} ${mk.st}">${mk.st==='coach'?'👑':mk.st==='done'?'✓':''}<b>${mk.cat==='wod'?'WOD':'STR'}</b></i>`).join('')}${shown.length>3?`<span class="mark-more">+${shown.length-3}</span>`:''}</span></button>`;}
  $('calGrid').innerHTML=html;renderDayPanel();
 }
-function renderDayPanel(){const d=calSelected,today=localDate(),plans=state.plans.filter(p=>p.date===d).sort((a,b)=>(a.category==='STRENGTH'?0:1)-(b.category==='STRENGTH'?0:1)),logs=ordered().filter(r=>r.date===d);
- let html=`<h2>${esc(new Date(d+'T12:00:00').toLocaleDateString(LOCALE,{weekday:'long',month:'long',day:'numeric'}))}${d===today?` <span class="pill">${esc(t('todayPlans'))}</span>`:''}</h2>`;
- if(!plans.length&&!logs.length)html+=`<p class="subtle spaced">${esc(t('dayEmpty'))}</p>`;
- if(plans.length)html+=`<div class="day-section"><h3>${esc(t(d<today?'dayMissed':'dayPlanned'))}</h3>${plans.map(planCardHTML).join('')}</div>`;
- if(logs.length)html+=`<div class="day-section"><h3>${esc(t('dayDone'))}</h3>${logs.map(logCardHTML).join('')}</div>`;
- html+=`<div class="day-actions"><button class="small" data-day-plan="${esc(d)}">${esc(t('planThisDay'))}</button>${d<=today?`<button class="small" data-day-log="${esc(d)}">${esc(t('logThisDay'))}</button>`:''}</div>`;
- const cps=coachPrograms.filter(p=>p.start_date===d);
- for(const cp of cps){
-  html+=`<div class="day-card wod" style="border-left-color:#f59e0b;background:#fffdf7"><div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:6px"><div style="display:flex;align-items:center;gap:6px"><span class="role-pill coach">${esc(t('coachWod'))}</span><h4 style="margin:0">${esc(cp.title)}</h4></div>${Supabase.isCoach?`<button type="button" class="danger small" data-del-coach-prog="${esc(cp.id)}">${esc(t('delete'))}</button>`:''}</div><p class="record-content" style="white-space:pre-wrap;font-size:12px;margin:6px 0">${esc(cp.program_text)}</p><div class="day-actions"><button type="button" class="primary small" data-coach-log="${esc(cp.id)}">${esc(t('useCoachWod'))}</button></div></div>`;
- }
- const sps=sharedPrograms.filter(p=>p.start_date===d);
- for(const sp of sps){
-  const canDel=Supabase.isCoach||(Supabase.user&&sp.user_id===Supabase.user.id);
-  html+=`<div class="day-card wod" style="border-left-color:#3b82f6;background:#f8fafc"><div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:6px"><div style="display:flex;align-items:center;gap:6px"><span class="role-pill member">${esc(sp.user_name||'Member')}</span><h4 style="margin:0">${esc(sp.title)}</h4></div>${canDel?`<button type="button" class="danger small" data-del-shared-prog="${esc(sp.id)}">${esc(t('delete'))}</button>`:''}</div><p class="record-content" style="white-space:pre-wrap;font-size:12px;margin:6px 0">${esc(sp.program_text)}</p><div class="day-actions"><button type="button" class="secondary small" data-shared-log="${esc(sp.id)}">${esc(t('useCoachWod'))}</button></div></div>`;
- }
- $('dayPanel').innerHTML=html;}
+function renderDayPanel(){
+  const d=calSelected,today=localDate(),plans=state.plans.filter(p=>p.date===d).sort((a,b)=>(a.category==='STRENGTH'?0:1)-(b.category==='STRENGTH'?0:1)),logs=ordered().filter(r=>r.date===d);
+  let html=`<h2>${esc(new Date(d+'T12:00:00').toLocaleDateString(LOCALE,{weekday:'long',month:'long',day:'numeric'}))}${d===today?` <span class="pill">${esc(t('todayPlans'))}</span>`:''}</h2>`;
+  if(!plans.length&&!logs.length)html+=`<p class="subtle spaced">${esc(t('dayEmpty'))}</p>`;
+  if(plans.length)html+=`<div class="day-section"><h3>${esc(t(d<today?'dayMissed':'dayPlanned'))}</h3>${plans.map(planCardHTML).join('')}</div>`;
+  if(logs.length)html+=`<div class="day-section"><h3>${esc(t('dayDone'))}</h3>${logs.map(logCardHTML).join('')}</div>`;
+  html+=`<div class="day-actions"><button class="small" data-day-plan="${esc(d)}">${esc(t('planThisDay'))}</button>${d<=today?`<button class="small" data-day-log="${esc(d)}">${esc(t('logThisDay'))}</button>`:''}</div>`;
+  if(!hideBoxWod){
+    const cps=coachPrograms.filter(p=>p.start_date===d);
+    for(const cp of cps){
+      const cat=getProgramCategory(cp);
+      const isStr=cat==='STRENGTH';
+      const cleanTitle=cleanProgramTitle(cp.title);
+      html+=`<div class="day-card ${isStr?'coach-str':'coach-wod'}"><div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:6px"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span class="cat-pill ${isStr?'str':'wod'}">${isStr?'STRENGTH':'WOD'}</span><span class="role-pill coach">${esc(isStr?(t('coachStrength')||'코치 STRENGTH'):t('coachWod'))}</span><h4 style="margin:0">${esc(cleanTitle)}</h4></div>${Supabase.isCoach?`<button type="button" class="danger small" data-del-coach-prog="${esc(cp.id)}">${esc(t('delete'))}</button>`:''}</div><p class="record-content" style="white-space:pre-wrap;font-size:12px;margin:6px 0">${esc(cp.program_text)}</p><div class="day-actions"><button type="button" class="primary small" data-coach-log="${esc(cp.id)}">${esc(isStr?(t('useCoachStrength')||'이 스트렝스로 기록하기'):t('useCoachWod'))}</button></div></div>`;
+    }
+    const sps=sharedPrograms.filter(p=>p.start_date===d);
+    for(const sp of sps){
+      const cat=getProgramCategory(sp);
+      const isStr=cat==='STRENGTH';
+      const cleanTitle=cleanProgramTitle(sp.title);
+      const canDel=Supabase.isCoach||(Supabase.user&&sp.user_id===Supabase.user.id);
+      html+=`<div class="day-card ${isStr?'shared-str':'shared-wod'}"><div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:6px"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span class="cat-pill ${isStr?'str':'wod'}">${isStr?'STRENGTH':'WOD'}</span><span class="role-pill member">${esc(sp.user_name||'Member')}</span><h4 style="margin:0">${esc(cleanTitle)}</h4></div>${canDel?`<button type="button" class="danger small" data-del-shared-prog="${esc(sp.id)}">${esc(t('delete'))}</button>`:''}</div><p class="record-content" style="white-space:pre-wrap;font-size:12px;margin:6px 0">${esc(sp.program_text)}</p><div class="day-actions"><button type="button" class="secondary small" data-shared-log="${esc(sp.id)}">${esc(isStr?(t('useCoachStrength')||'이 스트렝스로 기록하기'):t('useCoachWod'))}</button></div></div>`;
+    }
+  } else {
+    const hasBox=coachPrograms.some(p=>p.start_date===d)||sharedPrograms.some(s=>s.start_date===d);
+    if(hasBox){
+      html+=`<div class="box-wod-hidden-banner"><span>👑 ${esc(t('boxWodHiddenNotice')||'박스 운동이 숨김 설정되어 있습니다.')}</span><button type="button" id="unhideBoxWodBtn" class="link-button small">${esc(t('showBoxWod'))}</button></div>`;
+    }
+  }
+  $('dayPanel').innerHTML=html;
+}
 $('calGrid').addEventListener('click',e=>{const b=e.target.closest('[data-date]');if(!b)return;calSelected=b.dataset.date;calCursor=calSelected.slice(0,7);renderCalendar();if(innerWidth<=1150)$('dayPanel').scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});});
 function shiftMonth(n){const [y,m]=calCursor.split('-').map(Number);calCursor=localDate(new Date(y,m-1+n,1)).slice(0,7);renderCalendar();}
 $('calPrev').onclick=()=>shiftMonth(-1);$('calNext').onclick=()=>shiftMonth(1);$('calToday').onclick=()=>{calSelected=localDate();calCursor=calSelected.slice(0,7);renderCalendar();};
@@ -1743,24 +1942,53 @@ $('programApply').onclick=async()=>{const d=programDraft;if(!d)return;
     notify(t('programAdded',{n:d.plans.length}));
     if(shareWithMembers&&Supabase.session&&Supabase.isApproved){
       const unit=$('programUnit')?.value||'kg';
-      const rows=d.parsed.days.map(day=>{
+      const rows=[];
+      for(const day of d.parsed.days){
         const date=addDays(d.start,day.day-1);
-        const lines=[];
-        for(const l of day.lifts)lines.push(l.text);
-        for(const a of day.accessory){
-          if(a.header)lines.push(a.header);
-          for(const line of a.lines)lines.push(line);
+        const dayLifts=day.lifts||[];
+        const dayAcc=day.accessory||[];
+
+        if(dayLifts.length > 0){
+          const lines = dayLifts.map(l => l.text);
+          rows.push({
+            title: `${d.name} · Day ${day.day} · STRENGTH`,
+            start_date: date,
+            unit,
+            program_text: lines.join('\n'),
+            category: 'STRENGTH',
+            is_public: true
+          });
         }
-        if(day.notes.length)lines.push(...day.notes);
-        if(!lines.length&&day.rest)lines.push(t('restDay')||'Rest Day');
-        return {
-          title:`${d.name} · Day ${day.day}`,
-          start_date:date,
-          unit,
-          program_text:lines.join('\n')||`${d.name} · Day ${day.day}`,
-          is_public:true
-        };
-      });
+
+        if(dayAcc.length > 0){
+          const lines = [];
+          for(const a of dayAcc){
+            if(a.header) lines.push(a.header);
+            for(const line of a.lines) lines.push(line);
+          }
+          rows.push({
+            title: `${d.name} · Day ${day.day} · WOD`,
+            start_date: date,
+            unit,
+            program_text: lines.join('\n'),
+            category: 'WOD',
+            is_public: true
+          });
+        }
+
+        if(dayLifts.length === 0 && dayAcc.length === 0){
+          const lines = [...day.notes];
+          if(!lines.length && day.rest) lines.push(t('restDay') || 'Rest Day');
+          rows.push({
+            title: `${d.name} · Day ${day.day} · WOD`,
+            start_date: date,
+            unit,
+            program_text: lines.join('\n') || `${d.name} · Day ${day.day}`,
+            category: 'WOD',
+            is_public: true
+          });
+        }
+      }
       try{
         if(Supabase.isCoach){
           await Supabase.batchPublishCoachPrograms(rows);
@@ -1924,7 +2152,31 @@ function importCsvText(source){const rows=parseCSV(source);if(!rows.length)throw
 async function readFile(input){const file=input.files[0];if(!file)return null;if(file.size>10*1024*1024)throw new Error(t('maxFile'));return file.text();}
 $('importCSV').onchange=async()=>{try{const source=await readFile($('importCSV'));if(source===null)return;const logs=importCsvText(source);if(await confirmAction(t('importAsk',{n:logs.length,old:state.logs.length}))){if(commit({...state,logs},true))notify(t('imported',{n:logs.length}));}}catch(e){notify(t('invalidCSV')+' '+e.message);}finally{$('importCSV').value='';}};
 $('importJSON').onchange=async()=>{try{const source=await readFile($('importJSON'));if(source===null)return;const data=migrateState(JSON.parse(source));if(!validState(data))throw new Error('invalid');if(await confirmAction(t('restoreAsk',{n:data.logs.length,p:(data.plans??[]).length,r:Object.keys(data.profiles).length}))){if(commit(normalizeState(data),true)){resetEntry('log');rmOptions();loadRM();notify(t('importAllDone',{n:data.logs.length,p:(data.plans??[]).length}));}}}catch{notify(t('invalidJSON'));}finally{$('importJSON').value='';}};
-$('resetAll').onclick=async()=>{if(await confirmAction(t('resetAllAsk'))){if(commit({version:2,logs:[],profiles:{},plans:[],customLifts:{}},true)){selected.clear();resetEntry('log');rmOptions();loadRM();notify(t('resetDone'));}}};
+$('resetAll').onclick=async()=>{
+  if(await confirmAction(t('resetAllAsk'))){
+    const blank = {version:2,logs:[],profiles:{},plans:[],customLifts:{}};
+    if(commit(blank,true)){
+      selected.clear();
+      resetEntry('log');
+      rmOptions();
+      loadRM();
+      if(Supabase.session && Supabase.isApproved) {
+        try {
+          await Supabase.req('/rest/v1/member_data?on_conflict=user_id', {
+            method: 'POST',
+            headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' },
+            body: JSON.stringify({
+              user_id: Supabase.user.id,
+              data: blank,
+              updated_at: new Date().toISOString()
+            })
+          });
+        } catch {}
+      }
+      notify(t('resetDone'));
+    }
+  }
+};
 
 /* ---------------- Refresh & boot ---------------- */
 function refresh(){const month=localDate().slice(0,7);$('totalStat').textContent=state.logs.length;$('monthStat').textContent=state.logs.filter(r=>r.date.startsWith(month)).length;$('rmStat').textContent=Object.keys(state.profiles).length;$('exportCount').textContent=t('count',{n:state.logs.length});
@@ -2027,10 +2279,13 @@ async function loadCoachPublishedPrograms() {
       container.innerHTML = `<p class="subtle">${esc(t('noCoachPrograms'))}</p>`;
       return;
     }
-    container.innerHTML = cachedCoachPrograms.map(p => `
+    container.innerHTML = cachedCoachPrograms.map(p => {
+      const cat = getProgramCategory(p);
+      const isStr = cat === 'STRENGTH';
+      return `
       <div class="coach-program-card">
         <div class="coach-program-meta">
-          <h4>${esc(p.title)} <span class="pill">${esc(p.start_date)}</span> <span class="pill">${esc(p.unit)}</span> <span class="pill ${p.is_public ? 'green' : 'gray'}">${esc(p.is_public ? t('publicWod') : t('privateWod'))}</span></h4>
+          <h4><span class="cat-pill ${isStr ? 'str' : 'wod'}">${cat}</span> ${esc(cleanProgramTitle(p.title))} <span class="pill">${esc(p.start_date)}</span> <span class="pill">${esc(p.unit)}</span> <span class="pill ${p.is_public ? 'green' : 'gray'}">${esc(p.is_public ? t('publicWod') : t('privateWod'))}</span></h4>
           <p>${esc(p.program_text)}</p>
         </div>
         <div style="display:flex;gap:6px;align-items:center">
@@ -2038,7 +2293,7 @@ async function loadCoachPublishedPrograms() {
           <button type="button" class="danger small" data-delete-prog="${esc(p.id)}">${esc(t('delete'))}</button>
         </div>
       </div>
-    `).join('');
+    `;}).join('');
   } catch (e) {
     container.innerHTML = `<p class="error-banner">${esc(e.message)}</p>`;
   }
@@ -2063,6 +2318,10 @@ async function loadCoachWodForSelectedDate() {
 function renderCoachWodBanner() {
   const banner = $('coachWodBanner');
   if (!banner) return;
+  if (hideBoxWod) {
+    banner.hidden = true;
+    return;
+  }
   const d = calSelected || localDate();
   const prog = coachPrograms.find(p => p.start_date === d);
   if (!prog) {
@@ -2070,9 +2329,25 @@ function renderCoachWodBanner() {
     return;
   }
   banner.hidden = false;
-  $('coachWodTitle').textContent = `${prog.title} (${prog.start_date})`;
+  const cat = getProgramCategory(prog);
+  const isStr = cat === 'STRENGTH';
+  const cleanTitle = cleanProgramTitle(prog.title);
+  $('coachWodTitle').textContent = `${cleanTitle} (${prog.start_date})`;
   $('coachWodContent').textContent = prog.program_text;
   banner.dataset.programId = prog.id;
+
+  const rolePill = banner.querySelector('.role-pill.coach');
+  if (rolePill) rolePill.textContent = isStr ? (t('coachStrength') || '코치 STRENGTH') : t('coachWod');
+  const catPill = banner.querySelector('.cat-pill');
+  if (catPill) {
+    catPill.textContent = isStr ? 'STRENGTH' : 'WOD';
+    catPill.className = `cat-pill ${isStr ? 'str' : 'wod'}`;
+    catPill.style.marginLeft = '4px';
+  }
+  const useBtn = $('useCoachWodBtn');
+  if (useBtn) {
+    useBtn.textContent = isStr ? (t('useCoachStrength') || '오늘 이 스트렝스 기록하기') : t('useCoachWod');
+  }
 }
 
 /* ---------------- Event Listeners for Supabase & Auth ---------------- */
@@ -2098,6 +2373,7 @@ const doSignOutUser = async () => {
   sharedPrograms = [];
   renderCoachWodBanner();
   renderCalendar();
+  showPage('todo');
   notify(t('signOut'));
   if (!navigator.webdriver) {
     document.body.classList.add('auth-locked');
@@ -2119,6 +2395,8 @@ $('checkApprovalBtn')?.addEventListener('click', async () => {
     if (prof?.approved || prof?.role === 'coach') {
       $('approvalDialog').close();
       notify(t('loginSuccess'));
+      resetEntry('log');
+      showPage('todo');
       Supabase.syncPullOrPush();
       loadCoachWodForSelectedDate();
     } else {
@@ -2166,11 +2444,15 @@ $('authForm')?.addEventListener('submit', async (e) => {
       await Supabase.signIn(email, pass);
       $('authDialog').close();
       notify(t('loginSuccess'));
+      resetEntry('log');
+      showPage('todo');
       loadCoachWodForSelectedDate();
     } else {
       const genderVal = $('authGender')?.value || 'M';
       const res = await Supabase.signUp(email, pass, name, genderVal);
       $('authDialog').close();
+      resetEntry('log');
+      showPage('todo');
       if (res.access_token) {
         notify(t('signUpSuccess'));
         loadCoachWodForSelectedDate();
@@ -2192,13 +2474,15 @@ $('useCoachWodBtn')?.addEventListener('click', async () => {
   const prog = coachPrograms.find(p => p.start_date === d);
   if (!prog) return;
   if (await canReplaceEntry()) {
+    const cat = getProgramCategory(prog);
     resetEntry('log');
+    setCategory(cat);
     $('date').value = prog.start_date;
-    $('wodTitle').value = prog.title;
+    $('wodTitle').value = cleanProgramTitle(prog.title);
     $('content').value = prog.program_text;
     $('weightUnit').value = prog.unit || 'kg';
     showPage('add');
-    notify(t('useCoachWod'));
+    notify(cat === 'STRENGTH' ? (t('useCoachStrength') || '코치 스트렝스를 불러왔습니다.') : t('useCoachWod'));
     setTimeout(() => {
       const input = $('finishTime') || $('amrapRounds') || $('qualityResult') || $('wodTitle');
       if (input) input.focus();
@@ -2220,9 +2504,14 @@ $('coachProgramForm')?.addEventListener('submit', async (e) => {
   e.preventDefault();
   const date = $('coachProgramDate').value;
   const unit = $('coachProgramUnit').value;
-  const title = $('coachProgramTitle').value.trim();
+  const category = $('coachProgramCategory')?.value || 'WOD';
+  let title = $('coachProgramTitle').value.trim();
   const text = $('coachProgramText').value.trim();
   if (!date || !title || !text) return;
+
+  if (category === 'STRENGTH' && !title.toUpperCase().includes('STRENGTH')) {
+    title = `${title} · STRENGTH`;
+  }
 
   const submitBtn = e.target.querySelector('button[type="submit"]');
   submitBtn.disabled = true;
@@ -2230,7 +2519,7 @@ $('coachProgramForm')?.addEventListener('submit', async (e) => {
 
   try {
     const isPub = $('coachProgramPublic')?.checked ?? true;
-    await Supabase.publishProgram(title, date, unit, text, isPub);
+    await Supabase.publishProgram(title, date, unit, text, isPub, category);
     notify(t('publishSuccess'));
     $('coachProgramTitle').value = '';
     $('coachProgramText').value = '';
@@ -2412,7 +2701,10 @@ $('cloudRestoreBtn')?.addEventListener('click', async () => {
   }
 });
 
-// Boot Supabase session check
+// Boot Supabase session check & Box WOD toggle
+updateBoxWodBtn();
+$('toggleBoxWodBtn')?.addEventListener('click', toggleBoxWodVisibility);
+
 Supabase.init();
 if (Supabase.session) {
   Supabase.fetchProfile().then(() => {
