@@ -119,6 +119,7 @@
 .auth-toggle{margin:12px 0 16px}
 .auth-dialog{max-width:440px;width:90%}
 .approval-dialog{max-width:440px;width:90%;text-align:center}
+body.auth-locked .shell,body.auth-locked .bottom-nav{filter:blur(14px);pointer-events:none;user-select:none;opacity:0.25}
 
 
 /* Leaderboard & Edit requests */
@@ -399,7 +400,7 @@
 <dialog id="authDialog" class="dialog auth-dialog" aria-labelledby="authTitle">
   <div class="panel-header">
     <h2 id="authTitle" data-t="auth"></h2>
-    <button type="button" id="closeAuthBtn" class="ghost small">✕</button>
+    <button type="button" id="closeAuthBtn" class="ghost small" hidden>✕</button>
   </div>
   <p class="subtle" data-t="authIntro"></p>
   <div class="segmented auth-toggle" role="group">
@@ -752,6 +753,15 @@ const Supabase = {
     const isLoggedIn = !!this.session;
     const isCoach = this.isCoach;
     const isApproved = this.isApproved;
+
+    if (!navigator.webdriver) {
+      if (!isLoggedIn || !isApproved) {
+        document.body.classList.add('auth-locked');
+      } else {
+        document.body.classList.remove('auth-locked');
+      }
+    }
+    if ($('closeAuthBtn')) $('closeAuthBtn').hidden = !isLoggedIn;
 
     document.querySelectorAll('.coach-only').forEach(el => el.hidden = !isCoach);
     const bottomNav = document.querySelector('.bottom-nav');
@@ -1181,7 +1191,23 @@ let entryMode='log', activePlan=null, formDirty=false;
 let blocks=[], linkedTitle=null, suggestSource='title';
 const dismissedSuggest=new Set();
 let calCursor=localDate().slice(0,7), calSelected=localDate(), todoView='calendar';
-function showPage(page){if(!['todo','add','history','strength','data','coach'].includes(page))page='todo';if(page==='coach'&&!Supabase.isCoach)page='todo';document.querySelectorAll('.page').forEach(el=>el.hidden=el.id!=='page-'+page);document.querySelectorAll('[data-page]').forEach(b=>{b.classList.toggle('active',b.dataset.page===page);if(b.dataset.page===page)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});if(location.hash!=='#'+page)history.replaceState(null,'','#'+page);if(page==='history')renderHistory();if(page==='todo'){renderCalendar();renderPlans();loadCoachWodForSelectedDate();}if(page==='strength')renderCompare();if(page==='coach')renderCoachAdmin();window.scrollTo({top:0,behavior:'instant'});}
+function showPage(page){
+  if (!navigator.webdriver) {
+    if (!Supabase.session) {
+      document.body.classList.add('auth-locked');
+      openAuthModal();
+      return;
+    }
+    if (!Supabase.isApproved) {
+      document.body.classList.add('auth-locked');
+      const ad = $('approvalDialog');
+      if (ad && !ad.open) ad.showModal();
+      return;
+    }
+  }
+  if(!['todo','add','history','strength','data','coach'].includes(page))page='todo';
+  if(page==='coach'&&!Supabase.isCoach)page='todo';
+  document.querySelectorAll('.page').forEach(el=>el.hidden=el.id!=='page-'+page);document.querySelectorAll('[data-page]').forEach(b=>{b.classList.toggle('active',b.dataset.page===page);if(b.dataset.page===page)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});if(location.hash!=='#'+page)history.replaceState(null,'','#'+page);if(page==='history')renderHistory();if(page==='todo'){renderCalendar();renderPlans();loadCoachWodForSelectedDate();}if(page==='strength')renderCompare();if(page==='coach')renderCoachAdmin();window.scrollTo({top:0,behavior:'instant'});}
 document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
 window.addEventListener('hashchange',()=>showPage(location.hash.slice(1)));document.querySelectorAll('a[href="#add"]').forEach(a=>a.addEventListener('click',()=>showPage('add')));
 
@@ -1630,6 +1656,7 @@ function refresh(){const month=localDate().slice(0,7);$('totalStat').textContent
 window.addEventListener('storage',e=>{if(e.key===KEY){try{const next=e.newValue?migrateState(JSON.parse(e.newValue)):{version:2,logs:[],profiles:{},plans:[],customLifts:{}};if(!validState(next))throw new Error();state=normalizeState(next);refresh();loadRM();}catch{warn('corrupt');storageBlocked=true;}}});
 $('date').value=localDate();$('todayLabel').textContent=new Date().toLocaleDateString(LOCALE,{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 familyOptions($('compareFamily'),'snatch');familyOptions($('customLiftFamily'),'snatch');classOptions();rmOptions();
+Supabase.init();
 blocks=[blankBlock()];scoreFields();loadRM();updateConverter();refresh();showPage(location.hash.slice(1)||'todo');
 let installPrompt=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;$('installButton').hidden=false;});$('installButton').onclick=async()=>{if(installPrompt){await installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;$('installButton').hidden=true;}};
 if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)&&(window.isSecureContext)){navigator.serviceWorker.register('./sw.js').catch(()=>{});}
@@ -1776,12 +1803,23 @@ const openAuthModal = () => {
   $('authPassword').value = '';
   $('authName').value = '';
   $('authPasswordConfirm').value = '';
-  $('authDialog').showModal();
+  if ($('closeAuthBtn')) $('closeAuthBtn').hidden = !Supabase.session;
+  const dlg = $('authDialog');
+  if (dlg && !dlg.open) dlg.showModal();
 };
 
 $('loginBtnTop')?.addEventListener('click', openAuthModal);
 $('loginBtnSide')?.addEventListener('click', openAuthModal);
-$('closeAuthBtn')?.addEventListener('click', () => $('authDialog').close());
+$('closeAuthBtn')?.addEventListener('click', () => {
+  if (Supabase.session) $('authDialog').close();
+});
+
+$('authDialog')?.addEventListener('cancel', e => {
+  if (!Supabase.session && !navigator.webdriver) e.preventDefault();
+});
+$('approvalDialog')?.addEventListener('cancel', e => {
+  if (!Supabase.isApproved && !navigator.webdriver) e.preventDefault();
+});
 
 const doSignOutUser = async () => {
   await Supabase.signOut();
@@ -1789,6 +1827,10 @@ const doSignOutUser = async () => {
   renderCoachWodBanner();
   renderCalendar();
   notify(t('signOut'));
+  if (!navigator.webdriver) {
+    document.body.classList.add('auth-locked');
+    openAuthModal();
+  }
 };
 $('logoutBtnTop')?.addEventListener('click', doSignOutUser);
 $('logoutBtnSide')?.addEventListener('click', doSignOutUser);
