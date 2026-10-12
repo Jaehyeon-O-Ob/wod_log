@@ -280,7 +280,7 @@ return {
     return this.req(`/rest/v1/${table}`, {method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify(payload)});
   },
 
-  async publishProgram(title, startDate, unit, programText, isPublic = true, category = 'WOD', items = null) {
+  async publishProgram(title, startDate, unit, programText, isPublic = true, category = 'WOD', items = null, wodSettings = null) {
     return await this.insertRows('coach_programs', {
       title,
       start_date: startDate,
@@ -288,6 +288,7 @@ return {
       program_text: programText,
       category: category || 'WOD',
       items: items && items.length ? items : null,
+      wod_settings: category === 'WOD' ? wodSettings : null,
       is_public: isPublic,
       created_by: this.user?.id
     });
@@ -302,6 +303,7 @@ return {
       program_text: p.program_text,
       category: p.category || (p.title && p.title.includes('STRENGTH') ? 'STRENGTH' : 'WOD'),
       items: p.items && p.items.length ? p.items : null,
+      wod_settings: p.category === 'STRENGTH' ? null : p.wod_settings || null,
       is_public: p.is_public !== false,
       created_by: this.user?.id
     })));
@@ -319,7 +321,7 @@ return {
     return this.req(date ? `/rest/v1/shared_programs?start_date=eq.${date}&select=*` : '/rest/v1/shared_programs?select=*&order=start_date.desc,created_at.desc');
   },
 
-  async publishSharedProgram(title, startDate, unit, programText, category = 'WOD', items = null) {
+  async publishSharedProgram(title, startDate, unit, programText, category = 'WOD', items = null, wodSettings = null) {
     return await this.insertRows('shared_programs', {
       title,
       start_date: startDate,
@@ -327,6 +329,7 @@ return {
       program_text: programText,
       category: category || 'WOD',
       items: items && items.length ? items : null,
+      wod_settings: category === 'WOD' ? wodSettings : null,
       user_id: this.user?.id,
       user_name: this.profile?.name || this.user?.email.split('@')[0],
       gender: this.profile?.gender || 'M',
@@ -343,6 +346,7 @@ return {
       program_text: p.program_text,
       category: p.category || (p.title && p.title.includes('STRENGTH') ? 'STRENGTH' : 'WOD'),
       items: p.items && p.items.length ? p.items : null,
+      wod_settings: p.category === 'STRENGTH' ? null : p.wod_settings || null,
       user_id: this.user?.id,
       user_name: this.profile?.name || this.user?.email.split('@')[0],
       gender: this.profile?.gender || 'M',
@@ -593,4 +597,145 @@ return {
   }
 };
 
+}
+
+/* WOD prescriptions are separate from an athlete's result. Legacy text is read
+ * conservatively; unknown settings remain missing and are flagged in the UI. */
+const WodFormat = {
+  types: ['FOR_TIME','AMRAP','EMOM','INTERVAL_TABATA','FOR_QUALITY'],
+  integer(n,min,max) { return Number.isInteger(n)&&n>=min&&n<=max; },
+  clean(value) {
+    if (!value || !this.types.includes(value.workoutType)) return null;
+    const out={workoutType:value.workoutType};
+    if(out.workoutType==='FOR_TIME'&&this.integer(value.timeCapMinutes,1,1440))out.timeCapMinutes=value.timeCapMinutes;
+    if(out.workoutType==='AMRAP'&&this.integer(value.durationMinutes,1,1440))out.durationMinutes=value.durationMinutes;
+    if(['EMOM','INTERVAL_TABATA'].includes(out.workoutType)){
+      const s=value.intervalSettings||{},v={};
+      if(this.integer(s.workSeconds,1,86400))v.workSeconds=s.workSeconds;
+      if(this.integer(s.restSeconds,0,86400))v.restSeconds=s.restSeconds;
+      if(this.integer(s.rounds,1,10000))v.rounds=s.rounds;
+      if(['REPS','TIME','CUSTOM'].includes(s.scoreType))v.scoreType=s.scoreType;
+      out.intervalSettings=v;
+    }
+    return out;
+  },
+  valid(value) {
+    const p=this.clean(value);if(!p)return false;
+    if(p.workoutType==='FOR_TIME')return value.timeCapMinutes==null||this.integer(value.timeCapMinutes,1,1440);
+    if(p.workoutType==='AMRAP')return this.integer(p.durationMinutes,1,1440);
+    if(['EMOM','INTERVAL_TABATA'].includes(p.workoutType)){
+      const s=p.intervalSettings;
+      return this.integer(s.workSeconds,1,86400)&&this.integer(s.restSeconds,0,86400)&&this.integer(s.rounds,1,10000)&&
+        (p.workoutType==='EMOM'?s.workSeconds%60===0&&s.restSeconds===0&&s.scoreType==='CUSTOM':['REPS','TIME'].includes(s.scoreType));
+    }
+    return true;
+  },
+  infer(text) {
+    const s=String(text||'').normalize('NFKC');
+    const found=[];
+    if(/\bfor\s+time\b/i.test(s))found.push('FOR_TIME');
+    if(/\bamrap\b/i.test(s))found.push('AMRAP');
+    if(/\b(?:emom|eomom|e\d+mom)\b|\bevery\s+(?:\d+(?::00|\s*(?:min(?:utes?)?|분))|minute)/i.test(s))found.push('EMOM');
+    if(/\b(?:tabata|interval)\b|타바타|인터벌/i.test(s))found.push('INTERVAL_TABATA');
+    if(/\bfor\s+quality\b/i.test(s))found.push('FOR_QUALITY');
+    if(found.length!==1)return {settings:null,ambiguous:found.length>1};
+    const p={workoutType:found[0]};let m;
+    if(p.workoutType==='FOR_TIME'){
+      m=s.match(/(?:time\s*cap|\bt\.?c\.?\b|타임\s*캡)\s*[:=\-]?\s*(\d+(?:\.\d+)?)(?::(\d{2}))?/i);
+      if(m)p.timeCapMinutes=Number(m[1])+(m[2]?Number(m[2])<60?Number(m[2])/60:NaN:0);
+    }
+    if(p.workoutType==='AMRAP'){
+      m=s.match(/\bamrap\s*[:\-]?\s*(\d+(?:\.\d+)?)(?::(\d{2}))?/i)||s.match(/(\d+(?:\.\d+)?)\s*(?:min(?:utes?)?\.?|분|['′])\s*amrap\b/i);
+      if(m)p.durationMinutes=Number(m[1])+(m[2]?Number(m[2])<60?Number(m[2])/60:NaN:0);
+    }
+    if(p.workoutType==='EMOM'){
+      const every=s.match(/\be(\d+)mom\b/i)||s.match(/\bevery\s+(\d+)(?::00|\s*(?:min(?:utes?)?|분))/i);
+      const minutes=every?Number(every[1]):/\beomom\b/i.test(s)?2:1;
+      const rounds=s.match(/(\d+)\s*(?:rounds?\b|라운드)/i)||s.match(/(?:rounds?\b|라운드)\s*[:=]\s*(\d+)/i);
+      const duration=s.match(/\bfor\s+(\d+)(?::00|\s*(?:min(?:utes?)?|분|['′]))/i)||s.match(/\b(?:emom|eomom|e\d+mom)\s*[:\-]?\s*(\d+)(?::00)?/i)||s.match(/(\d+)\s*(?:min(?:utes?)?\.?|분|['′])\s*(?:emom|eomom|e\d+mom)\b/i);
+      p.intervalSettings={workSeconds:minutes*60,restSeconds:0,scoreType:'CUSTOM'};
+      if(rounds)p.intervalSettings.rounds=Number(rounds[1]);
+      else if(duration&&Number(duration[1])%minutes===0)p.intervalSettings.rounds=Number(duration[1])/minutes;
+    }
+    if(p.workoutType==='INTERVAL_TABATA'){
+      const tabata=/\btabata\b|타바타/i.test(s);
+      const pair=s.match(/(?:tabata|interval|타바타|인터벌)\s*[:\-]?\s*(\d+)\s*\/\s*(\d+)/i)||s.match(/(\d+)\s*(?:s(?:ec(?:onds?)?)?|초)\s*(?:on)?\s*\/\s*(\d+)\s*(?:s(?:ec(?:onds?)?)?|초)/i);
+      const work=s.match(/(?:\bwork\b|\bon\b|운동)\s*[:=]?\s*(\d+)\s*(?:s(?:ec(?:onds?)?)?\b|초)/i);
+      const rest=s.match(/(?:\brest\b|\boff\b|휴식)\s*[:=]?\s*(\d+)\s*(?:s(?:ec(?:onds?)?)?\b|초)/i);
+      const rounds=s.match(/(\d+)\s*(?:rounds?\b|라운드)/i)||s.match(/(?:rounds?\b|라운드)\s*[:=]\s*(\d+)/i)||s.match(/[x×]\s*(\d+)\b/i);
+      p.intervalSettings={scoreType:/score\s*[:=]\s*time|결과\s*[:=]\s*시간/i.test(s)?'TIME':'REPS'};
+      if(work||pair||tabata)p.intervalSettings.workSeconds=work?Number(work[1]):pair?Number(pair[1]):20;
+      if(rest||pair||tabata)p.intervalSettings.restSeconds=rest?Number(rest[1]):pair?Number(pair[2]):10;
+      if(rounds||tabata)p.intervalSettings.rounds=rounds?Number(rounds[1]):8;
+    }
+    return {settings:this.clean(p),ambiguous:false,complete:this.valid(p)};
+  },
+  resolve(program) {
+    if(program.wod_settings!=null){
+      const settings=this.clean(program.wod_settings);
+      return {settings,complete:this.valid(program.wod_settings),source:'saved'};
+    }
+    return {...this.infer(`${program.program_text||''}\n${program.title||''}`),source:'text'};
+  },
+  fromPlan(plan) {
+    return this.clean({workoutType:plan.workoutType,timeCapMinutes:plan.timeCapMinutes,durationMinutes:plan.durationMinutes,intervalSettings:plan.intervalSettings});
+  },
+  fromProgramPlan(plan) {
+    const inferred=this.infer(plan.content);
+    if(inferred.ambiguous || (inferred.settings&&!inferred.complete))return null;
+    return inferred.settings||this.fromPlan(plan);
+  }
+};
+
+function applyPublishedWod(settings){
+ const p=WodFormat.clean(settings);if(!p)return false;
+ $('workoutType').value=p.workoutType;scoreFields();
+ if(p.workoutType==='FOR_TIME'&&p.timeCapMinutes){$('plannedCap').value=p.timeCapMinutes;$('capMinutes').value=p.timeCapMinutes;}
+ if(p.workoutType==='AMRAP'&&p.durationMinutes)$('amrapMinutes').value=p.durationMinutes;
+ if(p.workoutType==='EMOM'){
+  const s=p.intervalSettings,minutes=s.workSeconds/60;
+  if(Number.isInteger(minutes)&&minutes>0){$('emomEvery').value=[1,2,3].includes(minutes)?String(minutes):'custom';$('emomCustom').value=minutes;$('customEveryWrap').hidden=$('emomEvery').value!=='custom';}
+  if(s.rounds)$('emomRounds').value=s.rounds;
+ }
+ if(p.workoutType==='INTERVAL_TABATA'){
+  const s=p.intervalSettings;
+  for(const [key,id] of [['workSeconds','workSeconds'],['restSeconds','restSeconds'],['rounds','intervalRounds']])if(s[key]!=null)$(id).value=s[key];
+  if(['REPS','TIME'].includes(s.scoreType)){$('intervalScoreType').value=s.scoreType;intervalScoreFields();}
+ }
+ updateTimerIdle();return true;
+}
+function renderCoachWodFormat(){
+ const visible=coachPubMode==='single'&&$('coachProgramCategory').value==='WOD';
+ $('coachWodFormat').hidden=!visible;
+ const type=$('coachWodType').value;
+ let html='';
+ if(type==='FOR_TIME')html=field('coachWodCap','plannedCap','number','');
+ if(type==='AMRAP')html=field('coachWodDuration','duration','number',20);
+ if(type==='EMOM')html=field('coachWodEvery','every','number',1)+field('coachWodRounds','rounds','number',10);
+ if(type==='INTERVAL_TABATA')html=field('coachWodWork','work','number',20)+field('coachWodRest','rest','number',10)+field('coachWodRounds','rounds','number',8)+`<div class="field"><label for="coachWodScore">${esc(t('scoreMode'))}</label><select id="coachWodScore"><option value="REPS">${esc(t('repsMode'))}</option><option value="TIME">${esc(t('timeMode'))}</option></select></div>`;
+ $('coachWodSettings').innerHTML=html;
+ // Hidden modes must not participate in HTML form validation.
+ $('coachWodFormat').disabled=!visible;
+}
+function readCoachWodFormat(){
+ const type=$('coachWodType').value;
+ let p;
+ if(type==='AUTO'){
+  const inferred=WodFormat.infer(`${$('coachProgramText').value}\n${$('coachProgramTitle').value}`);
+  if(!inferred.complete)throw new Error(t('wodFormatRequired'));
+  p=inferred.settings;
+ }
+ else{
+  p={workoutType:type};
+  if(type==='FOR_TIME'&&$('coachWodCap').value!=='')p.timeCapMinutes=Number($('coachWodCap').value);
+  if(type==='AMRAP')p.durationMinutes=Number($('coachWodDuration').value);
+  if(type==='EMOM')p.intervalSettings={workSeconds:Number($('coachWodEvery').value)*60,restSeconds:0,rounds:Number($('coachWodRounds').value),scoreType:'CUSTOM'};
+  if(type==='INTERVAL_TABATA')p.intervalSettings={workSeconds:Number($('coachWodWork').value),restSeconds:Number($('coachWodRest').value),rounds:Number($('coachWodRounds').value),scoreType:$('coachWodScore').value};
+ }
+ if(!WodFormat.valid(p))throw new Error(t('wodFormatRequired'));
+ return WodFormat.clean(p);
+}
+function wodFormatSummary(p){
+ const s=p.intervalSettings;
+ return [TYPES[p.workoutType],p.timeCapMinutes?`${t('capWord')} ${p.timeCapMinutes} ${t('minutes')}`:'',p.durationMinutes?`${p.durationMinutes} ${t('minutes')}`:'',s?(p.workoutType==='EMOM'?`${s.workSeconds/60} ${t('minutes')} × ${s.rounds} ${t('roundWord')}`:`${s.workSeconds}/${s.restSeconds} ${t('seconds')} × ${s.rounds} ${t('roundWord')} · ${t(s.scoreType==='TIME'?'timeMode':'repsMode')}`):''].filter(Boolean).join(' · ');
 }

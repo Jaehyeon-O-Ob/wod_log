@@ -230,6 +230,7 @@ body.auth-locked .shell,body.auth-locked .bottom-nav{filter:blur(14px);pointer-e
     <div class="todo-summary"><div><strong data-t="todayWorkouts"></strong><p class="subtle" id="todayPlansSummary"></p><ul class="today-list" id="todayList"></ul></div><button class="small" data-page="todo" data-t="viewPlans"></button></div>
     <div class="work-grid"><div class="panel"><h2 id="entryTitle" data-t="newEntry"></h2><p id="entryHint" class="subtle" data-t="formIntro"></p>
       <div class="segmented" role="group" aria-label="Entry mode"><button id="entryLog" type="button" class="active" aria-pressed="true" data-t="logMode"></button><button id="entryPlan" type="button" aria-pressed="false" data-t="planMode"></button></div>
+      <p id="publishedWodFormatNotice" class="help" hidden></p>
       <div id="coachCompletionNotice" class="preview" hidden><p data-t="coachCompletionLinked"></p><button id="unlinkCoachProgram" type="button" class="link-button small" data-t="unlink"></button></div>
       <div id="activePlanBanner" class="preview" hidden><p id="activePlanText"></p><button id="cancelPlan" type="button" class="link-button small" data-t="cancelPlan"></button></div>
       <div class="segmented" role="group" aria-label="WOD / Strength"><button id="categoryWod" type="button" class="active" aria-pressed="true">WOD</button><button id="categoryStrength" type="button" aria-pressed="false">Strength</button></div>
@@ -412,6 +413,10 @@ body.auth-locked .shell,body.auth-locked .bottom-nav{filter:blur(14px);pointer-e
               </select>
             </div>
           </div>
+          <fieldset id="coachWodFormat" style="border:0;padding:0;margin:0;min-width:0">
+            <div class="field"><label for="coachWodType" data-t="wodFormat"></label><select id="coachWodType"><option value="AUTO" data-t="wodFormatAuto"></option><option value="FOR_TIME">For Time</option><option value="AMRAP">AMRAP</option><option value="EMOM">EMOM / EOMOM</option><option value="INTERVAL_TABATA">Tabata / Interval</option><option value="FOR_QUALITY">For Quality</option></select></div>
+            <div id="coachWodSettings" class="row"></div><p class="help" data-t="wodFormatHelp"></p>
+          </fieldset>
           <div class="field" id="coachNameField" hidden>
             <label for="coachProgramName" data-t="programName"></label>
             <input id="coachProgramName" maxlength="80">
@@ -620,6 +625,11 @@ Object.assign(T, LANG==='ko'?{
  coachCompletions:'Who performed this',coachCompletionIntro:'Members and coaches who saved and synced a result. Private scores and weights are not shown.',
  noCoachCompletions:'No linked performance records yet.',coachCompletionCount:'{n} people recorded a result',lastPerformed:'Last performed',
  coachCompletionLinked:'Linked to a coach workout. Saving and syncing a result lets coaches see that you performed it.',coachCompletionRefresh:'Refresh'
+});
+Object.assign(T,LANG==='ko'?{
+ wodFormat:'WOD 운동 방식 및 설정',wodFormatAuto:'텍스트에서 자동 감지',wodFormatRequired:'운동 방식과 시간·라운드를 확인해주세요. 자동 감지가 불명확하면 운동 방식을 직접 선택하고 설정을 입력하세요.',wodFormatReview:'운동 방식 또는 시간·라운드 설정을 모두 확인할 수 없습니다. 내용을 보고 설정을 확인해주세요.',wodFormatLoaded:'불러온 설정: {settings}',wodFormatHelp:'선택한 방식과 시간·라운드 설정이 회원의 기록 화면에 그대로 전달됩니다. 자동 감지 예: EMOM 12 min / E2MOM 20 min / AMRAP 15 / For Time, Time Cap 10 min.'
+}:{
+ wodFormat:'WOD format and settings',wodFormatAuto:'Detect from text',wodFormatRequired:'Check the format, time and rounds. If detection is uncertain, choose a format and enter its settings.',wodFormatReview:'Some format or timing settings could not be determined. Check the prescription and form settings.',wodFormatLoaded:'Loaded settings: {settings}',wodFormatHelp:'The selected format and timing are copied into members’ result forms. Examples: EMOM 12 min / E2MOM 20 min / AMRAP 15 / For Time, Time Cap 10 min.'
 });
 const KO=LANG==='ko', LOCALE=KO?'ko-KR':'en-US';
 const $=id=>document.getElementById(id);
@@ -900,7 +910,7 @@ function openAuthModal() {
 
 /* ---------------- Navigation ---------------- */
 let category='WOD', selected=new Set(), oldWeightUnit='lb', oldRmUnit='lb';
-let entryMode='log', activePlan=null, formDirty=false, activeCoachProgramId=null;
+let entryMode='log', activePlan=null, formDirty=false, activeCoachProgramId=null, loadedWodSettings=null;
 let blocks=[], linkedTitle=null, suggestSource='title';
 const dismissedSuggest=new Set();
 let calCursor=localDate().slice(0,7), calSelected=localDate(), todoView='calendar';
@@ -1027,7 +1037,7 @@ function strengthLogs(base){if(!blocks.length)throw {key:'liftRequired',el:$('ad
 function logRecords(){const b=baseRecord();const link=activePlan?{plannedWorkoutId:activePlan.id,plannedDate:activePlan.date}:{};if(activePlan?.program){link.program=activePlan.program;link.programId=activePlan.programId;}
  if(category==='STRENGTH')return strengthLogs({...b,...link,sessionId:activePlan?activePlan.id:'session_'+uid()});
  const r={...b,...link,id:'wod_'+uid(),title:$('wodTitle').value.trim(),workoutType:$('workoutType').value,score:'',scoreUnit:'CUSTOM',weightUsed:$('weightUsed').value===''?null:number('weightUsed',0,100000,false)};
- if(r.workoutType==='FOR_TIME'){r.scoreUnit='TIME';if($('timeCapped').checked){const cap=number('capMinutes',1,1440),reps=number('capReps');r.score=`CAP ${secondsText(cap*60)} + ${reps} reps`;r.timeCapMinutes=cap;r.capReps=reps;}else r.score=secondsText(parseTime($('finishTime').value,'finishTime'));if(activePlan?.timeCapMinutes&&!r.timeCapMinutes)r.timeCapMinutes=activePlan.timeCapMinutes;}
+ if(r.workoutType==='FOR_TIME'){r.scoreUnit='TIME';if($('timeCapped').checked){const cap=number('capMinutes',1,1440),reps=number('capReps');r.score=`CAP ${secondsText(cap*60)} + ${reps} reps`;r.timeCapMinutes=cap;r.capReps=reps;}else r.score=secondsText(parseTime($('finishTime').value,'finishTime'));if(!r.timeCapMinutes&&(activePlan?.timeCapMinutes||loadedWodSettings?.timeCapMinutes))r.timeCapMinutes=activePlan?.timeCapMinutes||loadedWodSettings.timeCapMinutes;}
  if(r.workoutType==='AMRAP'){r.durationMinutes=number('amrapMinutes',1,1440);r.score=`${number('amrapRounds')}R + ${number('amrapReps')}`;r.scoreUnit='ROUNDS_REPS';}
  if(r.workoutType==='EMOM'){const rounds=number('emomRounds',1,10000),reps=repList('emomReps',rounds);r.intervalSettings={workSeconds:emomMinutes()*60,restSeconds:0,rounds,scoreType:'CUSTOM'};r.score=$('emomSuccess').value+(reps.length?' | '+reps.join(', ')+' reps':'');}
  if(r.workoutType==='INTERVAL_TABATA'){const rounds=number('intervalRounds',1,10000),mode=$('intervalScoreType').value;r.intervalSettings={workSeconds:number('workSeconds',1,86400),restSeconds:number('restSeconds',0,86400),rounds,scoreType:mode};if(mode==='REPS'){const reps=repList('intervalRepList',rounds),total=$('intervalTotal').value===''?null:number('intervalTotal');if(total===null&&!reps.length)throw {key:'scoreRequired',el:$('intervalTotal')};const sum=reps.reduce((a,c)=>a+c,0);if(total!==null&&reps.length&&total!==sum)throw {key:'invalidSum',el:$('intervalTotal')};r.score=`${total??sum} reps`+(reps.length?' | '+reps.join(', '):'');}else{const final=$('intervalFinal').value.trim(),list=$('intervalTimeList').value.trim();if(!final&&!list)throw {key:'scoreRequired',el:$('intervalFinal')};let times=[];if(list){times=list.split(',').map(v=>secondsText(parseTime(v,'intervalTimeList')));if(times.length!==rounds)throw {key:'invalidRounds',el:$('intervalTimeList')};}r.score=(final?secondsText(parseTime(final,'intervalFinal')):'')+(final&&times.length?' | ':'')+times.join(', ');r.scoreUnit='TIME';}}
@@ -1080,7 +1090,7 @@ $('workoutForm').addEventListener('submit',e=>{
    const isSharedPlan = $('planSharePublic')?.checked ?? false;
    if(commit({...state,plans})){
      if(isSharedPlan && Supabase.session && Supabase.isApproved){
-       Supabase.publishSharedProgram(planTitle(p), p.date, p.weightUnit||'kg', p.content||p.title, p.category, p.items || null).catch(error=>Supabase.report(error));
+       Supabase.publishSharedProgram(planTitle(p), p.date, p.weightUnit||'kg', p.content||p.title, p.category, p.items || null, p.category==='WOD'?WodFormat.fromPlan(p):null).catch(error=>Supabase.report(error));
      }
      resetEntry('plan');$('todoFilter').value='all';$('todoCategory').value='';$('todoSearch').value='';calSelected=p.date;calCursor=p.date.slice(0,7);showPage('todo');notify(t(editing?'planUpdated':'planSaved'));
    }
@@ -1123,7 +1133,7 @@ $('entryLog').onclick=()=>setEntryMode('log');$('entryPlan').onclick=()=>setEntr
 for(const event of ['input','change'])$('workoutForm').addEventListener(event,()=>formDirty=true);
 function resetTimerState(){timer={running:false,elapsed:0,started:0,config:null,finished:false};$('timerStart').disabled=false;$('timerStart').textContent=t('start');$('timerProgress').style.width='0%';updateTimerIdle();}
 function resetEntry(mode){
- activePlan=null;activeCoachProgramId=null;entryMode=mode;const keepUnit=$('weightUnit').value;$('workoutForm').reset();$('weightUnit').value=keepUnit||'kg';$('date').value=localDate();oldWeightUnit=$('weightUnit').value;
+ activePlan=null;activeCoachProgramId=null;loadedWodSettings=null;$('publishedWodFormatNotice').hidden=true;entryMode=mode;const keepUnit=$('weightUnit').value;$('workoutForm').reset();$('weightUnit').value=keepUnit||'kg';$('date').value=localDate();oldWeightUnit=$('weightUnit').value;
  blocks=[blankBlock()];linkedTitle=null;dismissedSuggest.clear();
  scoreDrafts.REPS=null;scoreDrafts.TIME=null;scoreFields();setCategory('WOD');applyEntryMode();renderLinked();renderSuggest();resetTimerState();formDirty=false;
 }
@@ -1349,6 +1359,10 @@ async function loadPublishedIntoForm(p,source='coach'){if(!p||!await canReplaceE
  }else{
   $('wodTitle').value=cleanProgramTitle(p.title);
   $('content').value=p.program_text||'';
+  const resolved=WodFormat.resolve(p);
+  loadedWodSettings=resolved.settings;applyPublishedWod(loadedWodSettings);
+  $('publishedWodFormatNotice').hidden=false;
+  $('publishedWodFormatNotice').textContent=resolved.complete?t('wodFormatLoaded',{settings:wodFormatSummary(loadedWodSettings)}):t('wodFormatReview');
   setCategory('WOD');
  }
  applyEntryMode();
@@ -1568,7 +1582,7 @@ $('convertWeight').oninput=updateConverter;$('convertUnit').onchange=updateConve
 
 /* ---------------- Timer ---------------- */
 let timer={running:false,elapsed:0,started:0,config:null,finished:false};
-function timerConfig(){let type=category==='STRENGTH'?'FOR_TIME':$('workoutType').value;if(type==='FOR_QUALITY')type='FOR_TIME';if(type==='FOR_TIME'){const cap=category!=='WOD'||$('workoutType').value==='FOR_QUALITY'?0:entryMode==='plan'?($('plannedCap').value===''?0:number('plannedCap',1,1440)*60):$('timeCapped')?.checked?number('capMinutes',1,1440)*60:(activePlan?.timeCapMinutes||0)*60;return {type,total:cap,rounds:1,work:cap,rest:0};}if(type==='AMRAP'){const total=number('amrapMinutes',1,1440)*60;return {type,total,rounds:1,work:total,rest:0};}if(type==='EMOM'){const rounds=number('emomRounds',1,10000),work=emomMinutes()*60;return {type,total:rounds*work,rounds,work,rest:0};}const work=number('workSeconds',1,86400),rest=number('restSeconds',0,86400),rounds=number('intervalRounds',1,10000);return {type,total:work*rounds+rest*(rounds-1),rounds,work,rest};}
+function timerConfig(){let type=category==='STRENGTH'?'FOR_TIME':$('workoutType').value;if(type==='FOR_QUALITY')type='FOR_TIME';if(type==='FOR_TIME'){const cap=category!=='WOD'||$('workoutType').value==='FOR_QUALITY'?0:entryMode==='plan'?($('plannedCap').value===''?0:number('plannedCap',1,1440)*60):$('timeCapped')?.checked?number('capMinutes',1,1440)*60:(activePlan?.timeCapMinutes||loadedWodSettings?.timeCapMinutes||0)*60;return {type,total:cap,rounds:1,work:cap,rest:0};}if(type==='AMRAP'){const total=number('amrapMinutes',1,1440)*60;return {type,total,rounds:1,work:total,rest:0};}if(type==='EMOM'){const rounds=number('emomRounds',1,10000),work=emomMinutes()*60;return {type,total:rounds*work,rounds,work,rest:0};}const work=number('workSeconds',1,86400),rest=number('restSeconds',0,86400),rounds=number('intervalRounds',1,10000);return {type,total:work*rounds+rest*(rounds-1),rounds,work,rest};}
 function elapsedSeconds(){return (timer.elapsed+(timer.running?Date.now()-timer.started:0))/1000;}
 function updateTimerIdle(){if(!timer.config){try{const c=timerConfig();$('timerDisplay').textContent=secondsText(c.total&&['FOR_TIME','AMRAP'].includes(c.type)?c.total:c.work||0);$('timerLabel').textContent=TYPES[c.type];}catch{$('timerDisplay').textContent='00:00';}$('timerPhase').textContent=t('ready');}$('timerApply').hidden=entryMode==='plan'||category==='STRENGTH'||!['FOR_TIME','INTERVAL_TABATA'].includes($('workoutType').value);}
 function tick(){if(!timer.config)return;const c=timer.config;let sec=elapsedSeconds();if(c.total&&sec>=c.total){sec=c.total;if(!timer.finished){timer.elapsed=c.total*1000;timer.running=false;timer.finished=true;$('timerStart').textContent=t('finished');$('timerStart').disabled=true;notify(t('finished'));}}
@@ -1966,6 +1980,7 @@ function shareRowsFromDraft(d,unit,isPublic){const rows=[];
    program_text:p.content,
    category:p.category,
    is_public:isPublic!==false,
+   wod_settings:p.category==='WOD'?WodFormat.fromProgramPlan(p):null,
    items:p.category==='STRENGTH'?itemsForWire(p.items,d.newLifts):null
   });}
  for(const day of d.parsed.days){
@@ -1978,6 +1993,7 @@ function shareRowsFromDraft(d,unit,isPublic){const rows=[];
    unit,
    program_text:lines.join('\n')||`${d.name} · Day ${day.day}`,
    category:'WOD',
+   wod_settings:{workoutType:'FOR_QUALITY'},
    is_public:isPublic!==false,
    items:null
   });}
@@ -2003,6 +2019,7 @@ function setCoachPubMode(mode){
   if(!$('coachProgramName').value)$('coachProgramName').value=PROGRAM_DEFAULT_NAME;
  }else if(!$('coachProgramDate').value)$('coachProgramDate').value=localDate();
  $('coachProgramText').placeholder=prog?t('programTextHint'):t('coachTextHint');
+ renderCoachWodFormat();
 }
 $('coachModeSingle')?.addEventListener('click',()=>setCoachPubMode('single'));
 $('coachModeProgram')?.addEventListener('click',()=>setCoachPubMode('program'));
@@ -2033,7 +2050,7 @@ $('coachPreviewBtn')?.addEventListener('click',()=>{
  }
  coachPubDraft=null;
  const cat=$('coachProgramCategory').value||'WOD';
- if(cat!=='STRENGTH'){box.innerHTML=`<p class="help">${esc(t('coachPubNoLifts'))}</p>`;return;}
+ if(cat!=='STRENGTH'){try{box.textContent=wodFormatSummary(readCoachWodFormat());}catch(error){box.textContent=error.message;}return;}
  const parsed=itemsFromText(text);
  if(!parsed.items.length){box.innerHTML=`<div class="warn-list">${esc(t('coachPubNoLifts'))}</div>`;return;}
  const saved=state.customLifts;state.customLifts={...state.customLifts,...parsed.newLifts};
@@ -2087,6 +2104,8 @@ $('coachProgramForm')?.addEventListener('submit', async (e) => {
     title = `${title} · STRENGTH`;
   }
 
+  let wodSettings=null;
+  if(category==='WOD'){try{wodSettings=readCoachWodFormat();}catch(error){notify(error.message);return;}}
   let wire = null;
   if (category === 'STRENGTH') {
     const parsed = itemsFromText(text);
@@ -2102,7 +2121,7 @@ $('coachProgramForm')?.addEventListener('submit', async (e) => {
   submitBtn.disabled = true;
   submitBtn.textContent = t('syncing');
   try {
-    await Supabase.publishProgram(title, date, unit, text, isPub, category, wire);
+    await Supabase.publishProgram(title, date, unit, text, isPub, category, wire, wodSettings);
     notify(category === 'STRENGTH' && wire ? t('coachPubParsed', { n: wire.length }) : t('publishSuccess'));
     if (Supabase.droppedColumns?.includes('items')) notify(t('itemsColumnMissing'));
     $('coachProgramTitle').value = '';
@@ -2117,6 +2136,9 @@ $('coachProgramForm')?.addEventListener('submit', async (e) => {
     submitBtn.textContent = t('coachPublish');
   }
 });
+$('coachWodType').addEventListener('change',()=>{renderCoachWodFormat();$('coachPubPreview').textContent='';});
+$('coachProgramCategory').addEventListener('change',renderCoachWodFormat);
+$('coachWodSettings').addEventListener('input',()=>{$('coachPubPreview').textContent='';});
 setCoachPubMode('single');
 
 $('coachProgramsList')?.addEventListener('toggle', (e) => {
