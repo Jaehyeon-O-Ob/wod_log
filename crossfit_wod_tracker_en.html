@@ -169,6 +169,45 @@ body.auth-locked .shell,body.auth-locked .bottom-nav{filter:blur(14px);pointer-e
 .share-program-card input[type=checkbox]{width:18px;height:18px;accent-color:#2563eb;cursor:pointer}
 .share-program-card .share-help-text{margin:6px 0 0 26px;color:#1d4ed8;font-size:12px;line-height:1.4}
 
+
+/* Calendar: compact prescriptions and touch-friendly day actions. */
+.day-panel{scroll-margin-top:16px}
+.day-group{margin-top:20px;padding:16px;border:1px solid var(--line);border-radius:14px;background:#fafbf8;min-width:0}
+.day-group-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.day-group-heading h3{margin:0;font-size:17px;color:var(--ink);letter-spacing:0}
+.day-group-heading .pill{font-size:11px}
+.day-group>.day-card:last-child{margin-bottom:0}
+.coach-day-group{background:#fffcf3;border-color:#eadab2}
+.day-create-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px}
+.day-create-actions button{min-height:54px;font-size:15px;font-weight:800;padding:14px 12px;line-height:1.5}
+.day-create-actions button:only-child{grid-column:1/-1}
+.coach-workout{padding:0;overflow-wrap:anywhere}
+.coach-workout summary{display:block;list-style:none;padding:16px;cursor:pointer;touch-action:manipulation;border-radius:10px}
+.coach-workout summary::-webkit-details-marker{display:none}
+.coach-workout summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.coach-workout summary h4{font-size:16px;line-height:1.5;margin:9px 0 10px}
+.coach-detail-toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:44px;font-size:14px;font-weight:750;color:#374634}
+.coach-detail-toggle::after{content:'⌄';font-size:23px;line-height:1}
+.coach-workout[open] .coach-detail-toggle::after{content:'⌃'}
+.coach-workout .detail-hide,.coach-workout[open] .detail-show{display:none}
+.coach-workout[open] .detail-hide{display:inline}
+.coach-workout-body{margin:0 16px;padding:16px 0;border-top:1px solid var(--line);scroll-margin-top:16px}
+.coach-workout-body .record-content,.coach-workout-body .item-list li{font-size:14px!important;line-height:1.75}
+.coach-workout-body .item-list strong{font-size:14px}
+.coach-workout-body .day-actions .primary{flex:1;min-height:48px;font-size:14px}
+@media(max-width:640px){
+ .cal-toolbar{gap:12px}.cal-toolbar .view-toggle{width:100%;max-width:none;margin-bottom:0}
+ .cal-toolbar .actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .cal-toolbar .actions button{min-height:48px;font-size:13px;padding:10px 8px}
+ .cal-toolbar .actions button:first-child{grid-column:1/-1}
+ .cal-layout{gap:16px}.day-panel{padding:18px 12px}.day-panel h2{font-size:18px;line-height:1.5}
+ .day-group{padding:12px;margin-top:16px}.day-create-actions{grid-template-columns:minmax(0,1fr)}
+ .day-create-actions button{font-size:16px;min-height:56px}
+ .coach-workout summary{padding:12px}.coach-workout-body{margin:0 12px}
+ .day-panel .day-actions button{min-height:48px}
+ .day-panel .item-list{overflow-wrap:anywhere}
+ .main{padding-bottom:calc(112px + env(safe-area-inset-bottom))}
+}
 </style>
 </head>
 <body>
@@ -277,18 +316,6 @@ body.auth-locked .shell,body.auth-locked .bottom-nav{filter:blur(14px);pointer-e
 
   <section id="page-todo" class="page">
     <div class="page-head"><div><div class="eyebrow">PLAN. TRAIN. COMPLETE.</div><h1 data-t="todo"></h1><p data-t="todoIntro"></p></div><span class="stamp">01 / CALENDAR &amp; PLANS</span></div>
-    <div id="coachWodBanner" class="coach-wod-banner" hidden>
-      <div class="coach-wod-header">
-        <span class="role-pill coach" data-t="coachWod"></span>
-        <span class="cat-pill wod" style="margin-left:4px">WOD</span>
-        <h3 id="coachWodTitle"></h3>
-        <button type="button" id="loadCoachWodBtn" class="ghost small" data-t="loadCoachWod"></button>
-      </div>
-      <p id="coachWodContent" class="coach-wod-body"></p>
-      <div class="coach-wod-actions">
-        <button type="button" id="useCoachWodBtn" class="primary small" data-t="useCoachWod"></button>
-      </div>
-    </div>
     <div class="cal-toolbar">
       <div class="segmented view-toggle" role="group" aria-label="Calendar / List"><button id="viewCalendar" type="button" class="active" aria-pressed="true" data-t="calendarView"></button><button id="viewList" type="button" aria-pressed="false" data-t="listView"></button></div>
       <div class="actions">
@@ -631,6 +658,11 @@ Object.assign(T,LANG==='ko'?{
 }:{
  wodFormat:'WOD format and settings',wodFormatAuto:'Detect from text',wodFormatRequired:'Check the format, time and rounds. If detection is uncertain, choose a format and enter its settings.',wodFormatReview:'Some format or timing settings could not be determined. Check the prescription and form settings.',wodFormatLoaded:'Loaded settings: {settings}',wodFormatHelp:'The selected format and timing are copied into members’ result forms. Examples: EMOM 12 min / E2MOM 20 min / AMRAP 15 / For Time, Time Cap 10 min.'
 });
+Object.assign(T,LANG==='ko'?{
+ coachWorkouts:'코치 운동',sharedWorkouts:'회원 공유 운동',showWorkoutDetails:'운동 상세 확인하기',hideWorkoutDetails:'운동 상세 접기',noDayPlans:'이 날짜에 계획한 운동이 없습니다.',noDayCoachWorkouts:'이 날짜에 등록된 코치 운동이 없습니다.'
+}:{
+ coachWorkouts:'Coach workouts',sharedWorkouts:'Member-shared workouts',showWorkoutDetails:'View workout details',hideWorkoutDetails:'Hide workout details',noDayPlans:'No personal workouts planned for this date.',noDayCoachWorkouts:'No coach workouts published for this date.'
+});
 const KO=LANG==='ko', LOCALE=KO?'ko-KR':'en-US';
 const $=id=>document.getElementById(id);
 const t=(key,values={})=>Object.entries(values).reduce((s,[k,v])=>s.replaceAll('{'+k+'}',String(v)),T[key]??key);
@@ -843,7 +875,7 @@ function toggleBoxWodVisibility() {
   updateBoxWodBtn();
   notify(hideBoxWod ? (t('boxWodHiddenNotify') || '박스 와드/스트렝스를 캘린더에서 숨겼습니다.') : (t('boxWodShownNotify') || '박스 와드/스트렝스를 캘린더에 표시합니다.'));
   renderCalendar();
-  renderCoachWodBanner();
+
 }
 
 const Supabase = createWodCloud({url: SUPABASE_URL, key: SUPABASE_KEY});
@@ -1177,6 +1209,11 @@ for(const id of ['todoSearch','todoFilter','todoCategory'])$(id).addEventListene
 async function planAction(e){
   if(e.target.closest('#unhideBoxWodBtn')){toggleBoxWodVisibility();return;}
   const b=e.target.closest('button');if(!b)return;
+  if(b.hasAttribute('data-refresh-coach')){
+    b.disabled=true;
+    try{await loadCoachWodForSelectedDate();}finally{b.disabled=false;}
+    return;
+  }
   if(b.dataset.performPlan)await openPlan(b.dataset.performPlan,'log');
   if(b.dataset.editPlan)await openPlan(b.dataset.editPlan,'plan');
   if(b.dataset.deletePlan&&await confirmAction(t('deletePlanAsk'))){if(commit({...state,plans:state.plans.filter(p=>p.id!==b.dataset.deletePlan)})){if(activePlan?.id===b.dataset.deletePlan)resetEntry('log');notify(t('deleted'));}}
@@ -1230,35 +1267,34 @@ function renderCalendar(){
  $('calGrid').innerHTML=html;renderDayPanel();
 }
 function renderDayPanel(){
-  const d=calSelected,today=localDate(),plans=state.plans.filter(p=>p.date===d).sort((a,b)=>(a.category==='STRENGTH'?0:1)-(b.category==='STRENGTH'?0:1)),logs=ordered().filter(r=>r.date===d);
+  const d=calSelected,today=localDate(),panel=$('dayPanel'),plans=state.plans.filter(p=>p.date===d).sort((a,b)=>(a.category==='STRENGTH'?0:1)-(b.category==='STRENGTH'?0:1)),logs=ordered().filter(r=>r.date===d);
+  // Preserve expanded workouts on background refresh, but start collapsed on another date.
+  const expanded=new Set(panel.dataset.date===d?[...panel.querySelectorAll('[data-coach-details][open]')].map(el=>el.dataset.coachDetails):[]);
   let html=`<h2>${esc(new Date(d+'T12:00:00').toLocaleDateString(LOCALE,{weekday:'long',month:'long',day:'numeric'}))}${d===today?` <span class="pill">${esc(t('todayPlans'))}</span>`:''}</h2>`;
-  if(!plans.length&&!logs.length)html+=`<p class="subtle spaced">${esc(t('dayEmpty'))}</p>`;
-  if(plans.length)html+=`<div class="day-section"><h3>${esc(t(d<today?'dayMissed':'dayPlanned'))}</h3>${plans.map(planCardHTML).join('')}</div>`;
-  if(logs.length)html+=`<div class="day-section"><h3>${esc(t('dayDone'))}</h3>${logs.map(logCardHTML).join('')}</div>`;
-  html+=`<div class="day-actions"><button class="small" data-day-plan="${esc(d)}">${esc(t('planThisDay'))}</button>${d<=today?`<button class="small" data-day-log="${esc(d)}">${esc(t('logThisDay'))}</button>`:''}</div>`;
+  html+=`<section class="day-group" aria-labelledby="dayPlansHeading"><div class="day-group-heading"><h3 id="dayPlansHeading">${esc(t(d<today?'dayMissed':'dayPlanned'))}</h3><span class="pill">${plans.length}</span></div>${plans.length?plans.map(planCardHTML).join(''):`<p class="subtle">${esc(t('noDayPlans'))}</p>`}<div class="day-create-actions"><button type="button" class="secondary" data-day-plan="${esc(d)}">${esc(t('planThisDay'))}</button>${d<=today?`<button type="button" class="primary" data-day-log="${esc(d)}">${esc(t('logThisDay'))}</button>`:''}</div></section>`;
   if(!hideBoxWod){
     const cps=coachPrograms.filter(p=>p.start_date===d);
+    html+=`<section class="day-group coach-day-group" aria-labelledby="dayCoachHeading"><div class="day-group-heading"><h3 id="dayCoachHeading">${esc(t('coachWorkouts'))}</h3><span class="pill">${cps.length}</span><button type="button" class="ghost small" data-refresh-coach>${esc(t('coachCompletionRefresh'))}</button></div>`;
+    if(!cps.length)html+=`<p class="subtle">${esc(t('noDayCoachWorkouts'))}</p>`;
     for(const cp of cps){
-      const cat=getProgramCategory(cp);
-      const isStr=cat==='STRENGTH';
-      const cleanTitle=cleanProgramTitle(cp.title);
-      html+=`<div class="day-card ${isStr?'coach-str':'coach-wod'}"><div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:6px"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span class="cat-pill ${isStr?'str':'wod'}">${isStr?'STRENGTH':'WOD'}</span><span class="role-pill coach">${esc(isStr?(t('coachStrength')||'코치 STRENGTH'):t('coachWod'))}</span><h4 style="margin:0">${esc(cleanTitle)}</h4></div>${Supabase.isCoach?`<button type="button" class="danger small" data-del-coach-prog="${esc(cp.id)}">${esc(t('delete'))}</button>`:''}</div>${publishedBodyHTML(cp)}<div class="day-actions"><button type="button" class="primary small" data-coach-log="${esc(cp.id)}">${esc(isStr?(t('useCoachStrength')||'이 스트렝스로 기록하기'):t('useCoachWod'))}</button></div></div>`;
+      const isStr=getProgramCategory(cp)==='STRENGTH';
+      html+=`<details class="day-card coach-workout ${isStr?'coach-str':'coach-wod'}" data-coach-details="${esc(cp.id)}"${expanded.has(cp.id)?' open':''}><summary><span class="cat-pill ${isStr?'str':'wod'}">${isStr?'STRENGTH':'WOD'}</span><h4>${esc(cleanProgramTitle(cp.title))}</h4><span class="coach-detail-toggle"><span class="detail-show">${esc(t('showWorkoutDetails'))}</span><span class="detail-hide">${esc(t('hideWorkoutDetails'))}</span></span></summary><div class="coach-workout-body">${publishedBodyHTML(cp)}<div class="day-actions"><button type="button" class="primary" data-coach-log="${esc(cp.id)}">${esc(t(isStr?'useCoachStrength':'useCoachWod'))}</button>${Supabase.isCoach?`<button type="button" class="danger small" data-del-coach-prog="${esc(cp.id)}">${esc(t('delete'))}</button>`:''}</div></div></details>`;
     }
+    html+='</section>';
     const sps=sharedPrograms.filter(p=>p.start_date===d);
+    if(sps.length)html+=`<section class="day-group" aria-labelledby="daySharedHeading"><div class="day-group-heading"><h3 id="daySharedHeading">${esc(t('sharedWorkouts'))}</h3><span class="pill">${sps.length}</span></div>`;
     for(const sp of sps){
-      const cat=getProgramCategory(sp);
-      const isStr=cat==='STRENGTH';
-      const cleanTitle=cleanProgramTitle(sp.title);
+      const isStr=getProgramCategory(sp)==='STRENGTH';
       const canDel=Supabase.isCoach||(Supabase.user&&sp.user_id===Supabase.user.id);
-      html+=`<div class="day-card ${isStr?'shared-str':'shared-wod'}"><div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:6px"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span class="cat-pill ${isStr?'str':'wod'}">${isStr?'STRENGTH':'WOD'}</span><span class="role-pill member">${esc(sp.user_name||'Member')}</span><h4 style="margin:0">${esc(cleanTitle)}</h4></div>${canDel?`<button type="button" class="danger small" data-del-shared-prog="${esc(sp.id)}">${esc(t('delete'))}</button>`:''}</div>${publishedBodyHTML(sp)}<div class="day-actions"><button type="button" class="secondary small" data-shared-log="${esc(sp.id)}">${esc(isStr?(t('useCoachStrength')||'이 스트렝스로 기록하기'):t('useCoachWod'))}</button></div></div>`;
+      html+=`<div class="day-card ${isStr?'shared-str':'shared-wod'}"><div class="plan-title-line"><span class="cat-pill ${isStr?'str':'wod'}">${isStr?'STRENGTH':'WOD'}</span><span class="role-pill member">${esc(sp.user_name||'Member')}</span>${canDel?`<button type="button" class="danger small" data-del-shared-prog="${esc(sp.id)}">${esc(t('delete'))}</button>`:''}</div><h4>${esc(cleanProgramTitle(sp.title))}</h4>${publishedBodyHTML(sp)}<div class="day-actions"><button type="button" class="secondary small" data-shared-log="${esc(sp.id)}">${esc(t(isStr?'useCoachStrength':'useCoachWod'))}</button></div></div>`;
     }
-  } else {
-    const hasBox=coachPrograms.some(p=>p.start_date===d)||sharedPrograms.some(s=>s.start_date===d);
-    if(hasBox){
-      html+=`<div class="box-wod-hidden-banner"><span>👑 ${esc(t('boxWodHiddenNotice')||'박스 운동이 숨김 설정되어 있습니다.')}</span><button type="button" id="unhideBoxWodBtn" class="link-button small">${esc(t('showBoxWod'))}</button></div>`;
-    }
+    if(sps.length)html+='</section>';
+  }else if(coachPrograms.some(p=>p.start_date===d)||sharedPrograms.some(s=>s.start_date===d)){
+    html+=`<div class="box-wod-hidden-banner"><span>${esc(t('boxWodHiddenNotice'))}</span><button type="button" id="unhideBoxWodBtn" class="link-button small">${esc(t('showBoxWod'))}</button></div>`;
   }
-  $('dayPanel').innerHTML=html;
+  if(logs.length)html+=`<section class="day-group" aria-labelledby="dayDoneHeading"><div class="day-group-heading"><h3 id="dayDoneHeading">${esc(t('dayDone'))}</h3><span class="pill">${logs.length}</span></div>${logs.map(logCardHTML).join('')}</section>`;
+  panel.dataset.date=d;
+  panel.innerHTML=html;
 }
 $('calGrid').addEventListener('click',e=>{const b=e.target.closest('[data-date]');if(!b)return;calSelected=b.dataset.date;calCursor=calSelected.slice(0,7);renderCalendar();if(innerWidth<=1150)$('dayPanel').scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});});
 function shiftMonth(n){const [y,m]=calCursor.split('-').map(Number);calCursor=localDate(new Date(y,m-1+n,1)).slice(0,7);renderCalendar();}
@@ -1794,43 +1830,8 @@ async function loadCoachWodForSelectedDate() {
   const [cp,sp]=await Promise.all([Supabase.fetchCoachPrograms(),Supabase.fetchSharedPrograms()]);
   if(epoch!==Supabase.epoch)return;
   coachPrograms=cp||[];sharedPrograms=sp||[];
-  renderCoachWodBanner();renderCalendar();
+  renderCalendar();
  }catch(error){if(epoch===Supabase.epoch)Supabase.report(error);}
-}
-
-function renderCoachWodBanner() {
-  const banner = $('coachWodBanner');
-  if (!banner) return;
-  if (hideBoxWod) {
-    banner.hidden = true;
-    return;
-  }
-  const d = calSelected || localDate();
-  const prog = coachPrograms.find(p => p.start_date === d);
-  if (!prog) {
-    banner.hidden = true;
-    return;
-  }
-  banner.hidden = false;
-  const cat = getProgramCategory(prog);
-  const isStr = cat === 'STRENGTH';
-  const cleanTitle = cleanProgramTitle(prog.title);
-  $('coachWodTitle').textContent = `${cleanTitle} (${prog.start_date})`;
-  $('coachWodContent').innerHTML = publishedBodyHTML(prog);
-  banner.dataset.programId = prog.id;
-
-  const rolePill = banner.querySelector('.role-pill.coach');
-  if (rolePill) rolePill.textContent = isStr ? (t('coachStrength') || '코치 STRENGTH') : t('coachWod');
-  const catPill = banner.querySelector('.cat-pill');
-  if (catPill) {
-    catPill.textContent = isStr ? 'STRENGTH' : 'WOD';
-    catPill.className = `cat-pill ${isStr ? 'str' : 'wod'}`;
-    catPill.style.marginLeft = '4px';
-  }
-  const useBtn = $('useCoachWodBtn');
-  if (useBtn) {
-    useBtn.textContent = isStr ? (t('useCoachStrength') || '오늘 이 스트렝스 기록하기') : t('useCoachWod');
-  }
 }
 
 /* ---------------- Event Listeners for Supabase & Auth ---------------- */
@@ -1854,7 +1855,7 @@ const doSignOutUser = async () => {
   await Supabase.signOut();
   coachPrograms = [];
   sharedPrograms = [];
-  renderCoachWodBanner();
+
   renderCalendar();
   showPage('todo');
   notify(t('signOut'));
@@ -1950,22 +1951,6 @@ $('authForm')?.addEventListener('submit', async (e) => {
   } finally {
     btn.disabled = false;
     btn.textContent = t(authMode === 'signIn' ? 'signIn' : 'signUp');
-  }
-});
-
-$('useCoachWodBtn')?.addEventListener('click', async () => {
-  const d = calSelected || localDate();
-  const prog = coachPrograms.find(p => p.start_date === d);
-  if (prog) await loadPublishedIntoForm(prog);
-});
-
-$('loadCoachWodBtn')?.addEventListener('click', async () => {
-  $('loadCoachWodBtn').disabled = true;
-  try {
-    await loadCoachWodForSelectedDate();
-    if(Supabase.syncStatus!=='offline')notify(t('loadCoachWod'));
-  } finally {
-    $('loadCoachWodBtn').disabled = false;
   }
 });
 
