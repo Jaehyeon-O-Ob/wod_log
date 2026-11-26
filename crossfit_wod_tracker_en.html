@@ -309,7 +309,7 @@ body.auth-locked .shell,body.auth-locked .bottom-nav{filter:blur(14px);pointer-e
             <input type="checkbox" id="planSharePublic">
             <span data-t="planShareLabel"></span>
           </label>
-          <p class="help" data-t="planShareHint"></p>
+          <p id="planShareHint" class="help" data-t="planShareHint"></p>
         </div>
         <div id="formError" class="form-error" role="alert" hidden></div><div class="save-bar"><button id="saveEntry" type="submit" class="primary" data-t="save"></button></div>
       </form>
@@ -403,89 +403,19 @@ body.auth-locked .shell,body.auth-locked .bottom-nav{filter:blur(14px);pointer-e
       </div>
       <span class="stamp">06 / COACH</span>
     </div>
-    <div class="coach-grid">
-      <div class="panel">
-        <div class="panel-header">
-          <h2 data-t="coachPublish"></h2>
-          <span class="role-pill coach">COACH</span>
-        </div>
-        <form id="coachProgramForm" class="spaced">
-          <div class="field">
-            <label data-t="coachPubMode"></label>
-            <div class="segmented" role="group">
-              <button type="button" id="coachModeSingle" class="active" data-t="coachPubSingle"></button>
-              <button type="button" id="coachModeProgram" data-t="coachPubProgram"></button>
-            </div>
-            <p class="help" data-t="coachPubModeHint"></p>
-          </div>
-          <div class="row three">
-            <div class="field" id="coachDateField">
-              <label for="coachProgramDate" data-t="date"></label>
-              <input id="coachProgramDate" type="date">
-            </div>
-            <div class="field" id="coachStartField" hidden>
-              <label for="coachProgramStart" data-t="programStart"></label>
-              <input id="coachProgramStart" type="date">
-            </div>
-            <div class="field">
-              <label for="coachProgramUnit" data-t="unit"></label>
-              <select id="coachProgramUnit">
-                <option value="kg">kg</option>
-                <option value="lb">lb</option>
-              </select>
-            </div>
-            <div class="field" id="coachCategoryField">
-              <label for="coachProgramCategory" data-t="coachCategory"></label>
-              <select id="coachProgramCategory">
-                <option value="WOD">WOD</option>
-                <option value="STRENGTH">STRENGTH</option>
-              </select>
-            </div>
-          </div>
-          <fieldset id="coachWodFormat" style="border:0;padding:0;margin:0;min-width:0">
-            <div class="field"><label for="coachWodType" data-t="wodFormat"></label><select id="coachWodType"><option value="AUTO" data-t="wodFormatAuto"></option><option value="FOR_TIME">For Time</option><option value="AMRAP">AMRAP</option><option value="EMOM">EMOM / EOMOM</option><option value="INTERVAL_TABATA">Tabata / Interval</option><option value="FOR_QUALITY">For Quality</option></select></div>
-            <div id="coachWodSettings" class="row"></div><p class="help" data-t="wodFormatHelp"></p>
-          </fieldset>
-          <div class="field" id="coachNameField" hidden>
-            <label for="coachProgramName" data-t="programName"></label>
-            <input id="coachProgramName" maxlength="80">
-          </div>
-          <div class="field" id="coachTitleField">
-            <label for="coachProgramTitle" data-t="title"></label>
-            <input id="coachProgramTitle" maxlength="120" placeholder="Fran / Squat Cycle Day 3">
-          </div>
-          <div class="field">
-            <label for="coachProgramText" data-t="content"></label>
-            <textarea id="coachProgramText" maxlength="15000" style="min-height:160px"></textarea>
-            <p class="help" data-t="wodSectionHint"></p>
-          </div>
-          <div class="field">
-            <label class="check">
-              <input type="checkbox" id="coachProgramPublic" checked>
-              <span data-t="coachProgramPublicLabel"></span>
-            </label>
-          </div>
-          <div id="coachPubPreview" class="program-preview"></div>
-          <div class="block-actions">
-            <button type="button" id="coachPreviewBtn" class="secondary small" data-t="programPreview"></button>
-            <button type="submit" class="primary" data-t="coachPublish"></button>
-          </div>
-        </form>
+    <div class="panel">
+      <div class="panel-header">
+        <h2 data-t="coachMembers"></h2>
+        <button type="button" id="refreshMembersBtn" class="ghost small">↻</button>
       </div>
-      <div class="panel">
-        <div class="panel-header">
-          <h2 data-t="coachMembers"></h2>
-          <button type="button" id="refreshMembersBtn" class="ghost small">↻</button>
-        </div>
-        <div class="segmented member-filters" role="group">
-          <button type="button" id="filterAllMembers" class="active" data-filter="all" data-t="filterAll"></button>
-          <button type="button" id="filterPendingMembers" data-filter="pending" data-t="filterPending"></button>
-          <button type="button" id="filterApprovedMembers" data-filter="approved" data-t="filterApproved"></button>
-        </div>
-        <div id="membersList" class="members-list"></div>
+      <div class="segmented member-filters" role="group">
+        <button type="button" id="filterAllMembers" class="active" data-filter="all" data-t="filterAll"></button>
+        <button type="button" id="filterPendingMembers" data-filter="pending" data-t="filterPending"></button>
+        <button type="button" id="filterApprovedMembers" data-filter="approved" data-t="filterApproved"></button>
       </div>
+      <div id="membersList" class="members-list"></div>
     </div>
-        <div class="panel spaced">
+    <div class="panel spaced">
       <div class="panel-header">
         <h2 data-t="coachEditRequests"></h2>
         <span id="editRequestsCount" class="pill">0</span>
@@ -493,7 +423,10 @@ body.auth-locked .shell,body.auth-locked .bottom-nav{filter:blur(14px);pointer-e
       <div id="coachEditRequestsList" class="edit-requests-list"></div>
     </div>
     <div class="panel spaced">
-      <h2 data-t="coachPrograms"></h2>
+      <div class="panel-header">
+        <h2 data-t="coachPrograms"></h2>
+        <button type="button" id="refreshCoachProgramsBtn" class="ghost small">↻</button>
+      </div>
       <div id="coachProgramsList" class="coach-programs-list"></div>
     </div>
   </section>
@@ -687,6 +620,43 @@ Object.assign(T,LANG==='ko'?{
  compareIntro:'Compare bests and 1RMs within a lift family across the main lift and all logged variation / custom movement names.',
  strengthFormHint:'Choose one of the 20 categories, then pick a previous movement or type your own (e.g. Power Snatch). You can also choose which 1RM to base % weights on.',
  legacyGroupLabel:'Legacy saved lifts',fromLogs:'From logs',mainLiftSection:'Main lift',variationLiftSection:'Variations / specific movements'
+});
+Object.assign(T,LANG==='ko'?{
+ sharedWorkoutsUnified:'공유 운동',noDaySharedWorkouts:'이 날짜에 공유된 운동이 없습니다.',sharedBadge:'공유 중',
+ planShareLabel:'공유 운동으로 함께 올리기',
+ planShareHint:'체크하면 박스 달력의 "공유 운동"에 표시됩니다. 이미 공유한 계획을 수정해 저장하면 중복 생성 없이 기존 공유 운동이 수정됩니다.',
+ planShareAlreadyLinked:'이미 공유 운동에 연결되어 있습니다. 저장하면 기존 공유 운동이 수정됩니다. 체크를 해제하면 공유 운동에서 삭제할 수 있습니다.',
+ sharedEditing:'공유 운동 수정 중 · {title} · {date}',sharedUpdateSave:'공유 운동 수정 저장',
+ sharedUpdated:'공유 운동을 수정했습니다.',sharedPublished:'공유 운동으로 등록했습니다.',
+ sharedUnshareAsk:'공유 체크가 해제되었습니다. 박스 "공유 운동"에서도 기존 항목을 삭제할까요?',sharedUnshared:'공유 운동에서 삭제했습니다.',
+ deleteLinkedSharedAsk:'이 계획과 연결된 박스 "공유 운동"도 함께 삭제할까요?',
+ sharedDupOverwriteAsk:'같은 날짜({date})에 이미 공유된 "{title}" 운동이 있습니다.\n기존 공유 운동을 수정(덮어쓰기)할까요?\n(취소를 누르면 새 공유 운동으로 추가합니다)',
+ sharedUpdateFailedNoRls:'공유 운동을 수정하지 못했습니다. Supabase의 UPDATE 권한(RLS)을 확인해주세요. (중복 생성을 막기 위해 새로 등록하지 않았습니다.)',
+ useSharedWod:'이 WOD 기록하기',useSharedStrength:'이 스트렝스 기록하기',
+ coachPrograms:'공유 운동 관리',
+ coachProgramDesc:'회원 승인, 기록 수정 승인, 공유 운동(수행한 사람·수정·삭제)을 관리합니다. 새 공유 운동은 달력 → 새 운동 계획 또는 프로그램 가져오기에서 공유 체크로 등록하세요.',
+ coachSharedGroup:'코치 공유 운동',memberSharedGroup:'회원 공유 운동',noSharedPrograms:'등록된 공유 운동이 없습니다.',
+ hideBoxWod:'공유 운동 숨김',showBoxWod:'공유 운동 보기',
+ boxWodHiddenNotify:'공유 운동을 캘린더에서 숨겼습니다.',boxWodShownNotify:'공유 운동을 캘린더에 표시합니다.',
+ boxWodHiddenNotice:'공유 운동이 숨김 설정되어 있습니다.'
+}:{
+ sharedWorkoutsUnified:'Shared workouts',noDaySharedWorkouts:'No shared workouts for this date.',sharedBadge:'Shared',
+ planShareLabel:'Share to box Shared workouts',
+ planShareHint:'When checked, this appears under Shared workouts on the box calendar. Editing an already-shared plan updates the existing shared workout instead of creating a duplicate.',
+ planShareAlreadyLinked:'Linked to an existing shared workout. Saving updates it in place. Unchecking lets you remove it from Shared workouts.',
+ sharedEditing:'Editing shared workout · {title} · {date}',sharedUpdateSave:'Save shared workout',
+ sharedUpdated:'Shared workout updated.',sharedPublished:'Published to Shared workouts.',
+ sharedUnshareAsk:'Sharing is unchecked. Also remove the linked workout from Shared workouts?',sharedUnshared:'Removed from Shared workouts.',
+ deleteLinkedSharedAsk:'Also delete the linked box Shared workout?',
+ sharedDupOverwriteAsk:'A shared workout "{title}" already exists on {date}.\nUpdate (overwrite) the existing shared workout?\n(Cancel to add as a new entry)',
+ sharedUpdateFailedNoRls:'Could not update the shared workout. Check your Supabase UPDATE RLS policy. (No duplicate was created.)',
+ useSharedWod:'Log this WOD',useSharedStrength:'Log this Strength',
+ coachPrograms:'Manage shared workouts',
+ coachProgramDesc:'Manage member approvals, record edit requests, and shared workouts (participation, editing, deletion). To share a new workout, use Plan a workout or Import program with sharing enabled.',
+ coachSharedGroup:'Coach-shared workouts',memberSharedGroup:'Member-shared workouts',noSharedPrograms:'No shared workouts yet.',
+ hideBoxWod:'Hide Shared Workouts',showBoxWod:'Show Shared Workouts',
+ boxWodHiddenNotify:'Shared workouts are now hidden from the calendar.',boxWodShownNotify:'Shared workouts are now visible on the calendar.',
+ boxWodHiddenNotice:'Shared workouts are currently hidden.'
 });
 const KO=LANG==='ko', LOCALE=KO?'ko-KR':'en-US';
 const $=id=>document.getElementById(id);
@@ -1019,6 +989,7 @@ function validLog(r,custom=state.customLifts){
  return shortText(r.prescription,300)&&validProgram(r.program);
 }
 function validProfiles(profiles,custom){return plainObject(profiles)&&Object.entries(profiles).every(([k,p])=>!!liftInfo(k,custom)&&plainObject(p)&&finite(p.weight,.1,100000)&&['lb','kg'].includes(p.unit)&&validDate(p.updatedAt));}
+function validSharedRef(ref){return ref===undefined||(plainObject(ref)&&Object.keys(ref).every(k=>['table','id'].includes(k))&&['coach_programs','shared_programs'].includes(ref.table)&&typeof ref.id==='string'&&ref.id.length>0&&ref.id.length<=150);}
 function validPlan(p,custom=state.customLifts){
  if(!plainObject(p)||p.status!=='PLANNED'||typeof p.id!=='string'||!p.id||p.score!==undefined||!validLog({...p,score:'planned',scoreUnit:'CUSTOM'},custom))return false;
  if(p.category==='STRENGTH'&&(!Array.isArray(p.items)||!p.items.length||p.items.length>30||!p.items.every(it=>validItem(it,custom))))return false;
@@ -1026,6 +997,7 @@ function validPlan(p,custom=state.customLifts){
  if(p.workoutType==='AMRAP'&&!p.durationMinutes)return false;
  if(['EMOM','INTERVAL_TABATA'].includes(p.workoutType)&&!p.intervalSettings)return false;
  if(p.updatedAt!==undefined&&(typeof p.updatedAt!=='string'||isNaN(Date.parse(p.updatedAt))))return false;
+ if(!validSharedRef(p.sharedRef))return false;
  return true;
 }
 // v1.1/1.2 single-lift strength plans become one-item sessions; logs and the storage key are unchanged.
@@ -1184,7 +1156,7 @@ function openAuthModal() {
 
 /* ---------------- Navigation ---------------- */
 let category='WOD', selected=new Set(), oldWeightUnit='lb', oldRmUnit='lb';
-let entryMode='log', activePlan=null, formDirty=false, activeCoachProgramId=null, loadedWodSettings=null;
+let entryMode='log', activePlan=null, editingShared=null, formDirty=false, activeCoachProgramId=null, loadedWodSettings=null;
 let blocks=[], linkedTitle=null, suggestSource='title';
 const dismissedSuggest=new Set();
 let calCursor=localDate().slice(0,7), calSelected=localDate(), todoView='calendar';
@@ -1414,7 +1386,7 @@ function planItems(){if(!blocks.length)throw {key:'liftRequired',el:$('addLiftBl
   if(b.baseMode==='custom'&&finite(b.baseWeight,.1,100000))item.baseWeight=Number(fmtNum(b.baseWeight));
   if(b.text)item.text=b.text.slice(0,300);if(b.note)item.note=b.note.slice(0,1000);return item;});}
 function planRecord(){const b=baseRecord(),r={...b,id:activePlan?.id||'plan_'+uid(),status:'PLANNED',createdAt:activePlan?.createdAt||b.createdAt,updatedAt:new Date().toISOString(),workoutType:category==='WOD'?$('workoutType').value:'STRENGTH_MAX',weightUsed:category==='WOD'&&$('weightUsed').value!==''?number('weightUsed',0,100000,false):null};
- for(const k of ['programId','program'])if(activePlan?.[k]!==undefined)r[k]=activePlan[k];
+ for(const k of ['programId','program','sharedRef'])if(activePlan?.[k]!==undefined)r[k]=activePlan[k];
  if(category==='STRENGTH'){r.items=planItems();r.liftKey=r.items[0].liftKey;r.title=activePlan?.category==='STRENGTH'&&activePlan.program?activePlan.title:r.items.map(i=>i.movementName||liftInfo(i.liftKey).en).join(' + ').slice(0,160);return r;}
  r.title=$('wodTitle').value.trim();
  if(r.workoutType==='FOR_TIME'&&$('plannedCap').value!=='')r.timeCapMinutes=number('plannedCap',1,1440);
@@ -1444,22 +1416,184 @@ function celebrate(c){$('celebrateTitle').textContent=t(c.pr?'prTitle':'maxTitle
 $('celebrateClose').onclick=()=>$('celebrateDialog').close();
 $('celebrateRM').onclick=()=>{const profiles={...state.profiles};for(const o of pendingRM)profiles[o.key]={weight:o.weight,unit:o.unit,updatedAt:localDate()};pendingRM=[];if(commit({...state,profiles})){loadRM();notify(t('rmUpdated'));}$('celebrateDialog').close();};
 
+/* ---------------- Unified Shared Workouts ---------------- */
+function allSharedEntries(date=null){
+ const out=[];
+ for(const p of coachPrograms){
+  if(date&&p.start_date!==date)continue;
+  out.push({table:'coach_programs',id:p.id,row:p,isCoachSource:true,category:getProgramCategory(p),date:p.start_date,title:cleanProgramTitle(p.title),authorLabel:t('coachRole'),canEdit:Supabase.isCoach,canDelete:Supabase.isCoach});
+ }
+ for(const p of sharedPrograms){
+  if(date&&p.start_date!==date)continue;
+  const isOwner=!!(Supabase.user&&p.user_id===Supabase.user.id);
+  out.push({table:'shared_programs',id:p.id,row:p,isCoachSource:false,category:getProgramCategory(p),date:p.start_date,title:cleanProgramTitle(p.title),authorLabel:p.user_name||t('memberRole'),canEdit:Supabase.isCoach||isOwner,canDelete:Supabase.isCoach||isOwner});
+ }
+ return out.sort((a,b)=>(a.isCoachSource===b.isCoachSource?0:a.isCoachSource?-1:1)||((a.category==='STRENGTH'?0:1)-(b.category==='STRENGTH'?0:1))||String(a.row.created_at||'').localeCompare(String(b.row.created_at||'')));
+}
+function findSharedEntry(table,id){
+ if(!table||!id)return null;
+ const inLoaded=allSharedEntries().find(e=>e.table===table&&e.id===id);
+ if(inLoaded)return inLoaded;
+ if(table==='coach_programs'){
+  const row=cachedCoachPrograms.find(p=>p.id===id);
+  if(row)return {table:'coach_programs',id:row.id,row,isCoachSource:true,category:getProgramCategory(row),date:row.start_date,title:cleanProgramTitle(row.title),authorLabel:t('coachRole'),canEdit:Supabase.isCoach,canDelete:Supabase.isCoach};
+ }
+ return null;
+}
+function sharedPayloadFromPlan(p,table,existingRow=null){
+ const baseTitle=planTitle(p);
+ const title=p.category==='STRENGTH'&&!baseTitle.toUpperCase().includes('STRENGTH')?`${baseTitle} · STRENGTH`:baseTitle;
+ const summaryLines=p.category==='STRENGTH'?(p.items||[]).map(it=>`${itemTitle(it)} - ${it.rows.map(r=>rowText(r,it,p.weightUnit||'kg')).join(', ')}`):[];
+ const extraText=(p.content||'').trim();
+ const program_text=p.category==='STRENGTH'?[...summaryLines,extraText].filter(Boolean).join('\n'):(extraText||p.title);
+ const patch={
+  title,
+  start_date:p.date,
+  unit:p.weightUnit||'kg',
+  program_text,
+  category:p.category,
+  items:p.category==='STRENGTH'&&p.items?.length?itemsForWire(p.items):null,
+  wod_settings:p.category==='WOD'?WodFormat.fromPlan(p):null
+ };
+ if(table==='coach_programs')patch.is_public=existingRow?existingRow.is_public!==false:true;
+ return patch;
+}
+function findDuplicateShared(plan,prevPlan=null){
+ const dates=new Set([plan.date,prevPlan?.date].filter(Boolean));
+ const titles=new Set([normalized(cleanProgramTitle(planTitle(plan))),prevPlan?normalized(cleanProgramTitle(planTitle(prevPlan))):''].filter(Boolean));
+ return allSharedEntries().find(e=>e.canEdit&&e.category===plan.category&&dates.has(e.date)&&titles.has(normalized(e.title)))||null;
+}
+function syncLocalPlanFromShared(table,id,updatedPlan){
+ const match=state.plans.find(x=>x.sharedRef?.table===table&&x.sharedRef?.id===id);
+ if(!match)return;
+ const synced={...updatedPlan,id:match.id,createdAt:match.createdAt,notes:match.notes,sharedRef:match.sharedRef};
+ if(match.program)synced.program=match.program;
+ if(match.programId)synced.programId=match.programId;
+ if(validPlan(synced))commit({...state,plans:state.plans.map(x=>x.id===match.id?synced:x)});
+}
+function clearLocalSharedRef(table,id){
+ if(!state.plans.some(x=>x.sharedRef?.table===table&&x.sharedRef?.id===id))return;
+ const plans=state.plans.map(x=>{if(x.sharedRef?.table===table&&x.sharedRef?.id===id){const copy={...x};delete copy.sharedRef;return copy;}return x;});
+ commit({...state,plans});
+}
+async function upsertSharedForPlan(p,prevPlan=null){
+ let targetRef=prevPlan?.sharedRef||null;
+ if(!targetRef){
+  const dup=findDuplicateShared(p,prevPlan);
+  if(dup&&await confirmAction(t('sharedDupOverwriteAsk',{date:displayDate(dup.date),title:dup.title}))){
+   targetRef={table:dup.table,id:dup.id};
+  }
+ }
+ if(targetRef){
+  const existingEntry=findSharedEntry(targetRef.table,targetRef.id);
+  const patch=sharedPayloadFromPlan(p,targetRef.table,existingEntry?.row||null);
+  try{
+   await Supabase.updatePublishedProgram(targetRef.table,targetRef.id,patch);
+   return {status:'updated',ref:targetRef};
+  }catch(err){
+   if(err.code==='NOT_UPDATED'){
+    const stillExists=await Supabase.fetchPublishedProgram(targetRef.table,targetRef.id).catch(()=>({id:targetRef.id}));
+    if(stillExists)throw new Error(t('sharedUpdateFailedNoRls'));
+    targetRef=null; // Deleted on server; fall through to create a fresh row.
+   }else throw err;
+  }
+ }
+ const table=Supabase.isCoach?'coach_programs':'shared_programs';
+ const payload=sharedPayloadFromPlan(p,table);
+ const res=table==='coach_programs'
+  ? await Supabase.publishProgram(payload.title,payload.start_date,payload.unit,payload.program_text,true,payload.category,payload.items,payload.wod_settings)
+  : await Supabase.publishSharedProgram(payload.title,payload.start_date,payload.unit,payload.program_text,payload.category,payload.items,payload.wod_settings);
+ const newId=res?.[0]?.id||null;
+ return {status:'created',ref:newId?{table,id:newId}:null};
+}
+async function openSharedForEdit(table,id){
+ if(!await canReplaceEntry())return;
+ const entry=findSharedEntry(table,id);
+ if(!entry||!entry.canEdit)return;
+ const row=entry.row, cat=entry.category, unit=row.unit||'kg';
+ resetEntry('plan');
+ editingShared={table,id,row:JSON.parse(JSON.stringify(row))};
+ $('date').value=row.start_date||localDate();
+ $('weightUnit').value=unit;oldWeightUnit=unit;
+ if(cat==='STRENGTH'){
+  const adopted=adoptItems(row.items);
+  if(adopted){
+   blocks=adopted.items.map(it=>blockFromItem(it,'plan',unit));
+   $('content').value=itemsFromText(row.program_text||'').rest;
+  }else{
+   const parsed=itemsFromText(row.program_text||'');
+   blocks=parsed.items.length?parsed.items.map(it=>blockFromItem(it,'plan',unit)):[blankBlock()];
+   $('content').value=parsed.items.length?parsed.rest:(row.program_text||'');
+  }
+  setCategory('STRENGTH');
+ }else{
+  $('wodTitle').value=cleanProgramTitle(row.title);
+  $('content').value=row.program_text||'';
+  const resolved=WodFormat.resolve(row);
+  loadedWodSettings=resolved.settings;
+  if(loadedWodSettings)applyPublishedWod(loadedWodSettings);
+  setCategory('WOD');
+ }
+ applyEntryMode();updateTimerIdle();formDirty=false;showPage('add');
+}
+
 /* ---------------- Submit ---------------- */
-$('workoutForm').addEventListener('submit',e=>{
+$('workoutForm').addEventListener('submit',async e=>{
  e.preventDefault();$('formError').hidden=true;
  if(!Supabase.session){openAuthModal();notify(t('loginRequired'));return;}
+ const saveBtn=$('saveEntry');
  try{
+  if(editingShared){
+   const p=planRecord();if(!validPlan(p))throw {key:'invalid'};
+   const target=editingShared;
+   const patch=sharedPayloadFromPlan(p,target.table,target.row);
+   saveBtn.disabled=true;
+   try{
+    await Supabase.updatePublishedProgram(target.table,target.id,patch);
+    syncLocalPlanFromShared(target.table,target.id,p);
+    await loadCoachWodForSelectedDate();
+    if(Supabase.isCoach&&!$('page-coach').hidden)await loadCoachPublishedPrograms();
+    resetEntry('log');calSelected=p.date;calCursor=p.date.slice(0,7);setTodoView('calendar');showPage('todo');
+    notify(t('sharedUpdated'));
+   }catch(err){
+    if(err.code==='NOT_UPDATED')notify(t('sharedUpdateFailedNoRls'));
+    else Supabase.report(err);
+   }finally{saveBtn.disabled=false;}
+   return;
+  }
   if(activePlan){const current=state.plans.find(p=>p.id===activePlan.id);if(!current||JSON.stringify(current)!==JSON.stringify(activePlan))throw {key:'planMissing'};}
   if(entryMode==='plan'){
    const p=planRecord();if(!validPlan(p))throw {key:'invalid'};
-   const editing=!!activePlan,plans=editing?state.plans.map(x=>x.id===activePlan.id?p:x):[...state.plans,p];
-   const isSharedPlan = $('planSharePublic')?.checked ?? false;
-   if(commit({...state,plans})){
-     if(isSharedPlan && Supabase.session && Supabase.isApproved){
-       Supabase.publishSharedProgram(planTitle(p), p.date, p.weightUnit||'kg', p.content||p.title, p.category, p.items ? itemsForWire(p.items) : null, p.category==='WOD'?WodFormat.fromPlan(p):null).catch(error=>Supabase.report(error));
+   const prevPlan=activePlan, editing=!!prevPlan, prevRef=prevPlan?.sharedRef||null;
+   const isSharedPlan=$('planSharePublic')?.checked??false;
+   const plans=editing?state.plans.map(x=>x.id===prevPlan.id?p:x):[...state.plans,p];
+   if(!commit({...state,plans}))return;
+   let notifyMsg=t(editing?'planUpdated':'planSaved');
+   saveBtn.disabled=true;
+   try{
+    if(isSharedPlan&&Supabase.session&&Supabase.isApproved){
+     const res=await upsertSharedForPlan(p,prevPlan);
+     if(res.ref){
+      const linked={...p,sharedRef:res.ref};
+      commit({...state,plans:state.plans.map(x=>x.id===p.id?linked:x)});
      }
-     resetEntry('plan');$('todoFilter').value='all';$('todoCategory').value='';$('todoSearch').value='';calSelected=p.date;calCursor=p.date.slice(0,7);showPage('todo');notify(t(editing?'planUpdated':'planSaved'));
-   }
+     await loadCoachWodForSelectedDate();
+     notifyMsg=t(res.status==='updated'?'sharedUpdated':'sharedPublished');
+    }else if(!isSharedPlan&&prevRef&&Supabase.session&&Supabase.isApproved){
+     if(await confirmAction(t('sharedUnshareAsk'))){
+      await Supabase.deletePublishedProgram(prevRef.table,prevRef.id);
+      const unlinked={...p};delete unlinked.sharedRef;
+      commit({...state,plans:state.plans.map(x=>x.id===p.id?unlinked:x)});
+      await loadCoachWodForSelectedDate();
+      notifyMsg=t('sharedUnshared');
+     }
+    }
+   }catch(err){
+    Supabase.report(err);
+    notifyMsg='';
+   }finally{saveBtn.disabled=false;}
+   resetEntry('plan');$('todoFilter').value='all';$('todoCategory').value='';$('todoSearch').value='';calSelected=p.date;calCursor=p.date.slice(0,7);showPage('todo');
+   if(notifyMsg)notify(notifyMsg);
    return;
   }
   const logs=logRecords();if(!logs.every(l=>validLog(l)))throw {key:'invalid'};
@@ -1477,29 +1611,31 @@ $('workoutForm').addEventListener('submit',e=>{
 
 /* ---------------- Entry mode & plans ---------------- */
 function applyEntryMode(){
- const plan=entryMode==='plan',type=$('workoutType').value;
+ const plan=entryMode==='plan',type=$('workoutType').value,lockedMode=!!activePlan||!!editingShared;
  $('entryLog').classList.toggle('active',!plan);$('entryPlan').classList.toggle('active',plan);
  $('entryLog').setAttribute('aria-pressed',String(!plan));$('entryPlan').setAttribute('aria-pressed',String(plan));
- $('entryLog').disabled=!!activePlan;$('entryPlan').disabled=!!activePlan;
+ $('entryLog').disabled=lockedMode;$('entryPlan').disabled=lockedMode;
  $('entryTitle').textContent=t(plan?'planEntry':'newEntry');$('entryHint').textContent=t(plan?'planHint':'formIntro');
  $('entryDateLabel').textContent=t(plan?'plannedDate':'date');$('entryWeightLabel').textContent=t(plan?'targetWeight':'weight');
- $('saveEntry').textContent=t(plan?(activePlan?'planUpdate':'planSave'):(activePlan?'completePlan':'save'));
+ $('saveEntry').textContent=editingShared?t('sharedUpdateSave'):t(plan?(activePlan?'planUpdate':'planSave'):(activePlan?'completePlan':'save'));
  $('scoreFields').hidden=plan&&['FOR_TIME','FOR_QUALITY'].includes(type);$('plannedCapField').hidden=!plan||type!=='FOR_TIME';
  for(const id of ['amrapRounds','amrapReps','emomSuccess','emomReps','qualityResult'])if($(id))$(id).closest('.field').hidden=plan;
  if($('intervalScoreFields'))$('intervalScoreFields').hidden=plan;
  $('coachCompletionNotice').hidden=!activeCoachProgramId;
- $('activePlanBanner').hidden=!activePlan;
- if(activePlan)$('activePlanText').textContent=t(plan?'planEditing':'planPerforming',{title:recordTitle(activePlan),date:displayDate(activePlan.date)});
+ $('activePlanBanner').hidden=!activePlan&&!editingShared;
+ if(editingShared)$('activePlanText').textContent=t('sharedEditing',{title:cleanProgramTitle(editingShared.row.title),date:displayDate(editingShared.row.start_date||localDate())});
+ else if(activePlan)$('activePlanText').textContent=t(plan?'planEditing':'planPerforming',{title:recordTitle(activePlan),date:displayDate(activePlan.date)});
  $('timerApply').hidden=plan||category==='STRENGTH'||!['FOR_TIME','INTERVAL_TABATA'].includes(type);
- if($('planShareField'))$('planShareField').hidden=!plan;
+ if($('planShareField'))$('planShareField').hidden=!plan||!!editingShared;
+ if($('planShareHint'))$('planShareHint').textContent=t(activePlan?.sharedRef?'planShareAlreadyLinked':'planShareHint');
  if($('logPrivacyField'))$('logPrivacyField').hidden=plan||category==='STRENGTH';
 }
-function setEntryMode(mode){if(activePlan)return;entryMode=mode;applyEntryMode();if(category==='STRENGTH')renderBlocks();$('formError').hidden=true;updateTimerIdle();}
+function setEntryMode(mode){if(activePlan||editingShared)return;entryMode=mode;applyEntryMode();if(category==='STRENGTH')renderBlocks();$('formError').hidden=true;updateTimerIdle();}
 $('entryLog').onclick=()=>setEntryMode('log');$('entryPlan').onclick=()=>setEntryMode('plan');
 for(const event of ['input','change'])$('workoutForm').addEventListener(event,()=>formDirty=true);
 function resetTimerState(){timer={running:false,elapsed:0,started:0,config:null,finished:false};$('timerStart').disabled=false;$('timerStart').textContent=t('start');$('timerProgress').style.width='0%';updateTimerIdle();}
 function resetEntry(mode){
- activePlan=null;activeCoachProgramId=null;loadedWodSettings=null;$('publishedWodFormatNotice').hidden=true;entryMode=mode;const keepUnit=$('weightUnit').value;$('workoutForm').reset();$('weightUnit').value=keepUnit||'kg';$('date').value=localDate();oldWeightUnit=$('weightUnit').value;
+ activePlan=null;editingShared=null;activeCoachProgramId=null;loadedWodSettings=null;$('publishedWodFormatNotice').hidden=true;entryMode=mode;const keepUnit=$('weightUnit').value;$('workoutForm').reset();$('weightUnit').value=keepUnit||'kg';$('date').value=localDate();oldWeightUnit=$('weightUnit').value;
  blocks=[blankBlock()];linkedTitle=null;dismissedSuggest.clear();
  scoreDrafts.REPS=null;scoreDrafts.TIME=null;scoreFields();setCategory('WOD');applyEntryMode();renderLinked();renderSuggest();resetTimerState();formDirty=false;
 }
@@ -1519,6 +1655,7 @@ async function openPlan(id,mode){
  $('date').value=mode==='plan'?p.date:localDate();$('wodTitle').value=p.category==='WOD'?p.title:'';
  $('weightUnit').value=p.weightUnit;oldWeightUnit=p.weightUnit;$('weightUsed').value=p.category==='WOD'?(p.weightUsed??''):'';
  $('content').value=p.content;$('notes').value=p.notes;document.querySelector(`[name=rx][value=${p.isRxd?'rx':'scaled'}]`).checked=true;
+ if($('planSharePublic'))$('planSharePublic').checked=mode==='plan'&&!!p.sharedRef;
  if(p.category==='STRENGTH')blocks=p.items.map(it=>blockFromItem(it,mode,p.weightUnit));
  else{
   $('workoutType').value=p.workoutType;scoreFields();
@@ -1533,7 +1670,7 @@ async function openPlan(id,mode){
 }
 function planPeriod(p){const today=localDate();return p.date===today?'today':p.date<today?'overdue':'upcoming';}
 function planCardHTML(p){const period=planPeriod(p),cat=p.category==='WOD'?'wod':'str',missed=period==='overdue';
- return `<article class="day-card plan-card ${cat}${missed?' missed':''}" data-plan-id="${esc(p.id)}"><div class="plan-title-line"><span class="cat-pill ${missed?'missed':cat}">${p.category==='WOD'?'WOD':'STRENGTH'}</span><span class="pill ${missed?'overdue':''}">${esc(t(period+'Plans'))}</span><span class="meta">${esc(displayDate(p.date))} · ${esc(TYPES[p.workoutType])}</span></div><h4>${esc(planTitle(p))}</h4>${p.category==='STRENGTH'?itemsHTML(p):`<div class="record-content">${esc(p.content||t('noContent'))}</div>`}<div class="record-settings">${esc(planSettings(p))}</div>${notesHTML(p.notes)}<div class="day-actions"><button class="primary small" data-perform-plan="${esc(p.id)}">${esc(t('performPlan'))}</button><button class="small" data-edit-plan="${esc(p.id)}">${esc(t('editPlan'))}</button><button class="danger small" data-delete-plan="${esc(p.id)}">${esc(t('delete'))}</button></div></article>`;}
+ return `<article class="day-card plan-card ${cat}${missed?' missed':''}" data-plan-id="${esc(p.id)}"><div class="plan-title-line"><span class="cat-pill ${missed?'missed':cat}">${p.category==='WOD'?'WOD':'STRENGTH'}</span><span class="pill ${missed?'overdue':''}">${esc(t(period+'Plans'))}</span>${p.sharedRef?`<span class="pill">📢 ${esc(t('sharedBadge'))}</span>`:''}<span class="meta">${esc(displayDate(p.date))} · ${esc(TYPES[p.workoutType])}</span></div><h4>${esc(planTitle(p))}</h4>${p.category==='STRENGTH'?itemsHTML(p):`<div class="record-content">${esc(p.content||t('noContent'))}</div>`}<div class="record-settings">${esc(planSettings(p))}</div>${notesHTML(p.notes)}<div class="day-actions"><button class="primary small" data-perform-plan="${esc(p.id)}">${esc(t('performPlan'))}</button><button class="small" data-edit-plan="${esc(p.id)}">${esc(t('editPlan'))}</button><button class="danger small" data-delete-plan="${esc(p.id)}">${esc(t('delete'))}</button></div></article>`;}
 function logCardHTML(r){const cat=r.category==='WOD'?'wod':'str',title=recordTitle(r),pill=r.category==='STRENGTH'?liftPillLabel(logLiftKey(r),title):'';return `<article class="day-card ${cat}"><div class="plan-title-line"><span class="cat-pill ${cat}">✓ ${r.category==='WOD'?'WOD':'STRENGTH'}</span><span class="meta">${esc(TYPES[r.workoutType])}</span>${badge(r)}</div><h4>${esc(title)}${pill?`<span class="cls-pill">${esc(pill)}</span>`:''}</h4><div class="record-score">${esc(shownScore(r))}</div>${r.prescription?`<div class="item-note">${esc(r.prescription)}</div>`:''}</article>`;}
 function renderPlans(){
  const counts={today:0,overdue:0,upcoming:0};state.plans.forEach(p=>counts[planPeriod(p)]++);
@@ -1555,19 +1692,40 @@ async function planAction(e){
   }
   if(b.dataset.performPlan)await openPlan(b.dataset.performPlan,'log');
   if(b.dataset.editPlan)await openPlan(b.dataset.editPlan,'plan');
-  if(b.dataset.deletePlan&&await confirmAction(t('deletePlanAsk'))){if(commit({...state,plans:state.plans.filter(p=>p.id!==b.dataset.deletePlan)})){if(activePlan?.id===b.dataset.deletePlan)resetEntry('log');notify(t('deleted'));}}
+  if(b.dataset.deletePlan){
+    const targetPlan=state.plans.find(p=>p.id===b.dataset.deletePlan);
+    if(await confirmAction(t('deletePlanAsk'))){
+      if(commit({...state,plans:state.plans.filter(p=>p.id!==b.dataset.deletePlan)})){
+        if(activePlan?.id===b.dataset.deletePlan)resetEntry('log');
+        notify(t('deleted'));
+        const ref=targetPlan?.sharedRef;
+        if(ref&&findSharedEntry(ref.table,ref.id)&&await confirmAction(t('deleteLinkedSharedAsk'))){
+          try{await Supabase.deletePublishedProgram(ref.table,ref.id);await loadCoachWodForSelectedDate();notify(t('sharedUnshared'));}
+          catch(err){Supabase.report(err);}
+        }
+      }
+    }
+  }
   if(b.dataset.dayPlan&&await canReplaceEntry()){resetEntry('plan');$('date').value=b.dataset.dayPlan;showPage('add');}
   if(b.dataset.dayLog&&await canReplaceEntry()){resetEntry('log');$('date').value=b.dataset.dayLog;showPage('add');}
-  if(b.dataset.coachLog){
-    const cp=coachPrograms.find(p=>p.id===b.dataset.coachLog);
-    if(cp)await loadPublishedIntoForm(cp);
+  if(b.dataset.sharedUse){
+    const [table,id]=b.dataset.sharedUse.split(':');
+    const entry=findSharedEntry(table,id);
+    if(entry)await loadPublishedIntoForm(entry.row,entry.isCoachSource?'coach':'shared');
   }
-  if(b.dataset.sharedLog){
-    const sp=sharedPrograms.find(p=>p.id===b.dataset.sharedLog);
-    if(sp)await loadPublishedIntoForm(sp,'shared');
+  if(b.dataset.editShared){
+    const [table,id]=b.dataset.editShared.split(':');
+    await openSharedForEdit(table,id);
   }
-  if(b.dataset.delCoachProg&&await confirmAction(t('deleteProgramConfirm'))){await Supabase.deleteCoachProgram(b.dataset.delCoachProg);notify(t('deleted'));await loadCoachWodForSelectedDate();}
-  if(b.dataset.delSharedProg&&await confirmAction(t('deleteProgramConfirm'))){await Supabase.deleteSharedProgram(b.dataset.delSharedProg);notify(t('deleted'));await loadCoachWodForSelectedDate();}
+  if(b.dataset.delShared&&await confirmAction(t('deleteProgramConfirm'))){
+    const [table,id]=b.dataset.delShared.split(':');
+    try{
+      await Supabase.deletePublishedProgram(table,id);
+      clearLocalSharedRef(table,id);
+      notify(t('deleted'));
+      await loadCoachWodForSelectedDate();
+    }catch(err){Supabase.report(err);}
+  }
 }
 $('todoList').addEventListener('click',planAction);$('dayPanel').addEventListener('click',planAction);
 
@@ -1577,12 +1735,9 @@ $('viewCalendar').onclick=()=>{setTodoView('calendar');renderCalendar();};$('vie
 function dayMarks(d,e,today){
   const marks=[],sessions=new Set();
   if(!hideBoxWod){
-    const cps=coachPrograms.filter(p=>p.start_date===d);
-    const sps=sharedPrograms.filter(s=>s.start_date===d);
-    const hasCoachStr=cps.some(p=>getProgramCategory(p)==='STRENGTH')||sps.some(s=>getProgramCategory(s)==='STRENGTH');
-    const hasCoachWod=cps.some(p=>getProgramCategory(p)==='WOD')||sps.some(s=>getProgramCategory(s)==='WOD');
-    if(hasCoachStr)marks.push({cat:'str',st:'coach'});
-    if(hasCoachWod)marks.push({cat:'wod',st:'coach'});
+    const shared=allSharedEntries(d);
+    if(shared.some(x=>x.category==='STRENGTH'))marks.push({cat:'str',st:'coach'});
+    if(shared.some(x=>x.category==='WOD'))marks.push({cat:'wod',st:'coach'});
   }
   for(const l of e.logs){
     if(l.category==='WOD')marks.push({cat:'wod',st:'done'});
@@ -1608,27 +1763,21 @@ function renderCalendar(){
 function renderDayPanel(){
   const d=calSelected,today=localDate(),panel=$('dayPanel'),plans=state.plans.filter(p=>p.date===d).sort((a,b)=>(a.category==='STRENGTH'?0:1)-(b.category==='STRENGTH'?0:1)),logs=ordered().filter(r=>r.date===d);
   // Preserve expanded workouts on background refresh, but start collapsed on another date.
-  const expanded=new Set(panel.dataset.date===d?[...panel.querySelectorAll('[data-coach-details][open]')].map(el=>el.dataset.coachDetails):[]);
+  const expanded=new Set(panel.dataset.date===d?[...panel.querySelectorAll('[data-shared-details][open]')].map(el=>el.dataset.sharedDetails):[]);
   let html=`<h2>${esc(new Date(d+'T12:00:00').toLocaleDateString(LOCALE,{weekday:'long',month:'long',day:'numeric'}))}${d===today?` <span class="pill">${esc(t('todayPlans'))}</span>`:''}</h2>`;
   html+=`<section class="day-group" aria-labelledby="dayPlansHeading"><div class="day-group-heading"><h3 id="dayPlansHeading">${esc(t(d<today?'dayMissed':'dayPlanned'))}</h3><span class="pill">${plans.length}</span></div>${plans.length?plans.map(planCardHTML).join(''):`<p class="subtle">${esc(t('noDayPlans'))}</p>`}<div class="day-create-actions"><button type="button" class="secondary" data-day-plan="${esc(d)}">${esc(t('planThisDay'))}</button>${d<=today?`<button type="button" class="primary" data-day-log="${esc(d)}">${esc(t('logThisDay'))}</button>`:''}</div></section>`;
+  const shared=allSharedEntries(d);
   if(!hideBoxWod){
-    const cps=coachPrograms.filter(p=>p.start_date===d);
-    html+=`<section class="day-group coach-day-group" aria-labelledby="dayCoachHeading"><div class="day-group-heading"><h3 id="dayCoachHeading">${esc(t('coachWorkouts'))}</h3><span class="pill">${cps.length}</span><button type="button" class="ghost small" data-refresh-coach>${esc(t('coachCompletionRefresh'))}</button></div>`;
-    if(!cps.length)html+=`<p class="subtle">${esc(t('noDayCoachWorkouts'))}</p>`;
-    for(const cp of cps){
-      const isStr=getProgramCategory(cp)==='STRENGTH';
-      html+=`<details class="day-card coach-workout ${isStr?'coach-str':'coach-wod'}" data-coach-details="${esc(cp.id)}"${expanded.has(cp.id)?' open':''}><summary><span class="cat-pill ${isStr?'str':'wod'}">${isStr?'STRENGTH':'WOD'}</span><h4>${esc(cleanProgramTitle(cp.title))}</h4><span class="coach-detail-toggle"><span class="detail-show">${esc(t('showWorkoutDetails'))}</span><span class="detail-hide">${esc(t('hideWorkoutDetails'))}</span></span></summary><div class="coach-workout-body">${publishedBodyHTML(cp)}<div class="day-actions"><button type="button" class="primary" data-coach-log="${esc(cp.id)}">${esc(t(isStr?'useCoachStrength':'useCoachWod'))}</button>${Supabase.isCoach?`<button type="button" class="danger small" data-del-coach-prog="${esc(cp.id)}">${esc(t('delete'))}</button>`:''}</div></div></details>`;
+    html+=`<section class="day-group coach-day-group" aria-labelledby="daySharedHeading"><div class="day-group-heading"><h3 id="daySharedHeading">${esc(t('sharedWorkoutsUnified'))}</h3><span class="pill">${shared.length}</span><button type="button" class="ghost small" data-refresh-coach>${esc(t('coachCompletionRefresh'))}</button></div>`;
+    if(!shared.length)html+=`<p class="subtle">${esc(t('noDaySharedWorkouts'))}</p>`;
+    for(const item of shared){
+      const isStr=item.category==='STRENGTH', refKey=`${item.table}:${item.id}`;
+      const cardCls=item.isCoachSource?(isStr?'coach-str':'coach-wod'):(isStr?'shared-str':'shared-wod');
+      const privPill=item.row.is_public===false?` <span class="pill">${esc(t('privateWod'))}</span>`:'';
+      html+=`<details class="day-card coach-workout ${cardCls}" data-shared-details="${esc(refKey)}"${expanded.has(refKey)?' open':''}><summary><div class="plan-title-line" style="margin-bottom:6px"><span class="cat-pill ${isStr?'str':'wod'}">${isStr?'STRENGTH':'WOD'}</span><span class="role-pill ${item.isCoachSource?'coach':'member'}">${esc(item.authorLabel)}</span>${privPill}</div><h4>${esc(item.title)}</h4><span class="coach-detail-toggle"><span class="detail-show">${esc(t('showWorkoutDetails'))}</span><span class="detail-hide">${esc(t('hideWorkoutDetails'))}</span></span></summary><div class="coach-workout-body">${publishedBodyHTML(item.row)}<div class="day-actions"><button type="button" class="primary" data-shared-use="${esc(refKey)}">${esc(t(isStr?'useSharedStrength':'useSharedWod'))}</button>${item.canEdit?`<button type="button" class="small" data-edit-shared="${esc(refKey)}">${esc(t('edit'))}</button>`:''}${item.canDelete?`<button type="button" class="danger small" data-del-shared="${esc(refKey)}">${esc(t('delete'))}</button>`:''}</div></div></details>`;
     }
     html+='</section>';
-    const sps=sharedPrograms.filter(p=>p.start_date===d);
-    if(sps.length)html+=`<section class="day-group" aria-labelledby="daySharedHeading"><div class="day-group-heading"><h3 id="daySharedHeading">${esc(t('sharedWorkouts'))}</h3><span class="pill">${sps.length}</span></div>`;
-    for(const sp of sps){
-      const isStr=getProgramCategory(sp)==='STRENGTH';
-      const canDel=Supabase.isCoach||(Supabase.user&&sp.user_id===Supabase.user.id);
-      html+=`<div class="day-card ${isStr?'shared-str':'shared-wod'}"><div class="plan-title-line"><span class="cat-pill ${isStr?'str':'wod'}">${isStr?'STRENGTH':'WOD'}</span><span class="role-pill member">${esc(sp.user_name||'Member')}</span>${canDel?`<button type="button" class="danger small" data-del-shared-prog="${esc(sp.id)}">${esc(t('delete'))}</button>`:''}</div><h4>${esc(cleanProgramTitle(sp.title))}</h4>${publishedBodyHTML(sp)}<div class="day-actions"><button type="button" class="secondary small" data-shared-log="${esc(sp.id)}">${esc(t(isStr?'useCoachStrength':'useCoachWod'))}</button></div></div>`;
-    }
-    if(sps.length)html+='</section>';
-  }else if(coachPrograms.some(p=>p.start_date===d)||sharedPrograms.some(s=>s.start_date===d)){
+  }else if(shared.length){
     html+=`<div class="box-wod-hidden-banner"><span>${esc(t('boxWodHiddenNotice'))}</span><button type="button" id="unhideBoxWodBtn" class="link-button small">${esc(t('showBoxWod'))}</button></div>`;
   }
   if(logs.length)html+=`<section class="day-group" aria-labelledby="dayDoneHeading"><div class="day-group-heading"><h3 id="dayDoneHeading">${esc(t('dayDone'))}</h3><span class="pill">${logs.length}</span></div>${logs.map(logCardHTML).join('')}</section>`;
@@ -1786,7 +1935,7 @@ async function loadPublishedIntoForm(p,source='coach'){if(!p||!await canReplaceE
  if(cat==='STRENGTH'){
   notify(adopted?t('restoredItems',{n:adopted.items.length}):t('restoredNoItems'));
   if(adopted&&adopted.names.length)notify(t('restoredCustom',{list:adopted.names.join(', ')}));
- }else notify(t('useCoachWod'));
+ }else notify(t('useSharedWod'));
  setTimeout(()=>{const input=cat==='STRENGTH'?$('liftBlocks')?.querySelector('.r-weight, .r-pct, input'):($('finishTime')||$('amrapRounds')||$('qualityResult')||$('wodTitle'));if(input)input.focus();},100);}
 
 function parseProgram(text){const days=[],general=[];let day=null,block=null;const dayRe=/^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\s*[-–]\s*Day\s*(\d+)\s*$/i,blockRe=/^\d+\s*sets?\b[^:]{0,40}:\s*$/i,wodRe=/^wod\b\s*[:\-–]?\s*(.*)$/i;
@@ -1869,11 +2018,31 @@ $('programApply').onclick=async()=>{const d=programDraft;if(!d)return;
     if(shareWithMembers&&Supabase.session&&Supabase.isApproved){
       const unit=$('programUnit')?.value||'kg';
       const rows=shareRowsFromDraft(d,unit,true);
+      const table=Supabase.isCoach?'coach_programs':'shared_programs';
       try{
-        if(Supabase.isCoach){
-          await Supabase.batchPublishCoachPrograms(rows);
-        }else{
-          await Supabase.batchPublishSharedPrograms(rows);
+        const inserted=Supabase.isCoach
+          ? await Supabase.batchPublishCoachPrograms(rows)
+          : await Supabase.batchPublishSharedPrograms(rows);
+        if(Array.isArray(inserted)&&inserted.length){
+          const byKey=new Map();
+          for(const r of inserted){
+            const k=`${r.start_date}|${getProgramCategory(r)}|${normalized(cleanProgramTitle(r.title))}`;
+            if(!byKey.has(k))byKey.set(k,[]);
+            byKey.get(k).push(r.id);
+          }
+          const planIds=new Set(d.plans.map(p=>p.id));
+          let linkedAny=false;
+          const updatedPlans=state.plans.map(p=>{
+            if(!planIds.has(p.id))return p;
+            const day=p.program?.day;
+            const k=`${p.date}|${p.category}|${normalized(`${d.name} · Day ${day}`)}`;
+            const ids=byKey.get(k);
+            const rid=ids?.shift();
+            if(!rid)return p;
+            linkedAny=true;
+            return {...p,sharedRef:{table,id:rid}};
+          });
+          if(linkedAny)commit({...state,plans:updatedPlans});
         }
         notify(t('programSharedWithBox',{n:rows.length}));
         if(Supabase.droppedColumns?.includes('items'))notify(t('itemsColumnMissing'));
@@ -2126,9 +2295,6 @@ async function renderCoachAdmin() {
     showPage('todo');
     return;
   }
-  if ($('coachProgramDate') && !$('coachProgramDate').value) {
-    $('coachProgramDate').value = localDate();
-  }
   await Promise.all([loadCoachMembers(), loadCoachPublishedPrograms(), loadCoachEditRequests()]);
 }
 
@@ -2192,24 +2358,45 @@ async function loadCoachPublishedPrograms() {
   const container = $('coachProgramsList');
   if (!container) return;
   try {
-    cachedCoachPrograms = await Supabase.fetchCoachPrograms();
-    if (!cachedCoachPrograms.length) {
-      container.innerHTML = `<p class="subtle">${esc(t('noCoachPrograms'))}</p>`;
+    const [cp, sp] = await Promise.all([Supabase.fetchCoachPrograms(), Supabase.fetchSharedPrograms()]);
+    cachedCoachPrograms = cp || [];
+    coachPrograms = cachedCoachPrograms;
+    sharedPrograms = sp || [];
+    if (!cachedCoachPrograms.length && !sharedPrograms.length) {
+      container.innerHTML = `<p class="subtle">${esc(t('noSharedPrograms'))}</p>`;
       return;
     }
-    const card = p => {
+    const coachCard = p => {
       const cat = getProgramCategory(p);
       const isStr = cat === 'STRENGTH';
+      const refKey = `coach_programs:${p.id}`;
       return `
       <div class="coach-program-card">
         <div class="coach-program-meta">
-          <h4><span class="cat-pill ${isStr ? 'str' : 'wod'}">${cat}</span> ${esc(cleanProgramTitle(p.title))} <span class="pill">${esc(p.start_date)}</span> <span class="pill">${esc(p.unit)}</span> <span class="pill ${p.is_public ? 'green' : 'gray'}">${esc(p.is_public ? t('publicWod') : t('privateWod'))}</span></h4>
+          <h4><span class="cat-pill ${isStr ? 'str' : 'wod'}">${cat}</span> <span class="role-pill coach">${esc(t('coachRole'))}</span> ${esc(cleanProgramTitle(p.title))} <span class="pill">${esc(p.start_date)}</span> <span class="pill">${esc(p.unit)}</span> <span class="pill ${p.is_public ? 'green' : 'gray'}">${esc(p.is_public ? t('publicWod') : t('privateWod'))}</span></h4>
           <p>${esc(p.program_text)}</p>
         </div>
         <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
           <button type="button" class="secondary small" data-coach-completions="${esc(p.id)}">${esc(t('coachCompletions'))}</button>
+          <button type="button" class="small" data-edit-shared="${esc(refKey)}">${esc(t('edit'))}</button>
           <button type="button" class="ghost small" data-toggle-prog="${esc(p.id)}" data-is-pub="${p.is_public ? '1' : '0'}">${esc(p.is_public ? t('togglePrivate') : t('togglePublic'))}</button>
           <button type="button" class="danger small" data-delete-prog="${esc(p.id)}">${esc(t('delete'))}</button>
+        </div>
+      </div>`;
+    };
+    const memberCard = p => {
+      const cat = getProgramCategory(p);
+      const isStr = cat === 'STRENGTH';
+      const refKey = `shared_programs:${p.id}`;
+      return `
+      <div class="coach-program-card">
+        <div class="coach-program-meta">
+          <h4><span class="cat-pill ${isStr ? 'str' : 'wod'}">${cat}</span> <span class="role-pill member">${esc(p.user_name || t('memberRole'))}</span> ${esc(cleanProgramTitle(p.title))} <span class="pill">${esc(p.start_date)}</span> <span class="pill">${esc(p.unit)}</span></h4>
+          <p>${esc(p.program_text)}</p>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+          <button type="button" class="small" data-edit-shared="${esc(refKey)}">${esc(t('edit'))}</button>
+          <button type="button" class="danger small" data-del-shared-prog="${esc(p.id)}">${esc(t('delete'))}</button>
         </div>
       </div>`;
     };
@@ -2220,17 +2407,23 @@ async function loadCoachPublishedPrograms() {
       groups.get(key).push(p);
     }
     let html = '';
-    for (const [key, rows] of groups) {
-      if (key) {
-        const dates = rows.map(r => r.start_date).sort();
-        html += `<div class="program-row">
-          <span><strong>${esc(key)}</strong><br><span class="help">${esc(t('programGroupCount', { n: rows.length, start: displayDate(dates[0]), end: displayDate(dates[dates.length - 1]) }))}</span></span>
-          <button type="button" class="danger small" data-del-prog-group="${esc(key)}">${esc(t('deleteProgramGroup'))}</button>
-        </div>
-        <details class="spaced" data-group="${esc(key)}"${openProgramGroups.has(key) ? ' open' : ''}><summary class="help">${esc(t('showProgramEntries', { n: rows.length }))}</summary>${rows.map(card).join('')}</details>`;
-      } else {
-        html += `<h3 class="help spaced">${esc(t('singlePublishes'))}</h3>${rows.map(card).join('')}`;
+    if (cachedCoachPrograms.length) {
+      html += `<h3 class="help">${esc(t('coachSharedGroup'))}</h3>`;
+      for (const [key, rows] of groups) {
+        if (key) {
+          const dates = rows.map(r => r.start_date).sort();
+          html += `<div class="program-row">
+            <span><strong>${esc(key)}</strong><br><span class="help">${esc(t('programGroupCount', { n: rows.length, start: displayDate(dates[0]), end: displayDate(dates[dates.length - 1]) }))}</span></span>
+            <button type="button" class="danger small" data-del-prog-group="${esc(key)}">${esc(t('deleteProgramGroup'))}</button>
+          </div>
+          <details class="spaced" data-group="${esc(key)}"${openProgramGroups.has(key) ? ' open' : ''}><summary class="help">${esc(t('showProgramEntries', { n: rows.length }))}</summary>${rows.map(coachCard).join('')}</details>`;
+        } else {
+          html += `<h3 class="help spaced">${esc(t('singlePublishes'))}</h3>${rows.map(coachCard).join('')}`;
+        }
       }
+    }
+    if (sharedPrograms.length) {
+      html += `<h3 class="help spaced">${esc(t('memberSharedGroup'))}</h3>${sharedPrograms.map(memberCard).join('')}`;
     }
     container.innerHTML = html;
   } catch (e) {
@@ -2399,147 +2592,7 @@ function shareRowsFromDraft(d,unit,isPublic){const rows=[];
   });}
  return rows.sort((a,b)=>a.start_date<b.start_date?-1:a.start_date>b.start_date?1:0);}
 
-let coachPubMode='single', coachPubDraft=null;
-function setCoachPubMode(mode){
- coachPubMode=mode==='program'?'program':'single';
- const prog=coachPubMode==='program';
- $('coachModeSingle').classList.toggle('active',!prog);
- $('coachModeProgram').classList.toggle('active',prog);
- $('coachModeSingle').setAttribute('aria-pressed',String(!prog));
- $('coachModeProgram').setAttribute('aria-pressed',String(prog));
- $('coachDateField').hidden=prog;
- $('coachStartField').hidden=!prog;
- $('coachCategoryField').hidden=prog;
- $('coachNameField').hidden=!prog;
- $('coachTitleField').hidden=prog;
- coachPubDraft=null;
- $('coachPubPreview').innerHTML='';
- if(prog){
-  if(!$('coachProgramStart').value)$('coachProgramStart').value=mondayOf(localDate());
-  if(!$('coachProgramName').value)$('coachProgramName').value=PROGRAM_DEFAULT_NAME;
- }else if(!$('coachProgramDate').value)$('coachProgramDate').value=localDate();
- $('coachProgramText').placeholder=prog?t('programTextHint'):t('coachTextHint');
- renderCoachWodFormat();
-}
-$('coachModeSingle')?.addEventListener('click',()=>setCoachPubMode('single'));
-$('coachModeProgram')?.addEventListener('click',()=>setCoachPubMode('program'));
-for(const id of ['coachProgramText','coachProgramStart','coachProgramName','coachProgramUnit','coachProgramCategory'])
- $(id)?.addEventListener('input',()=>{coachPubDraft=null;$('coachPubPreview').innerHTML='';});
-
-$('coachPreviewBtn')?.addEventListener('click',()=>{
- const text=$('coachProgramText').value.trim(),unit=$('coachProgramUnit').value;
- if(!text){notify(t('coachPubTextRequired'));return;}
- const box=$('coachPubPreview');
- if(coachPubMode==='program'){
-  const start=$('coachProgramStart').value,name=$('coachProgramName').value.trim()||PROGRAM_DEFAULT_NAME;
-  if(!validDate(start)){notify(t('coachPubDateRequired'));return;}
-  const draft=buildProgram(text,start,unit,name);
-  const custom={...state.customLifts,...draft.newLifts};
-  if(!draft.plans.length||!draft.plans.every(p=>validPlan(p,custom))){
-   coachPubDraft=null;box.innerHTML=`<div class="warn-list">${(draft.warnings.length?draft.warnings:[t('programInvalid')]).map(esc).join('<br>')}</div>`;return;}
-  coachPubDraft={...draft,name,start,unit};
-  const saved=state.customLifts;state.customLifts=custom;
-  const str=draft.plans.filter(p=>p.category==='STRENGTH'),acc=draft.plans.filter(p=>p.category==='WOD');
-  const last=draft.parsed.days.reduce((a,x)=>Math.max(a,x.day),1);
-  const summary=t('programSummary',{days:draft.parsed.days.length,s:str.length,w:acc.length,lifts:str.reduce((a,p)=>a+p.items.length,0),start:displayDate(start),end:displayDate(addDays(start,last-1))});
-  const dayHTML=draft.parsed.days.map(x=>{const ps=draft.plans.filter(p=>p.program.day===x.day);
-   return `<div class="program-day"><h4>Day ${x.day} · ${esc(shortDate(addDays(start,x.day-1)))}</h4>${!ps.length?`<div class="help">${esc(t('restDay'))}</div>`:''}${ps.map(p=>p.category==='STRENGTH'?`<div><span class="cat-pill str">STRENGTH</span>${itemsHTML(p)}</div>`:`<div style="margin-top:8px"><span class="cat-pill wod">WOD</span> ${esc(p.content.replace(/\n/g,' / '))}</div>`).join('')}</div>`;}).join('');
-  box.innerHTML=`<p class="subtle"><strong>${esc(summary)}</strong></p>${draft.warnings.length?`<div class="warn-list">${draft.warnings.map(esc).join('<br>')}</div>`:''}${dayHTML}`;
-  state.customLifts=saved;
-  return;
- }
- coachPubDraft=null;
- const cat=$('coachProgramCategory').value||'WOD';
- if(cat!=='STRENGTH'){try{box.textContent=wodFormatSummary(readCoachWodFormat());}catch(error){box.textContent=error.message;}return;}
- const parsed=itemsFromText(text);
- if(!parsed.items.length){box.innerHTML=`<div class="warn-list">${esc(t('coachPubNoLifts'))}</div>`;return;}
- const saved=state.customLifts;state.customLifts={...state.customLifts,...parsed.newLifts};
- const unparsed=parsed.rest.split('\n').filter(l=>l.trim()).length;
- box.innerHTML=`<p class="subtle"><strong>${esc(t('coachPubParsed',{n:parsed.items.length}))}</strong></p>`
-  +`<div><span class="cat-pill str">STRENGTH</span>${itemsHTML({items:parsed.items,weightUnit:unit})}</div>`
-  +(unparsed?`<p class="help">${esc(t('coachPubUnparsed',{n:unparsed}))}</p>`:'');
- state.customLifts=saved;
-});
-
-$('coachProgramForm')?.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const unit = $('coachProgramUnit').value;
-  const text = $('coachProgramText').value.trim();
-  const isPub = $('coachProgramPublic')?.checked ?? true;
-  const submitBtn = e.target.querySelector('button[type="submit"]');
-  if (!text) { notify(t('coachPubTextRequired')); return; }
-
-  if (coachPubMode === 'program') {
-    const d = coachPubDraft;
-    if (!d) { notify(t('coachPubPreviewFirst')); return; }
-    const rows = shareRowsFromDraft(d, d.unit || unit, isPub);
-    if (!rows.length) { notify(t('programInvalid')); return; }
-    if (!await confirmAction(t('coachPubProgramAsk', { name: d.name, n: rows.length, start: displayDate(d.start) }))) return;
-    submitBtn.disabled = true;
-    submitBtn.textContent = t('syncing');
-    try {
-      await Supabase.batchPublishCoachPrograms(rows);
-      notify(t('coachPubProgramDone', { n: rows.length }));
-      if (Supabase.droppedColumns?.includes('items')) notify(t('itemsColumnMissing'));
-      $('coachProgramText').value = '';
-      coachPubDraft = null;
-      $('coachPubPreview').innerHTML = '';
-      await loadCoachPublishedPrograms();
-      loadCoachWodForSelectedDate();
-    } catch (err) {
-      notify(err.message);
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = t('coachPublish');
-    }
-    return;
-  }
-
-  const date = $('coachProgramDate').value;
-  const category = $('coachProgramCategory')?.value || 'WOD';
-  let title = $('coachProgramTitle').value.trim();
-  if (!validDate(date)) { notify(t('coachPubDateRequired')); return; }
-  if (!title) { notify(t('coachPubTitleRequired')); return; }
-  if (category === 'STRENGTH' && !title.toUpperCase().includes('STRENGTH')) {
-    title = `${title} · STRENGTH`;
-  }
-
-  let wodSettings=null;
-  if(category==='WOD'){try{wodSettings=readCoachWodFormat();}catch(error){notify(error.message);return;}}
-  let wire = null;
-  if (category === 'STRENGTH') {
-    const parsed = itemsFromText(text);
-    if (parsed.items.length) {
-      const custom = { ...state.customLifts, ...parsed.newLifts };
-      const saved = state.customLifts;
-      state.customLifts = custom;
-      wire = itemsForWire(parsed.items, parsed.newLifts);
-      state.customLifts = saved;
-    }
-  }
-
-  submitBtn.disabled = true;
-  submitBtn.textContent = t('syncing');
-  try {
-    await Supabase.publishProgram(title, date, unit, text, isPub, category, wire, wodSettings);
-    notify(category === 'STRENGTH' && wire ? t('coachPubParsed', { n: wire.length }) : t('publishSuccess'));
-    if (Supabase.droppedColumns?.includes('items')) notify(t('itemsColumnMissing'));
-    $('coachProgramTitle').value = '';
-    $('coachProgramText').value = '';
-    $('coachPubPreview').innerHTML = '';
-    await loadCoachPublishedPrograms();
-    loadCoachWodForSelectedDate();
-  } catch (err) {
-    notify(err.message);
-  } finally {
-    submitBtn.disabled = false;
-    submitBtn.textContent = t('coachPublish');
-  }
-});
-$('coachWodType').addEventListener('change',()=>{renderCoachWodFormat();$('coachPubPreview').textContent='';});
-$('coachProgramCategory').addEventListener('change',renderCoachWodFormat);
-$('coachWodSettings').addEventListener('input',()=>{$('coachPubPreview').textContent='';});
-setCoachPubMode('single');
+$('refreshCoachProgramsBtn')?.addEventListener('click', loadCoachPublishedPrograms);
 
 $('coachProgramsList')?.addEventListener('toggle', (e) => {
   const d = e.target;
@@ -2551,6 +2604,12 @@ $('coachProgramsList')?.addEventListener('toggle', (e) => {
 $('coachProgramsList')?.addEventListener('click', async (e) => {
   const completionBtn=e.target.closest('[data-coach-completions]');
   if(completionBtn){await openCoachCompletions(completionBtn.dataset.coachCompletions);return;}
+  const editBtn=e.target.closest('[data-edit-shared]');
+  if(editBtn){
+    const [table,id]=editBtn.dataset.editShared.split(':');
+    await openSharedForEdit(table,id);
+    return;
+  }
   const toggleBtn = e.target.closest('[data-toggle-prog]');
   if (toggleBtn) {
     toggleBtn.disabled = true;
@@ -2573,6 +2632,7 @@ $('coachProgramsList')?.addEventListener('click', async (e) => {
     groupBtn.disabled = true;
     try {
       await Supabase.deleteCoachPrograms(rows.map(r => r.id));
+      for (const r of rows) clearLocalSharedRef('coach_programs', r.id);
       notify(t('programGroupDeleted', { n: rows.length }));
       await loadCoachPublishedPrograms();
       loadCoachWodForSelectedDate();
@@ -2582,12 +2642,29 @@ $('coachProgramsList')?.addEventListener('click', async (e) => {
     }
     return;
   }
+  const delSharedBtn = e.target.closest('[data-del-shared-prog]');
+  if (delSharedBtn) {
+    if (!await confirmAction(t('deleteProgramConfirm'))) return;
+    try {
+      const id = delSharedBtn.dataset.delSharedProg;
+      await Supabase.deleteSharedProgram(id);
+      clearLocalSharedRef('shared_programs', id);
+      notify(t('deleted'));
+      await loadCoachPublishedPrograms();
+      loadCoachWodForSelectedDate();
+    } catch (err) {
+      notify(err.message);
+    }
+    return;
+  }
   const btn = e.target.closest('[data-delete-prog]');
   if (!btn) return;
   if (!await confirmAction(t('deleteProgramConfirm'))) return;
   try {
-    await Supabase.deleteCoachProgram(btn.dataset.deleteProg);
-    notify(t('delete'));
+    const id = btn.dataset.deleteProg;
+    await Supabase.deleteCoachProgram(id);
+    clearLocalSharedRef('coach_programs', id);
+    notify(t('deleted'));
     await loadCoachPublishedPrograms();
     loadCoachWodForSelectedDate();
   } catch (err) {

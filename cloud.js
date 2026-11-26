@@ -317,6 +317,20 @@ return {
     });
   },
 
+  async updateCoachProgram(id, patch) {
+    const result = await this.req(`/rest/v1/coach_programs?id=eq.${id}`, {
+      method: 'PATCH',
+      headers: { 'Prefer': 'return=representation' },
+      body: JSON.stringify(patch)
+    });
+    if (!result?.length) {
+      const error = new Error(this.message('공유 운동을 수정할 수 없습니다. 이미 삭제되었거나 DB 수정 권한(RLS UPDATE)이 필요합니다.', 'Could not update the shared workout. It may have been deleted or needs an UPDATE RLS policy.'));
+      error.code = 'NOT_UPDATED';
+      throw error;
+    }
+    return result;
+  },
+
   async fetchSharedPrograms(date = null) {
     return this.req(date ? `/rest/v1/shared_programs?start_date=eq.${date}&select=*` : '/rest/v1/shared_programs?select=*&order=start_date.desc,created_at.desc');
   },
@@ -335,6 +349,34 @@ return {
       gender: this.profile?.gender || 'M',
       is_public: true
     });
+  },
+
+  async updateSharedProgram(id, patch) {
+    const result = await this.req(`/rest/v1/shared_programs?id=eq.${id}`, {
+      method: 'PATCH',
+      headers: { 'Prefer': 'return=representation' },
+      body: JSON.stringify(patch)
+    });
+    if (!result?.length) {
+      const error = new Error(this.message('공유 운동을 수정할 수 없습니다. 이미 삭제되었거나 DB 수정 권한(RLS UPDATE)이 필요합니다.', 'Could not update the shared workout. It may have been deleted or needs an UPDATE RLS policy.'));
+      error.code = 'NOT_UPDATED';
+      throw error;
+    }
+    return result;
+  },
+
+  async fetchPublishedProgram(table, id) {
+    if (!['coach_programs', 'shared_programs'].includes(table) || !id) return null;
+    const rows = await this.req(`/rest/v1/${table}?id=eq.${encodeURIComponent(id)}&select=id`);
+    return rows?.[0] || null;
+  },
+
+  async updatePublishedProgram(table, id, patch) {
+    return table === 'coach_programs' ? this.updateCoachProgram(id, patch) : this.updateSharedProgram(id, patch);
+  },
+
+  async deletePublishedProgram(table, id) {
+    return table === 'coach_programs' ? this.deleteCoachProgram(id) : this.deleteSharedProgram(id);
   },
 
   async batchPublishSharedPrograms(rows) {
@@ -703,37 +745,6 @@ function applyPublishedWod(settings){
   if(['REPS','TIME'].includes(s.scoreType)){$('intervalScoreType').value=s.scoreType;intervalScoreFields();}
  }
  updateTimerIdle();return true;
-}
-function renderCoachWodFormat(){
- const visible=coachPubMode==='single'&&$('coachProgramCategory').value==='WOD';
- $('coachWodFormat').hidden=!visible;
- const type=$('coachWodType').value;
- let html='';
- if(type==='FOR_TIME')html=field('coachWodCap','plannedCap','number','');
- if(type==='AMRAP')html=field('coachWodDuration','duration','number',20);
- if(type==='EMOM')html=field('coachWodEvery','every','number',1)+field('coachWodRounds','rounds','number',10);
- if(type==='INTERVAL_TABATA')html=field('coachWodWork','work','number',20)+field('coachWodRest','rest','number',10)+field('coachWodRounds','rounds','number',8)+`<div class="field"><label for="coachWodScore">${esc(t('scoreMode'))}</label><select id="coachWodScore"><option value="REPS">${esc(t('repsMode'))}</option><option value="TIME">${esc(t('timeMode'))}</option></select></div>`;
- $('coachWodSettings').innerHTML=html;
- // Hidden modes must not participate in HTML form validation.
- $('coachWodFormat').disabled=!visible;
-}
-function readCoachWodFormat(){
- const type=$('coachWodType').value;
- let p;
- if(type==='AUTO'){
-  const inferred=WodFormat.infer(`${$('coachProgramText').value}\n${$('coachProgramTitle').value}`);
-  if(!inferred.complete)throw new Error(t('wodFormatRequired'));
-  p=inferred.settings;
- }
- else{
-  p={workoutType:type};
-  if(type==='FOR_TIME'&&$('coachWodCap').value!=='')p.timeCapMinutes=Number($('coachWodCap').value);
-  if(type==='AMRAP')p.durationMinutes=Number($('coachWodDuration').value);
-  if(type==='EMOM')p.intervalSettings={workSeconds:Number($('coachWodEvery').value)*60,restSeconds:0,rounds:Number($('coachWodRounds').value),scoreType:'CUSTOM'};
-  if(type==='INTERVAL_TABATA')p.intervalSettings={workSeconds:Number($('coachWodWork').value),restSeconds:Number($('coachWodRest').value),rounds:Number($('coachWodRounds').value),scoreType:$('coachWodScore').value};
- }
- if(!WodFormat.valid(p))throw new Error(t('wodFormatRequired'));
- return WodFormat.clean(p);
 }
 function wodFormatSummary(p){
  const s=p.intervalSettings;
