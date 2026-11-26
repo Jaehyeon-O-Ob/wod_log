@@ -50,6 +50,9 @@
 .cls-pill{display:inline-block;font-size:9px;font-weight:700;border-radius:5px;padding:4px 6px;background:#f1efe8;color:#6b5f45;margin-left:4px;vertical-align:middle}
 .lift-block{border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px;background:#fcfcfa}
 .lift-head{display:flex;gap:8px;align-items:center}.lift-head select{flex:1;min-height:47px;border:1px solid var(--line);border-radius:9px;padding:10px;font-size:14px;background:#fff;min-width:0}
+.lift-name-row{margin-top:8px}.lift-name-input{width:100%;min-height:44px;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:14px;background:#fff;color:var(--ink)}
+.lift-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.lift-chip{min-height:30px;padding:4px 10px;font-size:11px;font-weight:600;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--ink)}.lift-chip.active{border-color:var(--accent);background:var(--wash);color:var(--accent)}
+.lift-base-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}.lift-base-row label{font-size:11px;font-weight:700;color:var(--muted);white-space:nowrap}.lift-base-select{flex:1;min-width:170px;min-height:40px;border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:13px;background:#fff;color:var(--ink)}.lift-base-weight{width:115px;min-height:40px;border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:13px;background:#fff;color:var(--ink)}
 .lift-meta{font-size:11px;color:var(--muted);line-height:1.6;margin:8px 0}.lift-source{font-size:11px;color:#6b5f45;background:#f6f2e8;border-radius:7px;padding:7px 9px;margin:6px 0;overflow-wrap:anywhere}
 .set-head,.set-row{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.2fr) minmax(0,.8fr) minmax(0,.8fr) 40px;gap:6px;align-items:center}
 .set-head{font-size:10px;font-weight:700;color:var(--muted);margin:6px 0 4px}.set-row{margin-bottom:6px}
@@ -81,7 +84,7 @@
 .custom-list{display:grid;gap:6px;margin-top:10px}.custom-row{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px}
 .today-list{margin:6px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:6px}
 @media(max-width:1150px){.cal-layout{grid-template-columns:minmax(0,1fr)}}
-@media(max-width:640px){.cal-day{min-height:62px;padding:4px 3px;border-radius:8px}.cal-grid{gap:3px}.mark{min-height:12px;padding:0 3px;font-size:8px;justify-content:center}.mark b{display:none}.cal-head h2{font-size:16px}.set-head,.set-row{grid-template-columns:minmax(0,.9fr) minmax(0,1.15fr) minmax(0,.8fr) minmax(0,.8fr) 36px;gap:4px}.set-row input{font-size:16px;padding:6px}.compare-table{font-size:11px}.cal-toolbar .actions{width:100%}.cal-toolbar .actions button{flex:1}}
+@media(max-width:640px){.cal-day{min-height:62px;padding:4px 3px;border-radius:8px}.cal-grid{gap:3px}.mark{min-height:12px;padding:0 3px;font-size:8px;justify-content:center}.mark b{display:none}.cal-head h2{font-size:16px}.set-head,.set-row{grid-template-columns:minmax(0,.9fr) minmax(0,1.15fr) minmax(0,.8fr) minmax(0,.8fr) 36px;gap:4px}.set-row input,.lift-name-input,.lift-base-select,.lift-base-weight{font-size:16px}.set-row input{padding:6px}.compare-table{font-size:11px}.cal-toolbar .actions{width:100%}.cal-toolbar .actions button{flex:1}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}.confetti{display:none}}
 
 /* User auth, badges, sync indicators & Coach Hub */
@@ -375,7 +378,6 @@ body.auth-locked .shell,body.auth-locked .bottom-nav{filter:blur(14px);pointer-e
     </div>
     <div class="calculator-grid"><div class="right-stack"><div class="panel"><div class="panel-header" style="margin-bottom:12px"><h2 data-t="oneRM" style="margin:0"></h2><button type="button" id="viewRmLbBtn" class="secondary small" data-t="view1RMLeaderboard"></button></div><form id="rmForm" class="spaced"><div class="field"><label for="rmLift" data-t="lift"></label><select id="rmLift"></select></div><div class="row"><div class="field"><label for="rmWeight" data-t="rmWeight"></label><input id="rmWeight" type="number" inputmode="decimal" min="0.1" max="100000" step="any" required></div><div class="field"><label for="rmUnit" data-t="unit"></label><select id="rmUnit"><option value="lb">lb</option><option value="kg">kg</option></select></div></div><div id="rmPrivacyField" class="field share-log-field"><label class="check"><input type="checkbox" id="rmPublicLeaderboard" checked><span data-t="rmPublicLeaderboardLabel"></span></label><p class="help" data-t="rmPublicLeaderboardHint"></p></div><p id="rmUpdated" class="help"></p><p id="rmBaseInfo" class="help"></p><div class="row"><button class="primary" type="submit" data-t="saveRM"></button><button id="deleteRM" type="button" class="ghost small" data-t="deleteRM"></button></div></form><div class="divider"></div><div class="row"><div class="field"><label for="calcPercent" data-t="target"></label><input id="calcPercent" type="number" inputmode="decimal" min="1" max="200" step="0.5" value="75"></div><div class="field"><label for="rounding" data-t="rounding"></label><select id="rounding"><option value="0" data-t="exact"></option><option value="0.5">0.5</option><option value="1">1</option><option value="2.5">2.5</option><option value="5">5</option></select></div></div><div id="calcResult" class="large-result" aria-live="polite"></div><p class="help" data-t="roundHint"></p></div>
       <div class="panel"><h2 data-t="compareTitle"></h2><p class="subtle" data-t="compareIntro"></p><div class="field spaced"><label for="compareFamily" data-t="liftFamily"></label><select id="compareFamily"></select></div><div id="compareTable"></div></div>
-      <div class="panel"><h2 data-t="customLiftTitle"></h2><p class="subtle" data-t="customLiftIntro"></p><form id="customLiftForm" class="spaced"><div class="field"><label for="customLiftName" data-t="customLiftName"></label><input id="customLiftName" maxlength="60" required data-placeholder="customLiftHint"></div><div class="row"><div class="field"><label for="customLiftFamily" data-t="liftFamily"></label><select id="customLiftFamily"></select></div><div class="field"><label for="customLiftClass" data-t="liftClass"></label><select id="customLiftClass"></select></div></div><button type="submit" class="secondary small" data-t="customLiftAdd"></button></form><div id="customLiftList" class="custom-list"></div></div>
       <div class="panel"><h2 data-t="converter"></h2><div class="row spaced"><div class="field"><label for="convertWeight" data-t="convertValue"></label><input id="convertWeight" type="number" inputmode="decimal" min="0" max="100000" step="any" value="150"></div><div class="field"><label for="convertUnit" data-t="unit"></label><select id="convertUnit"><option value="lb">lb</option><option value="kg">kg</option></select></div></div><div id="convertResult" class="converter-output" aria-live="polite"></div><button id="swapUnits" class="small" data-t="switchUnits"></button><p class="convert-caption">1 lb = 0.45359237 kg</p></div></div>
       <div class="panel"><h2 data-t="percentTable"></h2><p class="subtle" data-t="percentHint"></p><table class="percent-table spaced"><thead><tr><th data-t="percentage"></th><th>lb</th><th>kg</th></tr></thead><tbody id="percentTable"></tbody></table></div></div></section>
 
@@ -663,6 +665,29 @@ Object.assign(T,LANG==='ko'?{
 }:{
  coachWorkouts:'Coach workouts',sharedWorkouts:'Member-shared workouts',showWorkoutDetails:'View workout details',hideWorkoutDetails:'Hide workout details',noDayPlans:'No personal workouts planned for this date.',noDayCoachWorkouts:'No coach workouts published for this date.'
 });
+Object.assign(T,LANG==='ko'?{
+ movementNameLabel:'실제 운동명 (선택)',movementNameHint:'세부 운동명 선택 또는 직접 입력 (예: Power Snatch)',prevMovementsLabel:'이전 기록에서 선택',
+ pctBaseLabel:'% 기준 1RM',baseOptMain:'메인 · {lift} 1RM ({w})',baseOptMainMissing:'메인 · {lift} 1RM (미등록)',
+ baseOptVar:'변형 · {lift} 1RM ({w})',baseOptVarMissing:'변형 · {lift} 1RM (미등록)',
+ baseOptMovement:'이전 1RM · {name} ({w})',baseOptCustom:'기준 1RM 직접 입력',baseCustomPlaceholder:'기준 1RM',
+ baseCustomMissing:'% 기준 1RM 무게를 직접 입력하거나 다른 기준을 선택하세요.',baseCustomIs:'% 기준: 직접 입력 {w}',baseCustomShort:'직접 입력 1RM {w} 기준',
+ rmBaseInfo:'변형 종목의 % 계산 시 기록·계획 화면에서 메인({lift}) 1RM, 변형 1RM, 이전 1RM 또는 직접 입력 중 선택할 수 있습니다.',
+ programBaseRule:'스트렝스 종목은 20개 기본 분류와 세부 운동명으로 저장됩니다. 변형 종목의 % 기준은 메인 1RM·변형 1RM·직접 입력 중 선택할 수 있습니다.',
+ compareIntro:'같은 계열 안에서 메인 종목과 직접 입력한 변형·세부 운동별 최고 기록과 1RM을 비교합니다.',
+ strengthFormHint:'20개 기본 분류를 고르고, 세부 운동명(예: Power Snatch)은 이전 기록에서 선택하거나 직접 작성하세요. % 기준 1RM도 선택할 수 있습니다.',
+ legacyGroupLabel:'기존 등록 종목',fromLogs:'기록 기준',mainLiftSection:'메인 종목',variationLiftSection:'변형 · 세부 운동'
+}:{
+ movementNameLabel:'Actual movement (optional)',movementNameHint:'Pick a previous movement or type your own (e.g. Power Snatch)',prevMovementsLabel:'Pick from previous',
+ pctBaseLabel:'% base 1RM',baseOptMain:'Main · {lift} 1RM ({w})',baseOptMainMissing:'Main · {lift} 1RM (not set)',
+ baseOptVar:'Variation · {lift} 1RM ({w})',baseOptVarMissing:'Variation · {lift} 1RM (not set)',
+ baseOptMovement:'Past 1RM · {name} ({w})',baseOptCustom:'Enter reference 1RM manually',baseCustomPlaceholder:'Base 1RM',
+ baseCustomMissing:'Enter a reference 1RM weight or pick another base.',baseCustomIs:'% based on custom 1RM {w}',baseCustomShort:'Based on custom 1RM {w}',
+ rmBaseInfo:'For variations, you can choose between the main ({lift}) 1RM, this variation 1RM, a past 1RM, or a manual reference when logging or planning.',
+ programBaseRule:'Strength movements use the 20 simplified categories plus an optional specific movement name. For variations, % can be based on the main 1RM, variation 1RM, or a manual reference.',
+ compareIntro:'Compare bests and 1RMs within a lift family across the main lift and all logged variation / custom movement names.',
+ strengthFormHint:'Choose one of the 20 categories, then pick a previous movement or type your own (e.g. Power Snatch). You can also choose which 1RM to base % weights on.',
+ legacyGroupLabel:'Legacy saved lifts',fromLogs:'From logs',mainLiftSection:'Main lift',variationLiftSection:'Variations / specific movements'
+});
 const KO=LANG==='ko', LOCALE=KO?'ko-KR':'en-US';
 const $=id=>document.getElementById(id);
 const t=(key,values={})=>Object.entries(values).reduce((s,[k,v])=>s.replaceAll('{'+k+'}',String(v)),T[key]??key);
@@ -672,68 +697,109 @@ translate();document.title=t('appTitle');
 document.querySelectorAll('.language a').forEach(a=>{if(a.lang===LANG){a.classList.add('current');a.setAttribute('aria-current','page');}});
 
 /* ---------------- Movement taxonomy ----------------
- * Each lift belongs to a family (snatch, clean, ...) and a class (main / variation / skill / pull-strength).
- * Program percentages for Olympic-lift families always use the parent lift's 1RM (FAMILY_BASE);
- * squat, press and hinge lifts use their own 1RM. */
-const FAMILIES={snatch:['Snatch','스내치'],clean:['Clean','클린'],cleanJerk:['Clean & Jerk','클린 앤 저크'],jerk:['Jerk','저크'],squat:['Squat','스쿼트'],press:['Press','프레스'],hinge:['Deadlift / Hinge','데드리프트 · 힌지'],other:['Other','기타']};
-const OLY=new Set(['snatch','clean','cleanJerk','jerk']);
+ * 20 simplified categories (10 main lifts + 10 variations), paired with an optional
+ * user-entered movement name (e.g. "Power Snatch" under Snatch / Snatch Variation)
+ * and selectable % reference 1RM (main, variation, past movement 1RM, or manual).
+ * LEGACY_BUILTIN and state.customLifts remain readable for cloud data compatibility. */
+const FAMILIES={
+ snatch:['Snatch','스내치'],
+ clean:['Clean','클린'],
+ cleanJerk:['Clean & Jerk','클린 앤 저크'],
+ jerk:['Jerk','저크'],
+ deadlift:['Deadlift','데드리프트'],
+ shoulderToOverhead:['Shoulder to Overhead','숄더 투 오버헤드'],
+ benchPress:['Bench Press','벤치 프레스'],
+ backSquat:['Back Squat','백 스쿼트'],
+ frontSquat:['Front Squat','프런트 스쿼트'],
+ overheadSquat:['Overhead Squat','오버헤드 스쿼트']
+};
+const LEGACY_FAMILY_LABELS={squat:['Squat','스쿼트'],press:['Press','프레스'],hinge:['Deadlift','데드리프트'],other:['Other','기타']};
 const CLASSES={main:['Main lift','메인 종목'],variation:['Variation','변형'],skill:['Skill','스킬'],strength:['Pull / Strength','풀 · 근력']};
-const FAMILY_BASE={snatch:['snatch'],clean:['clean','cleanAndJerk'],cleanJerk:['cleanAndJerk'],jerk:['cleanAndJerk']};
+const FAMILY_MAIN={
+ snatch:'snatch',clean:'clean',cleanJerk:'cleanAndJerk',jerk:'jerk',deadlift:'deadlift',
+ shoulderToOverhead:'shoulderToOverhead',benchPress:'benchPress',
+ backSquat:'backSquat',frontSquat:'frontSquat',overheadSquat:'overheadSquat'
+};
+const FAMILY_VAR={
+ snatch:'snatchVariation',clean:'cleanVariation',cleanJerk:'cleanAndJerkVariation',jerk:'jerkVariation',deadlift:'deadliftVariation',
+ shoulderToOverhead:'shoulderToOverheadVariation',benchPress:'benchPressVariation',
+ backSquat:'backSquatVariation',frontSquat:'frontSquatVariation',overheadSquat:'overheadSquatVariation'
+};
+const FAMILY_BASE={
+ snatch:['snatch'],clean:['clean','cleanAndJerk'],cleanJerk:['cleanAndJerk'],jerk:['jerk','cleanAndJerk'],
+ deadlift:['deadlift'],shoulderToOverhead:['shoulderToOverhead'],benchPress:['benchPress'],
+ backSquat:['backSquat'],frontSquat:['frontSquat'],overheadSquat:['overheadSquat']
+};
 const BUILTIN=[
  ['snatch','Snatch','스내치','snatch','main'],
- ['powerSnatch','Power Snatch','파워 스내치','snatch','variation'],
- ['hangSnatch','Hang Snatch','행 스내치','snatch','variation'],
- ['hangPowerSnatch','Hang Power Snatch','행 파워 스내치','snatch','variation'],
- ['midHangSnatch','Mid-hang Snatch','미드행 스내치','snatch','variation'],
- ['blockSnatch','Block Snatch','블록 스내치','snatch','variation'],
- ['midHangOrBlockSnatch','Mid-hang or Block Snatch','미드행/블록 스내치','snatch','variation'],
- ['pauseSnatch','Pause Snatch','퍼즈 스내치','snatch','variation'],
- ['twoPositionSnatch','2-position Snatch','2포지션 스내치','snatch','variation'],
- ['powerSnatchSnatch','Power Snatch + Snatch','파워 스내치 + 스내치','snatch','variation'],
- ['midHangPowerSnatchComplex','Mid-hang Power Snatch + Mid-hang Snatch','미드행 파워 스내치 + 미드행 스내치','snatch','variation'],
- ['snatchBalance','Snatch Balance','스내치 밸런스','snatch','skill'],
- ['dropSnatch','Drop Snatch','드롭 스내치','snatch','skill'],
- ['muscleSnatch','Muscle Snatch','머슬 스내치','snatch','skill'],
- ['tallSnatch','Tall Snatch','톨 스내치','snatch','skill'],
- ['snatchPushPress','Snatch Push Press','스내치 푸시 프레스','snatch','strength'],
- ['snatchPull','Snatch Pull','스내치 풀','snatch','strength'],
- ['snatchPullRiser','Snatch Pull on 2" Riser','스내치 풀 (2인치 라이저)','snatch','strength'],
- ['snatchDeadlift','Snatch Deadlift','스내치 데드리프트','snatch','strength'],
- ['snatchHighPull','Snatch High Pull','스내치 하이풀','snatch','strength'],
+ ['snatchVariation','Snatch Variation','스내치 변형','snatch','variation'],
  ['clean','Clean','클린','clean','main'],
- ['powerClean','Power Clean','파워 클린','clean','variation'],
- ['hangClean','Hang Clean','행 클린','clean','variation'],
- ['hangPowerClean','Hang Power Clean','행 파워 클린','clean','variation'],
- ['blockClean','Block Clean','블록 클린','clean','variation'],
- ['midHangOrBlockClean','Mid-hang or Block Clean','미드행/블록 클린','clean','variation'],
- ['pauseClean','Pause Clean','퍼즈 클린','clean','variation'],
- ['twoPositionClean','2-position Clean','2포지션 클린','clean','variation'],
- ['muscleClean','Muscle Clean','머슬 클린','clean','skill'],
- ['tallClean','Tall Clean','톨 클린','clean','skill'],
- ['cleanPull','Clean Pull','클린 풀','clean','strength'],
- ['cleanPullRiser','Clean Pull off 2" Riser','클린 풀 (2인치 라이저)','clean','strength'],
- ['cleanDeadlift','Clean Deadlift','클린 데드리프트','clean','strength'],
+ ['cleanVariation','Clean Variation','클린 변형','clean','variation'],
  ['cleanAndJerk','Clean & Jerk','클린 앤 저크','cleanJerk','main'],
- ['powerCleanPowerJerk','Power Clean + Power Jerk','파워 클린 + 파워 저크','cleanJerk','variation'],
+ ['cleanAndJerkVariation','Clean & Jerk Variation','클린 앤 저크 변형','cleanJerk','variation'],
  ['jerk','Jerk','저크','jerk','main'],
- ['splitJerk','Split Jerk','스플릿 저크','jerk','variation'],
- ['powerJerk','Power Jerk','파워 저크','jerk','variation'],
- ['pushJerk','Push Jerk','푸시 저크','jerk','variation'],
- ['behindNeckJerk','Behind-the-neck Jerk','비하인드 넥 저크','jerk','variation'],
- ['jerkBalance','Jerk Balance','저크 밸런스','jerk','skill'],
- ['jerkDipSquat','Jerk Dip Squat','저크 딥 스쿼트','jerk','strength'],
- ['backSquat','Back Squat','백 스쿼트','squat','strength'],
- ['frontSquat','Front Squat','프런트 스쿼트','squat','strength'],
- ['overheadSquat','Overhead Squat','오버헤드 스쿼트','squat','strength'],
- ['pushPress','Push Press','푸시 프레스','press','strength'],
- ['strictPress','Strict Press','스트릭트 프레스','press','strength'],
- ['splitPress','Split Press','스플릿 프레스','press','strength'],
- ['deadlift','Deadlift','데드리프트','hinge','strength'],
- ['goodMorning','Good Morning','굿모닝','hinge','strength'],
- ['stiffLeggedDeadlift','Stiff-legged Deadlift','스티프 레그 데드리프트','hinge','strength'],
- ['romanianDeadlift','Romanian Deadlift','루마니안 데드리프트','hinge','strength']
+ ['jerkVariation','Jerk Variation','저크 변형','jerk','variation'],
+ ['deadlift','Deadlift','데드리프트','deadlift','main'],
+ ['deadliftVariation','Deadlift Variation','데드리프트 변형','deadlift','variation'],
+ ['shoulderToOverhead','Shoulder to Overhead','숄더 투 오버헤드','shoulderToOverhead','main'],
+ ['shoulderToOverheadVariation','Shoulder to Overhead Variation','숄더 투 오버헤드 변형','shoulderToOverhead','variation'],
+ ['benchPress','Bench Press','벤치 프레스','benchPress','main'],
+ ['benchPressVariation','Bench Press Variation','벤치 프레스 변형','benchPress','variation'],
+ ['backSquat','Back Squat','백 스쿼트','backSquat','main'],
+ ['backSquatVariation','Back Squat Variation','백 스쿼트 변형','backSquat','variation'],
+ ['frontSquat','Front Squat','프런트 스쿼트','frontSquat','main'],
+ ['frontSquatVariation','Front Squat Variation','프런트 스쿼트 변형','frontSquat','variation'],
+ ['overheadSquat','Overhead Squat','오버헤드 스쿼트','overheadSquat','main'],
+ ['overheadSquatVariation','Overhead Squat Variation','오버헤드 스쿼트 변형','overheadSquat','variation']
+];
+const LEGACY_BUILTIN=[
+ ['powerSnatch','Power Snatch','파워 스내치','snatch','variation','snatchVariation'],
+ ['hangSnatch','Hang Snatch','행 스내치','snatch','variation','snatchVariation'],
+ ['hangPowerSnatch','Hang Power Snatch','행 파워 스내치','snatch','variation','snatchVariation'],
+ ['midHangSnatch','Mid-hang Snatch','미드행 스내치','snatch','variation','snatchVariation'],
+ ['blockSnatch','Block Snatch','블록 스내치','snatch','variation','snatchVariation'],
+ ['midHangOrBlockSnatch','Mid-hang or Block Snatch','미드행/블록 스내치','snatch','variation','snatchVariation'],
+ ['pauseSnatch','Pause Snatch','퍼즈 스내치','snatch','variation','snatchVariation'],
+ ['twoPositionSnatch','2-position Snatch','2포지션 스내치','snatch','variation','snatchVariation'],
+ ['powerSnatchSnatch','Power Snatch + Snatch','파워 스내치 + 스내치','snatch','variation','snatchVariation'],
+ ['midHangPowerSnatchComplex','Mid-hang Power Snatch + Mid-hang Snatch','미드행 파워 스내치 + 미드행 스내치','snatch','variation','snatchVariation'],
+ ['snatchBalance','Snatch Balance','스내치 밸런스','snatch','skill','snatchVariation'],
+ ['dropSnatch','Drop Snatch','드롭 스내치','snatch','skill','snatchVariation'],
+ ['muscleSnatch','Muscle Snatch','머슬 스내치','snatch','skill','snatchVariation'],
+ ['tallSnatch','Tall Snatch','톨 스내치','snatch','skill','snatchVariation'],
+ ['snatchPushPress','Snatch Push Press','스내치 푸시 프레스','snatch','strength','snatchVariation'],
+ ['snatchPull','Snatch Pull','스내치 풀','snatch','strength','snatchVariation'],
+ ['snatchPullRiser','Snatch Pull on 2" Riser','스내치 풀 (2인치 라이저)','snatch','strength','snatchVariation'],
+ ['snatchDeadlift','Snatch Deadlift','스내치 데드리프트','snatch','strength','snatchVariation'],
+ ['snatchHighPull','Snatch High Pull','스내치 하이풀','snatch','strength','snatchVariation'],
+ ['powerClean','Power Clean','파워 클린','clean','variation','cleanVariation'],
+ ['hangClean','Hang Clean','행 클린','clean','variation','cleanVariation'],
+ ['hangPowerClean','Hang Power Clean','행 파워 클린','clean','variation','cleanVariation'],
+ ['blockClean','Block Clean','블록 클린','clean','variation','cleanVariation'],
+ ['midHangOrBlockClean','Mid-hang or Block Clean','미드행/블록 클린','clean','variation','cleanVariation'],
+ ['pauseClean','Pause Clean','퍼즈 클린','clean','variation','cleanVariation'],
+ ['twoPositionClean','2-position Clean','2포지션 클린','clean','variation','cleanVariation'],
+ ['muscleClean','Muscle Clean','머슬 클린','clean','skill','cleanVariation'],
+ ['tallClean','Tall Clean','톨 클린','clean','skill','cleanVariation'],
+ ['cleanPull','Clean Pull','클린 풀','clean','strength','cleanVariation'],
+ ['cleanPullRiser','Clean Pull off 2" Riser','클린 풀 (2인치 라이저)','clean','strength','cleanVariation'],
+ ['cleanDeadlift','Clean Deadlift','클린 데드리프트','clean','strength','cleanVariation'],
+ ['powerCleanPowerJerk','Power Clean + Power Jerk','파워 클린 + 파워 저크','cleanJerk','variation','cleanAndJerkVariation'],
+ ['splitJerk','Split Jerk','스플릿 저크','jerk','variation','jerkVariation'],
+ ['powerJerk','Power Jerk','파워 저크','jerk','variation','jerkVariation'],
+ ['pushJerk','Push Jerk','푸시 저크','jerk','variation','jerkVariation'],
+ ['behindNeckJerk','Behind-the-neck Jerk','비하인드 넥 저크','jerk','variation','jerkVariation'],
+ ['jerkBalance','Jerk Balance','저크 밸런스','jerk','skill','jerkVariation'],
+ ['jerkDipSquat','Jerk Dip Squat','저크 딥 스쿼트','jerk','strength','jerkVariation'],
+ ['pushPress','Push Press','푸시 프레스','shoulderToOverhead','variation','shoulderToOverheadVariation'],
+ ['strictPress','Strict Press','스트릭트 프레스','shoulderToOverhead','variation','shoulderToOverheadVariation'],
+ ['splitPress','Split Press','스플릿 프레스','shoulderToOverhead','variation','shoulderToOverheadVariation'],
+ ['goodMorning','Good Morning','굿모닝','deadlift','variation','deadliftVariation'],
+ ['stiffLeggedDeadlift','Stiff-legged Deadlift','스티프 레그 데드리프트','deadlift','variation','deadliftVariation'],
+ ['romanianDeadlift','Romanian Deadlift','루마니안 데드리프트','deadlift','variation','deadliftVariation']
 ];
 const LIFTS=Object.fromEntries(BUILTIN.map(([k,en,ko,family,cls])=>[k,{en,ko,family,cls}]));
+const LEGACY_LIFTS=Object.fromEntries(LEGACY_BUILTIN.map(([k,en,ko,family,cls,mappedKey])=>[k,{en,ko,family,cls,legacy:true,mappedKey}]));
 const TYPES={FOR_TIME:'For Time',AMRAP:'AMRAP',EMOM:'EMOM / EOMOM',INTERVAL_TABATA:'Tabata / Interval',FOR_QUALITY:'For Quality / Accessory',STRENGTH_MAX:'Strength'};
 Array.from($('typeFilter').options).forEach(o=>{if(o.value)o.textContent=TYPES[o.value];});
 const KEY='crossfit-wod-tracker-v1', POUND=.45359237;
@@ -764,15 +830,166 @@ const plainObject=o=>!!o&&typeof o==='object'&&!Array.isArray(o);
 
 /* ---------------- Lift helpers (need state) ---------------- */
 let state={version:2,logs:[],profiles:{},plans:[],customLifts:{}}, storageBlocked=false;
-function liftInfo(key,custom=state.customLifts){if(typeof key!=='string')return null;if(Object.hasOwn(LIFTS,key))return LIFTS[key];const c=plainObject(custom)&&Object.hasOwn(custom,key)?custom[key]:null;return c?{en:c.name,ko:c.name,family:c.family,cls:c.cls,custom:true}:null;}
+const BASE_MODES=new Set(['main','variation','movement','custom']);
+function normalizeLegacyFamily(family, name=''){
+ if(Object.hasOwn(FAMILIES,family))return family;
+ const n=normalized(name);
+ if(family==='squat'){if(n.includes('overhead')||n.includes('ohs')||n.includes('오버헤드'))return 'overheadSquat';if(n.includes('front')||n.includes('프런트')||n.includes('프론트'))return 'frontSquat';return 'backSquat';}
+ if(family==='press')return n.includes('bench')||n.includes('벤치')?'benchPress':'shoulderToOverhead';
+ if(family==='hinge')return 'deadlift';
+ return 'other';
+}
+function liftInfo(key,custom=state.customLifts){
+ if(typeof key!=='string')return null;
+ if(Object.hasOwn(LIFTS,key))return LIFTS[key];
+ if(Object.hasOwn(LEGACY_LIFTS,key))return LEGACY_LIFTS[key];
+ const c=plainObject(custom)&&Object.hasOwn(custom,key)?custom[key]:null;
+ return c?{en:c.name,ko:c.name,family:normalizeLegacyFamily(c.family,c.name),rawFamily:c.family,cls:c.cls,custom:true}:null;
+}
 const liftName=k=>{const l=liftInfo(k);return l?(KO?l.ko:l.en):String(k??'');};
-const allLiftKeys=()=>[...Object.keys(LIFTS),...Object.keys(state.customLifts||{})];
-function groupLabel(family,cls){const f=FAMILIES[family]?.[KO?1:0]||'';if(!OLY.has(family)||cls==='main')return f;return `${f} ${CLASSES[cls]?.[KO?1:0]||''}`;}
+const allLiftKeys=()=>[...Object.keys(LIFTS),...Object.keys(LEGACY_LIFTS),...Object.keys(state.customLifts||{})];
+function groupLabel(family,cls){
+ const f=(FAMILIES[family]||LEGACY_FAMILY_LABELS[family])?.[KO?1:0]||'';
+ if(!f)return '';
+ if(cls==='main')return f;
+ return `${f} ${CLASSES[cls]?.[KO?1:0]||''}`.trim();
+}
 const liftGroup=k=>{const l=liftInfo(k);return l?groupLabel(l.family,l.cls):'';};
 function liftKeyByName(name){const n=normalized(name);if(!n)return null;return allLiftKeys().find(k=>{const l=liftInfo(k);return normalized(l.en)===n||normalized(l.ko)===n;})||null;}
 function logLiftKey(r){return r.liftKey&&liftInfo(r.liftKey)?r.liftKey:liftKeyByName(r.title);}
+function cleanMovementName(liftKey, raw){
+ const s=String(raw??'').trim().slice(0,100);
+ if(!s)return '';
+ const l=liftInfo(liftKey);
+ if(l&&(normalized(s)===normalized(l.en)||normalized(s)===normalized(l.ko)))return '';
+ return s;
+}
+function toActiveLift(key, movementName=''){
+ const l=liftInfo(key);
+ if(!l)return {liftKey:'snatch',movementName:String(movementName??'').trim().slice(0,100)};
+ if(Object.hasOwn(LIFTS,key))return {liftKey:key,movementName:cleanMovementName(key, movementName)};
+ if(l.mappedKey)return {liftKey:l.mappedKey,movementName:cleanMovementName(l.mappedKey, movementName||(KO?l.ko:l.en))};
+ const mapped=FAMILY_VAR[l.family]||'snatchVariation';
+ return {liftKey:mapped,movementName:cleanMovementName(mapped, movementName||l.en)};
+}
 function baseFor(key){const l=liftInfo(key);if(!l)return {key:null,profile:null};const chain=FAMILY_BASE[l.family]||[key];for(const k of chain)if(state.profiles[k])return {key:k,profile:state.profiles[k]};return {key:chain[0],profile:null};}
-function liftOptions(selectedKey){let html='';for(const f of Object.keys(FAMILIES))for(const c of Object.keys(CLASSES)){const keys=allLiftKeys().filter(k=>{const l=liftInfo(k);return l.family===f&&l.cls===c;});if(!keys.length)continue;html+=`<optgroup label="${esc(groupLabel(f,c))}">`+keys.map(k=>`<option value="${esc(k)}"${k===selectedKey?' selected':''}>${esc(liftName(k))}</option>`).join('')+'</optgroup>';}return html;}
+function movementProfileOrBest(liftKey, movementName){
+ const m=cleanMovementName(liftKey, movementName);
+ if(!m)return null;
+ const mn=normalized(m);
+ for(const [k,p] of Object.entries(state.profiles||{})){
+  const l=liftInfo(k);if(!l)continue;
+  if(normalized(l.en)===mn||normalized(l.ko)===mn)return {weight:p.weight,unit:p.unit,label:m,source:'profile',key:k};
+ }
+ let best=null;
+ for(const r of state.logs){
+  if(r.category!=='STRENGTH')continue;
+  if(normalized(recordTitle(r))!==mn)continue;
+  for(const g of logGroups(r)){
+   if(g.reps!==1)continue;
+   const kg=toKg(g.weight,r.weightUnit);
+   if(!best||kg>best.kg)best={weight:g.weight,unit:r.weightUnit,kg,label:m,source:'log1rm',key:null};
+  }
+ }
+ return best;
+}
+function defaultBaseMode(liftKey){
+ const l=liftInfo(liftKey);
+ if(!l)return 'main';
+ if(l.cls==='variation'){
+  const main=baseFor(liftKey), varKey=FAMILY_VAR[l.family]||liftKey;
+  if(!main.profile&&state.profiles[varKey])return 'variation';
+ }
+ return 'main';
+}
+function resolveBase(item, unit){
+ const l=liftInfo(item?.liftKey);
+ if(!l)return {mode:'main',key:null,weight:null,unit,label:''};
+ const mode=item.baseMode&&BASE_MODES.has(item.baseMode)?item.baseMode:defaultBaseMode(item.liftKey);
+ if(mode==='custom'){
+  const w=finite(item.baseWeight,.1,100000)?item.baseWeight:null;
+  return {mode:'custom',key:null,weight:w,unit,label:t('baseOptCustom')};
+ }
+ if(mode==='movement'){
+  const mv=movementProfileOrBest(item.liftKey, item.movementName);
+  return mv?{mode:'movement',key:mv.key,weight:convert(mv.weight,mv.unit,unit),unit,label:mv.label,profile:mv}:{mode:'movement',key:null,weight:null,unit,label:cleanMovementName(item.liftKey,item.movementName)};
+ }
+ if(mode==='variation'){
+  const varKey=Object.hasOwn(LIFTS,item.liftKey)&&l.cls==='variation'?item.liftKey:(FAMILY_VAR[l.family]||item.liftKey);
+  const p=state.profiles[varKey]||(item.liftKey!==varKey?state.profiles[item.liftKey]:null);
+  return {mode:'variation',key:varKey,weight:p?convert(p.weight,p.unit,unit):null,unit,label:liftName(varKey),profile:p||null};
+ }
+ const b=baseFor(item.liftKey);
+ return {mode:'main',key:b.key,weight:b.profile?convert(b.profile.weight,b.profile.unit,unit):null,unit,label:b.key?liftName(b.key):liftName(item.liftKey),profile:b.profile};
+}
+function pctWeightFor(item, pct, unit){const b=resolveBase(item, unit);return b.weight!==null?roundPlate(b.weight*pct/100,unit):null;}
+function previousMovementNames(liftKey){
+ const l=liftInfo(liftKey);if(!l)return [];
+ const fam=l.family, seen=new Map();
+ const mainL=LIFTS[FAMILY_MAIN[fam]], varL=LIFTS[FAMILY_VAR[fam]];
+ const add=(name, ts='')=>{
+  const c=cleanMovementName(liftKey, name);if(!c)return;
+  const cn=normalized(c);
+  if([mainL?.en,mainL?.ko,varL?.en,varL?.ko].some(x=>x&&normalized(x)===cn))return;
+  const prev=seen.get(cn);
+  if(!prev||ts>prev.ts)seen.set(cn,{name:c,ts});
+ };
+ for(const r of ordered()){
+  if(r.category!=='STRENGTH')continue;
+  const k=logLiftKey(r), rl=liftInfo(k);
+  if(!rl||rl.family!==fam)continue;
+  if(r.movementName)add(r.movementName, r.date||r.createdAt||'');
+  else if(rl.legacy||rl.custom)add(liftName(k), r.date||r.createdAt||'');
+  else if(r.title&&normalized(r.title)!==normalized(rl.en)&&normalized(r.title)!==normalized(rl.ko))add(r.title, r.date||r.createdAt||'');
+ }
+ for(const p of state.plans){
+  if(p.category!=='STRENGTH')continue;
+  for(const it of (p.items||[])){
+   const il=liftInfo(it.liftKey);if(!il||il.family!==fam)continue;
+   if(it.movementName)add(it.movementName, p.date||p.createdAt||'');
+   else if(il.legacy||il.custom)add(liftName(it.liftKey), p.date||p.createdAt||'');
+  }
+ }
+ for(const k of Object.keys(state.profiles||{})){
+  const pl=liftInfo(k);
+  if(pl&&pl.family===fam&&(pl.legacy||pl.custom))add(liftName(k), '');
+ }
+ for(const [k,v] of Object.entries(state.customLifts||{})){
+  const cl=liftInfo(k);
+  if(cl&&cl.family===fam)add(v.name, '');
+ }
+ return [...seen.values()].sort((a,b)=>b.ts.localeCompare(a.ts)||a.name.localeCompare(b.name,LOCALE)).map(x=>x.name);
+}
+function movementMatchNames(liftKey, movementName){
+ const m=cleanMovementName(liftKey, movementName);
+ if(m)return new Set([normalized(m)]);
+ const l=liftInfo(liftKey);
+ if(!l)return new Set();
+ if(l.legacy||l.custom)return new Set([normalized(l.en),normalized(l.ko)]);
+ return null;
+}
+function sameMovement(a, b){
+ const ak=a.category==='STRENGTH'?logLiftKey(a):a.liftKey;
+ const bk=b.category==='STRENGTH'?logLiftKey(b):b.liftKey;
+ const am=a.category==='STRENGTH'?(a.movementName||cleanMovementName(ak, recordTitle(a))):a.movementName;
+ const bm=b.category==='STRENGTH'?(b.movementName||cleanMovementName(bk, recordTitle(b))):b.movementName;
+ const aNames=movementMatchNames(ak, am), bNames=movementMatchNames(bk, bm);
+ if(aNames&&bNames){for(const n of aNames)if(bNames.has(n))return true;return false;}
+ if(!aNames&&!bNames)return ak===bk;
+ return false;
+}
+function liftOptions(selectedKey, includeLegacyProfiles=false){
+ let html='';
+ for(const f of Object.keys(FAMILIES)){
+  const keys=[FAMILY_MAIN[f],FAMILY_VAR[f]].filter(Boolean);
+  html+=`<optgroup label="${esc(FAMILIES[f][KO?1:0])}">`+keys.map(k=>`<option value="${esc(k)}"${k===selectedKey?' selected':''}>${esc(liftName(k))}</option>`).join('')+'</optgroup>';
+ }
+ const extras=[];
+ if(includeLegacyProfiles)for(const k of Object.keys(state.profiles||{}))if(!Object.hasOwn(LIFTS,k)&&liftInfo(k))extras.push(k);
+ if(selectedKey&&!Object.hasOwn(LIFTS,selectedKey)&&liftInfo(selectedKey)&&!extras.includes(selectedKey))extras.push(selectedKey);
+ if(extras.length)html+=`<optgroup label="${esc(t('legacyGroupLabel'))}">`+extras.map(k=>`<option value="${esc(k)}"${k===selectedKey?' selected':''}>${esc(liftName(k))}</option>`).join('')+'</optgroup>';
+ return html;
+}
 function logGroups(r){if(Array.isArray(r.setGroups))return r.setGroups;return finite(r.weightUsed,.001,100000)&&r.reps&&r.sets?[{weight:r.weightUsed,reps:r.reps,sets:r.sets}]:[];}
 
 /* ---------------- Validation & storage ---------------- */
@@ -780,8 +997,8 @@ const ROW_KEYS=['pct','pctMax','weight','reps','repsMax','sets','setsMax','max',
 function validRow(r){if(!plainObject(r)||Object.keys(r).some(k=>!ROW_KEYS.includes(k)))return false;if(!isInt(r.reps,1,10000)||!isInt(r.sets,1,10000))return false;if(r.pct!==undefined&&!finite(r.pct,.1,200))return false;if(r.pctMax!==undefined&&(r.pct===undefined||!finite(r.pctMax,r.pct,200)))return false;if(r.weight!==undefined&&!finite(r.weight,0,100000))return false;if(r.repsMax!==undefined&&!isInt(r.repsMax,r.reps,10000))return false;if(r.setsMax!==undefined&&!isInt(r.setsMax,r.sets,10000))return false;return [r.max,r.ofDayMax].every(v=>v===undefined||v===true);}
 function validGroup(g){return plainObject(g)&&Object.keys(g).every(k=>['weight','reps','sets','pct'].includes(k))&&finite(g.weight,.001,100000)&&isInt(g.reps,1,10000)&&isInt(g.sets,1,10000)&&(g.pct===undefined||finite(g.pct,.1,200));}
 function validProgram(p){return p===undefined||(plainObject(p)&&Object.keys(p).every(k=>['name','day'].includes(k))&&typeof p.name==='string'&&p.name.trim().length>0&&p.name.length<=100&&isInt(p.day,1,1000));}
-function validItem(it,custom){return plainObject(it)&&Object.keys(it).every(k=>['liftKey','rows','text','note'].includes(k))&&!!liftInfo(it.liftKey,custom)&&Array.isArray(it.rows)&&it.rows.length>=1&&it.rows.length<=30&&it.rows.every(validRow)&&shortText(it.text,300)&&shortText(it.note,1000);}
-function validCustomLifts(c){return c===undefined||(plainObject(c)&&Object.keys(c).length<=300&&Object.entries(c).every(([k,v])=>/^custom_[A-Za-z0-9_-]{1,80}$/.test(k)&&plainObject(v)&&Object.keys(v).every(x=>['name','family','cls'].includes(x))&&typeof v.name==='string'&&v.name.trim().length>0&&v.name.length<=60&&Object.hasOwn(FAMILIES,v.family)&&Object.hasOwn(CLASSES,v.cls)));}
+function validItem(it,custom){return plainObject(it)&&Object.keys(it).every(k=>['liftKey','movementName','baseMode','baseWeight','rows','text','note'].includes(k))&&!!liftInfo(it.liftKey,custom)&&shortText(it.movementName,100)&&(it.baseMode===undefined||BASE_MODES.has(it.baseMode))&&(it.baseWeight===undefined||finite(it.baseWeight,.1,100000))&&Array.isArray(it.rows)&&it.rows.length>=1&&it.rows.length<=30&&it.rows.every(validRow)&&shortText(it.text,300)&&shortText(it.note,1000);}
+function validCustomLifts(c){return c===undefined||(plainObject(c)&&Object.keys(c).length<=300&&Object.entries(c).every(([k,v])=>/^custom_[A-Za-z0-9_-]{1,80}$/.test(k)&&plainObject(v)&&Object.keys(v).every(x=>['name','family','cls'].includes(x))&&typeof v.name==='string'&&v.name.trim().length>0&&v.name.length<=60&&(Object.hasOwn(FAMILIES,v.family)||Object.hasOwn(LEGACY_FAMILY_LABELS,v.family))&&Object.hasOwn(CLASSES,v.cls)));}
 function validLog(r,custom=state.customLifts){
  if(!plainObject(r)||!['WOD','STRENGTH'].includes(r.category)||!validDate(r.date)||typeof r.title!=='string'||!r.title.trim()||r.title.length>160||!Object.hasOwn(TYPES,r.workoutType)||typeof r.score!=='string'||!r.score.trim()||r.score.length>20000||!['TIME','ROUNDS_REPS','WEIGHT','CUSTOM'].includes(r.scoreUnit)||typeof r.isRxd!=='boolean'||!['lb','kg'].includes(r.weightUnit)||typeof r.createdAt!=='string'||isNaN(Date.parse(r.createdAt)))return false;
  if((r.category==='STRENGTH')!==(r.workoutType==='STRENGTH_MAX'))return false;
@@ -789,6 +1006,9 @@ function validLog(r,custom=state.customLifts){
  if([r.content,r.notes].some(v=>typeof v!=='string'||v.length>10000))return false;
  if(r.weightUsed!==null&&r.weightUsed!==undefined&&!finite(r.weightUsed,0,100000))return false;
  if(r.liftKey!==undefined&&!liftInfo(r.liftKey,custom))return false;
+ if(!shortText(r.movementName,100))return false;
+ if(r.baseMode!==undefined&&!BASE_MODES.has(r.baseMode))return false;
+ if(r.baseWeight!==undefined&&!finite(r.baseWeight,.1,100000))return false;
  for(const k of ['sets','reps'])if(r[k]!==undefined&&!isInt(r[k],1,10000))return false;
  for(const k of ['durationMinutes','timeCapMinutes'])if(r[k]!==undefined&&!isInt(r[k],1,1440))return false;
  if(r.capReps!==undefined&&!isInt(r.capReps,0,1000000))return false;
@@ -891,8 +1111,24 @@ function commit(next,recover=false){
 function ordered(){return [...state.logs].sort((a,b)=>b.date.localeCompare(a.date)||b.createdAt.localeCompare(a.createdAt));}
 
 /* ---------------- Display helpers ---------------- */
-function planTitle(p){if(p.category!=='STRENGTH')return p.title;if(p.program)return `${p.program.name} · Day ${p.program.day}`;return (p.items||[]).map(i=>liftName(i.liftKey)).join(' + ')||p.title;}
-function recordTitle(r){if(r.status==='PLANNED')return planTitle(r);if(r.category==='STRENGTH'){const k=logLiftKey(r);return k?liftName(k):r.title;}return r.title;}
+function itemTitle(it){return (it.movementName&&it.movementName.trim())||liftName(it.liftKey);}
+function planTitle(p){if(p.category!=='STRENGTH')return p.title;if(p.program)return `${p.program.name} · Day ${p.program.day}`;return (p.items||[]).map(itemTitle).join(' + ')||p.title;}
+function recordTitle(r){
+ if(r.status==='PLANNED')return planTitle(r);
+ if(r.category==='STRENGTH'){
+  const k=logLiftKey(r), l=liftInfo(k);
+  if(l&&r.title&&normalized(r.title)!==normalized(l.en)&&normalized(r.title)!==normalized(l.ko))return r.title;
+  if(r.movementName&&r.movementName.trim())return r.movementName.trim();
+  return k?liftName(k):r.title;
+ }
+ return r.title;
+}
+function liftPillLabel(liftKey, displayTitle){
+ const l=liftInfo(liftKey);if(!l)return '';
+ const catLabel=liftName(liftKey);
+ if(displayTitle&&normalized(displayTitle)!==normalized(catLabel))return catLabel;
+ return liftGroup(liftKey);
+}
 function shownScore(r){
  if(r.category==='STRENGTH'){const groups=logGroups(r);if(groups.length)return groups.map(g=>`${fmtW(g.weight)} ${r.weightUnit} × ${g.reps} ${t('repsWord')} × ${g.sets} ${t('setsWord')}`).join(' / ');}
  return r.score.replace(/^Success\b/,t('success')).replace(/^Pass\b/,t('pass')).replace(/^CAP\b/,t('capWord')).replace(/^Done$/,t('doneWord')).replace(/\breps\b/g,t('repsWord'));
@@ -909,11 +1145,17 @@ function rowText(r,item,unit){
  if(r.max)return t('dayMaxTag');
  const load=r.ofDayMax?t('ofDayMaxTag',{p:pctLabel(r)}):pctLabel(r)||(r.weight!==undefined?`${fmtW(r.weight)} ${unit}`:'');
  let s=`${load?load+' × ':''}${reps}${t('repsWord')} × ${sets}${t('setsWord')}`;
- if(!r.ofDayMax&&r.pct!==undefined){const w=pctWeight(item.liftKey,r.pct,unit);if(w!==null){const w2=r.pctMax?pctWeight(item.liftKey,r.pctMax,unit):null;s+=` → ${w2!==null?`${fmtW(w)}–${fmtW(w2)} ${unit}`:dual(w,unit)}`;}}
+ if(!r.ofDayMax&&r.pct!==undefined){const w=pctWeightFor(item,r.pct,unit);if(w!==null){const w2=r.pctMax?pctWeightFor(item,r.pctMax,unit):null;s+=` → ${w2!==null?`${fmtW(w)}–${fmtW(w2)} ${unit}`:dual(w,unit)}`;}}
  return s;
 }
-function baseNote(key){const l=liftInfo(key),b=baseFor(key);if(!b.key)return '';if(!b.profile)return t('baseMissingShort',{lift:liftName(b.key)});return b.key!==key?t('baseShort',{lift:liftName(b.key)}):'';}
-function itemsHTML(p){return `<ul class="item-list">${p.items.map(it=>{const note=[baseNote(it.liftKey),it.note].filter(Boolean).join(' · ');return `<li><strong>${esc(liftName(it.liftKey))}</strong><span class="cls-pill">${esc(liftGroup(it.liftKey))}</span><div class="item-rows">${esc(it.rows.map(r=>rowText(r,it,p.weightUnit)).join(' · '))}</div>${note?`<div class="item-note">${esc(note)}</div>`:''}</li>`;}).join('')}</ul>`;}
+function baseNote(it,unit='kg'){
+ const rb=resolveBase(it,unit);
+ if(rb.mode==='custom')return rb.weight!==null?t('baseCustomShort',{w:dual(rb.weight,unit)}):'';
+ if(rb.weight===null)return rb.label?t('baseMissingShort',{lift:rb.label}):'';
+ const showBase=rb.mode==='movement'||(rb.key&&rb.key!==it.liftKey)||(it.movementName&&rb.label);
+ return showBase?t('baseShort',{lift:rb.label}):'';
+}
+function itemsHTML(p){return `<ul class="item-list">${p.items.map(it=>{const title=itemTitle(it),pill=liftPillLabel(it.liftKey,title),note=[baseNote(it,p.weightUnit||'kg'),it.note].filter(Boolean).join(' · ');return `<li><strong>${esc(title)}</strong>${pill?`<span class="cls-pill">${esc(pill)}</span>`:''}<div class="item-rows">${esc(it.rows.map(r=>rowText(r,it,p.weightUnit)).join(' · '))}</div>${note?`<div class="item-note">${esc(note)}</div>`:''}</li>`;}).join('')}</ul>`;}
 function notesHTML(notes){if(!notes)return '';return notes.length>160?`<details><summary class="help">${esc(t('notes'))}</summary><p class="record-note">${esc(notes)}</p></details>`:`<p class="record-note">${esc(notes)}</p>`;}
 
 /* ---------------- Auth Modal & Mode Management ---------------- */
@@ -1027,30 +1269,111 @@ for(const id of ['titleSuggest','contentSuggest'])$(id).addEventListener('click'
 $('linkedPanel').addEventListener('click',e=>{if(e.target.closest('[data-unlink]')){if(linkedTitle)dismissedSuggest.add(linkedTitle);linkedTitle=null;renderLinked();renderSuggest();}});
 
 /* ---------------- Strength session blocks ---------------- */
-function blankBlock(key='snatch'){return {liftKey:liftInfo(key)?key:'snatch',rows:[{reps:1,sets:1}],text:'',note:''};}
+function blankBlock(key='snatch'){
+ const active=Object.hasOwn(LIFTS,key)?key:'snatch';
+ return {liftKey:active,movementName:'',baseMode:defaultBaseMode(active),baseWeight:undefined,rows:[{reps:1,sets:1}],text:'',note:''};
+}
 function rowInput(bi,ri,cls){return $('liftBlocks').querySelector(`.set-row[data-bi="${bi}"][data-ri="${ri}"] .${cls}`);}
-function rowComputed(b,r,unit){if(r.max||!finite(r.pct,.1,200))return null;if(r.ofDayMax){const m=b.rows.find(x=>x.max&&finite(x.weight,.001,100000));return m?roundPlate(m.weight*r.pct/100,unit):null;}return pctWeight(b.liftKey,r.pct,unit);}
-function rowTag(b,r,unit){const parts=[];if(r.max)parts.push(t('dayMaxTag'));if(r.ofDayMax)parts.push(t('ofDayMaxTag',{p:pctLabel(r)}));else if(r.pctMax)parts.push(pctLabel(r));if(r.repsMax)parts.push(`${r.reps}–${r.repsMax}${t('repsWord')}`);if(r.setsMax)parts.push(`${r.sets}–${r.setsMax}${t('setsWord')}`);const c=rowComputed(b,r,unit);if(c!==null){const c2=r.pctMax&&!r.ofDayMax?pctWeight(b.liftKey,r.pctMax,unit):null;parts.push('→ '+(c2!==null?`${fmtW(c)}–${fmtW(c2)} ${unit}`:dual(c,unit)));}else if(finite(r.pct,.1,200)&&!r.ofDayMax)parts.push(t('noBaseShort'));return parts.join(' · ');}
-function liftHistoryHTML(key){const logs=ordered().filter(r=>r.category==='STRENGTH'&&logLiftKey(r)===key);if(!logs.length)return esc(t('noLift'));let best=null;for(const r of logs)for(const g of logGroups(r)){const kg=toKg(g.weight,r.weightUnit);if(!best||kg>best.kg)best={kg,g,r};}const last=logs[0];return `${esc(t('latest'))}: ${esc(displayDate(last.date))} · ${esc(shownScore(last))}${best?`<br>${esc(t('bestShort'))}: ${esc(`${fmtW(best.g.weight)} ${best.r.weightUnit} × ${best.g.reps}`)} · ${esc(displayDate(best.r.date))}`:''}`;}
+function rowComputed(b,r,unit){if(r.max||!finite(r.pct,.1,200))return null;if(r.ofDayMax){const m=b.rows.find(x=>x.max&&finite(x.weight,.001,100000));return m?roundPlate(m.weight*r.pct/100,unit):null;}return pctWeightFor(b,r.pct,unit);}
+function rowTag(b,r,unit){const parts=[];if(r.max)parts.push(t('dayMaxTag'));if(r.ofDayMax)parts.push(t('ofDayMaxTag',{p:pctLabel(r)}));else if(r.pctMax)parts.push(pctLabel(r));if(r.repsMax)parts.push(`${r.reps}–${r.repsMax}${t('repsWord')}`);if(r.setsMax)parts.push(`${r.sets}–${r.setsMax}${t('setsWord')}`);const c=rowComputed(b,r,unit);if(c!==null){const c2=r.pctMax&&!r.ofDayMax?pctWeightFor(b,r.pctMax,unit):null;parts.push('→ '+(c2!==null?`${fmtW(c)}–${fmtW(c2)} ${unit}`:dual(c,unit)));}else if(finite(r.pct,.1,200)&&!r.ofDayMax)parts.push(t('noBaseShort'));return parts.join(' · ');}
+function liftHistoryHTML(b){const spec=typeof b==='string'?{liftKey:b,movementName:''}:b;const logs=ordered().filter(r=>r.category==='STRENGTH'&&sameMovement(spec,r));if(!logs.length)return esc(t('noLift'));let best=null;for(const r of logs)for(const g of logGroups(r)){const kg=toKg(g.weight,r.weightUnit);if(!best||kg>best.kg)best={kg,g,r};}const last=logs[0];return `${esc(t('latest'))}: ${esc(displayDate(last.date))} · ${esc(shownScore(last))}${best?`<br>${esc(t('bestShort'))}: ${esc(`${fmtW(best.g.weight)} ${best.r.weightUnit} × ${best.g.reps}`)} · ${esc(displayDate(best.r.date))}`:''}`;}
+function baseSelectOptions(b,unit){
+ const l=liftInfo(b.liftKey), fam=l?.family;
+ const mainBase=baseFor(b.liftKey), mainLabel=mainBase.key?liftName(mainBase.key):liftName(b.liftKey);
+ const mainOpt=mainBase.profile?t('baseOptMain',{lift:mainLabel,w:`${fmtW(convert(mainBase.profile.weight,mainBase.profile.unit,unit))} ${unit}`}):t('baseOptMainMissing',{lift:mainLabel});
+ const varKey=FAMILY_VAR[fam], varProf=varKey?state.profiles[varKey]:null;
+ const mvBest=movementProfileOrBest(b.liftKey,b.movementName);
+ let mode=b.baseMode&&BASE_MODES.has(b.baseMode)?b.baseMode:defaultBaseMode(b.liftKey);
+ if(mode==='movement'&&!mvBest){mode=defaultBaseMode(b.liftKey);b.baseMode=mode;}
+ const showVar=!!(varKey&&(l?.cls==='variation'||cleanMovementName(b.liftKey,b.movementName)||varProf||mode==='variation'));
+ if(mode==='variation'&&!showVar){mode='main';b.baseMode=mode;}
+ let html=`<option value="main"${mode==='main'?' selected':''}>${esc(mainOpt)}</option>`;
+ if(showVar){
+  const varOpt=varProf?t('baseOptVar',{lift:liftName(varKey),w:`${fmtW(convert(varProf.weight,varProf.unit,unit))} ${unit}`}):t('baseOptVarMissing',{lift:liftName(varKey)});
+  html+=`<option value="variation"${mode==='variation'?' selected':''}>${esc(varOpt)}</option>`;
+ }
+ if(mvBest)html+=`<option value="movement"${mode==='movement'?' selected':''}>${esc(t('baseOptMovement',{name:mvBest.label,w:`${fmtW(convert(mvBest.weight,mvBest.unit,unit))} ${unit}`}))}</option>`;
+ html+=`<option value="custom"${mode==='custom'?' selected':''}>${esc(t('baseOptCustom'))}</option>`;
+ return html;
+}
+function blockBaseNote(b,unit){
+ const rb=resolveBase(b,unit);
+ if(rb.mode==='custom')return rb.weight!==null?t('baseCustomIs',{w:dual(rb.weight,unit)}):t('baseCustomMissing');
+ if(rb.weight!==null)return t('baseIs',{lift:rb.label,w:dual(rb.weight,unit)});
+ return t('baseMissing',{lift:rb.label||liftName(b.liftKey)});
+}
+function movementChipsHTML(b,bi,prev){
+ if(!prev.length)return '';
+ const cur=normalized(b.movementName||'');
+ return `<div class="lift-chips" aria-label="${esc(t('prevMovementsLabel'))}">${prev.slice(0,8).map(name=>`<button type="button" class="lift-chip${cur===normalized(name)?' active':''}" data-pick-movement="${bi}" data-name="${esc(name)}">${esc(name)}</button>`).join('')}</div>`;
+}
 function rowHTML(b,bi,r,ri){const plan=entryMode==='plan',unit=$('weightUnit').value,c=rowComputed(b,r,unit);const w=r.weight!==undefined&&Number.isFinite(r.weight)&&!(plan&&r.auto)?fmtNum(r.weight):'';
  return `<div class="set-row" data-bi="${bi}" data-ri="${ri}"><input class="r-pct" type="number" inputmode="decimal" min="0" max="200" step="any" value="${finite(r.pct,0,200)?r.pct:''}" aria-label="%"${r.max?' disabled':''}><input class="r-weight" type="number" inputmode="decimal" min="0" max="100000" step="any" value="${w}" placeholder="${c!==null?fmtW(c):''}" aria-label="${esc(t('weightCol'))}"><input class="r-reps" type="number" inputmode="numeric" min="1" max="10000" step="1" value="${isInt(r.reps,1,10000)?r.reps:''}" aria-label="${esc(t('repsCol'))}"><input class="r-sets" type="number" inputmode="numeric" min="1" max="10000" step="1" value="${isInt(r.sets,1,10000)?r.sets:''}" aria-label="${esc(t('setsCol'))}"><button type="button" class="row-del" data-del-row="${bi}:${ri}" aria-label="${esc(t('removeSet'))}">×</button><div class="row-tag">${esc(rowTag(b,r,unit))}</div></div>`;}
-function blockHTML(b,bi){const plan=entryMode==='plan',unit=$('weightUnit').value,l=liftInfo(b.liftKey),base=baseFor(b.liftKey);const baseTxt=base.profile?t('baseIs',{lift:liftName(base.key),w:dual(convert(base.profile.weight,base.profile.unit,unit),unit)}):t('baseMissing',{lift:liftName(base.key||b.liftKey)});
- return `<div class="lift-block" data-bi="${bi}"><div class="lift-head"><select class="lift-select" aria-label="${esc(t('lift'))}">${liftOptions(b.liftKey)}</select><button type="button" class="small ghost" data-del-block="${bi}" aria-label="${esc(t('removeLift'))}">✕</button></div><div class="lift-meta"><span class="cls-pill">${esc(l?groupLabel(l.family,l.cls):'')}</span> ${esc(baseTxt)}</div>${b.text?`<div class="lift-source">${esc(t('programLine'))}: ${esc(b.text)}</div>`:''}${b.note?`<div class="lift-meta">${esc(b.note)}</div>`:''}<div class="set-head"><span>%</span><span>${esc(t(plan?'targetWeightCol':'weightCol'))} (${unit})</span><span>${esc(t('repsCol'))}</span><span>${esc(t('setsCol'))}</span><span></span></div>${b.rows.map((r,ri)=>rowHTML(b,bi,r,ri)).join('')}<div class="block-actions"><button type="button" class="small" data-add-row="${bi}">${esc(t('addSet'))}</button></div><div class="lift-history">${liftHistoryHTML(b.liftKey)}</div></div>`;}
-function refreshBlock(bi){const b=blocks[bi];if(!b)return;const unit=$('weightUnit').value,plan=entryMode==='plan';b.rows.forEach((r,ri)=>{const c=rowComputed(b,r,unit),w=rowInput(bi,ri,'r-weight');if(!plan&&c!==null&&(r.auto===true||(r.weight===undefined&&r.auto!==false))){r.weight=c;r.auto=true;if(w&&document.activeElement!==w)w.value=fmtNum(c);}if(w)w.placeholder=c!==null?fmtW(c):'';const tag=w?.parentElement.querySelector('.row-tag');if(tag)tag.textContent=rowTag(b,r,unit);});}
+function blockHTML(b,bi){
+ const plan=entryMode==='plan',unit=$('weightUnit').value,prev=previousMovementNames(b.liftKey);
+ const mode=b.baseMode&&BASE_MODES.has(b.baseMode)?b.baseMode:defaultBaseMode(b.liftKey);
+ return `<div class="lift-block" data-bi="${bi}"><div class="lift-head"><select class="lift-select" aria-label="${esc(t('lift'))}">${liftOptions(b.liftKey)}</select><button type="button" class="small ghost" data-del-block="${bi}" aria-label="${esc(t('removeLift'))}">✕</button></div><div class="lift-name-row"><input class="lift-name-input" type="text" maxlength="100" list="dl-lift-${bi}" value="${esc(b.movementName||'')}" placeholder="${esc(t('movementNameHint'))}" aria-label="${esc(t('movementNameLabel'))}"><datalist id="dl-lift-${bi}">${prev.map(n=>`<option value="${esc(n)}"></option>`).join('')}</datalist>${movementChipsHTML(b,bi,prev)}</div><div class="lift-base-row"><label for="baseSel-${bi}">${esc(t('pctBaseLabel'))}</label><select id="baseSel-${bi}" class="lift-base-select" aria-label="${esc(t('pctBaseLabel'))}">${baseSelectOptions(b,unit)}</select><input class="lift-base-weight" type="number" inputmode="decimal" min="0.1" max="100000" step="any" value="${finite(b.baseWeight,.1,100000)?fmtNum(b.baseWeight):''}" placeholder="${esc(t('baseCustomPlaceholder'))} (${unit})" aria-label="${esc(t('baseCustomPlaceholder'))}"${mode==='custom'?'':' hidden'}></div><div class="lift-meta">${esc(blockBaseNote(b,unit))}</div>${b.text?`<div class="lift-source">${esc(t('programLine'))}: ${esc(b.text)}</div>`:''}${b.note?`<div class="lift-meta">${esc(b.note)}</div>`:''}<div class="set-head"><span>%</span><span>${esc(t(plan?'targetWeightCol':'weightCol'))} (${unit})</span><span>${esc(t('repsCol'))}</span><span>${esc(t('setsCol'))}</span><span></span></div>${b.rows.map((r,ri)=>rowHTML(b,bi,r,ri)).join('')}<div class="block-actions"><button type="button" class="small" data-add-row="${bi}">${esc(t('addSet'))}</button></div><div class="lift-history">${liftHistoryHTML(b)}</div></div>`;
+}
+function refreshBlock(bi){const b=blocks[bi];if(!b)return;const unit=$('weightUnit').value,plan=entryMode==='plan';b.rows.forEach((r,ri)=>{const c=rowComputed(b,r,unit),w=rowInput(bi,ri,'r-weight');if(!plan&&c!==null&&(r.auto===true||(r.weight===undefined&&r.auto!==false))){r.weight=c;r.auto=true;if(w&&document.activeElement!==w)w.value=fmtNum(c);}else if(!plan&&c===null&&r.auto===true){delete r.weight;if(w&&document.activeElement!==w)w.value='';}if(w)w.placeholder=c!==null?fmtW(c):'';const tag=w?.parentElement.querySelector('.row-tag');if(tag)tag.textContent=rowTag(b,r,unit);});}
+function updateBlockContext(bi){
+ const b=blocks[bi], el=$('liftBlocks').querySelector(`.lift-block[data-bi="${bi}"]`);if(!b||!el)return;
+ const unit=$('weightUnit').value;
+ const sel=el.querySelector('.lift-base-select');if(sel)sel.innerHTML=baseSelectOptions(b,unit);
+ const mode=b.baseMode&&BASE_MODES.has(b.baseMode)?b.baseMode:defaultBaseMode(b.liftKey);
+ const bw=el.querySelector('.lift-base-weight');if(bw)bw.hidden=mode!=='custom';
+ const meta=el.querySelector('.lift-meta');if(meta)meta.textContent=blockBaseNote(b,unit);
+ const cur=normalized(b.movementName||'');
+ el.querySelectorAll('.lift-chip').forEach(ch=>ch.classList.toggle('active',cur!==''&&normalized(ch.dataset.name)===cur));
+ const hist=el.querySelector('.lift-history');if(hist)hist.innerHTML=liftHistoryHTML(b);
+ refreshBlock(bi);
+}
 function renderBlocks(){$('liftBlocks').innerHTML=blocks.map(blockHTML).join('');blocks.forEach((_,bi)=>refreshBlock(bi));}
-$('liftBlocks').addEventListener('input',e=>{const row=e.target.closest('.set-row');if(!row)return;const bi=Number(row.dataset.bi),r=blocks[bi]?.rows[Number(row.dataset.ri)];if(!r)return;const v=e.target.value.trim(),n=v===''?undefined:Number(v),cl=e.target.classList;
+$('liftBlocks').addEventListener('input',e=>{
+ const blkEl=e.target.closest('.lift-block');if(!blkEl)return;
+ const bi=Number(blkEl.dataset.bi), b=blocks[bi];if(!b)return;
+ if(e.target.classList.contains('lift-name-input')){b.movementName=e.target.value;updateBlockContext(bi);return;}
+ if(e.target.classList.contains('lift-base-weight')){const v=e.target.value.trim();b.baseWeight=v===''?undefined:Number(v);b.rows.forEach(r=>{if(r.auto)delete r.weight;});updateBlockContext(bi);return;}
+ const row=e.target.closest('.set-row');if(!row)return;
+ const r=b.rows[Number(row.dataset.ri)];if(!r)return;
+ const v=e.target.value.trim(),n=v===''?undefined:Number(v),cl=e.target.classList;
  if(cl.contains('r-pct')){r.pct=n;delete r.pctMax;if(entryMode==='log')r.auto=true;}
  else if(cl.contains('r-weight')){r.weight=n;r.auto=false;}
  else if(cl.contains('r-reps')){r.reps=n;delete r.repsMax;}
  else if(cl.contains('r-sets')){r.sets=n;delete r.setsMax;}
- refreshBlock(bi);});
-$('liftBlocks').addEventListener('change',e=>{if(e.target.classList.contains('lift-select')){const b=blocks[Number(e.target.closest('.lift-block').dataset.bi)];b.liftKey=e.target.value;b.rows.forEach(r=>{if(r.auto){delete r.weight;delete r.auto;}});renderBlocks();}});
+ refreshBlock(bi);
+});
+$('liftBlocks').addEventListener('change',e=>{
+ const blkEl=e.target.closest('.lift-block');if(!blkEl)return;
+ const bi=Number(blkEl.dataset.bi), b=blocks[bi];if(!b)return;
+ if(e.target.classList.contains('lift-select')){
+  const prevFam=liftInfo(b.liftKey)?.family;
+  b.liftKey=e.target.value;
+  if(liftInfo(b.liftKey)?.family!==prevFam)b.movementName='';
+  b.baseMode=defaultBaseMode(b.liftKey);
+  b.rows.forEach(r=>{if(r.auto){delete r.weight;delete r.auto;}});
+  renderBlocks();return;
+ }
+ if(e.target.classList.contains('lift-base-select')){
+  b.baseMode=e.target.value;
+  b.rows.forEach(r=>{if(r.auto)delete r.weight;});
+  updateBlockContext(bi);
+  if(b.baseMode==='custom'){const bw=blkEl.querySelector('.lift-base-weight');if(bw)bw.focus();}
+ }
+});
 $('liftBlocks').addEventListener('click',e=>{const btn=e.target.closest('button');if(!btn)return;
+ if(btn.dataset.pickMovement!==undefined){
+  const bi=Number(btn.dataset.pickMovement), b=blocks[bi];if(!b)return;
+  const picked=btn.dataset.name||'';
+  b.movementName=normalized(b.movementName||'')===normalized(picked)?'':picked;
+  const inp=$('liftBlocks').querySelector(`.lift-block[data-bi="${bi}"] .lift-name-input`);
+  if(inp)inp.value=b.movementName;
+  updateBlockContext(bi);formDirty=true;return;
+ }
  if(btn.dataset.addRow!==undefined){const blk=blocks[Number(btn.dataset.addRow)],last=blk.rows[blk.rows.length-1]||{reps:1,sets:1},row={reps:isInt(last.reps,1,10000)?last.reps:1,sets:1};if(finite(last.pct,.1,200)&&!last.ofDayMax)row.pct=last.pct;if(entryMode==='log'&&finite(last.weight,0,100000)&&last.auto===false){row.weight=last.weight;row.auto=false;}blk.rows.push(row);renderBlocks();formDirty=true;}
  if(btn.dataset.delRow){const [bi,ri]=btn.dataset.delRow.split(':').map(Number);blocks[bi].rows.splice(ri,1);if(!blocks[bi].rows.length)blocks[bi].rows.push({reps:1,sets:1});renderBlocks();formDirty=true;}
  if(btn.dataset.delBlock!==undefined){blocks.splice(Number(btn.dataset.delBlock),1);if(!blocks.length)blocks.push(blankBlock());renderBlocks();formDirty=true;}});
 $('addLiftBlock').onclick=()=>{blocks.push(blankBlock(blocks[blocks.length-1]?.liftKey||'snatch'));renderBlocks();formDirty=true;};
-$('weightUnit').onchange=()=>{const to=$('weightUnit').value;if($('weightUsed').value!==''&&finite(Number($('weightUsed').value)))$('weightUsed').value=String(Number(convert(Number($('weightUsed').value),oldWeightUnit,to).toFixed(6)));for(const b of blocks)for(const r of b.rows){if(r.auto){delete r.weight;}else if(finite(r.weight,0,100000))r.weight=Number(convert(r.weight,oldWeightUnit,to).toFixed(3));}oldWeightUnit=to;if(category==='STRENGTH')renderBlocks();};
+$('weightUnit').onchange=()=>{const to=$('weightUnit').value;if($('weightUsed').value!==''&&finite(Number($('weightUsed').value)))$('weightUsed').value=String(Number(convert(Number($('weightUsed').value),oldWeightUnit,to).toFixed(6)));for(const b of blocks){if(finite(b.baseWeight,.1,100000))b.baseWeight=Number(convert(b.baseWeight,oldWeightUnit,to).toFixed(3));for(const r of b.rows){if(r.auto){delete r.weight;}else if(finite(r.weight,0,100000))r.weight=Number(convert(r.weight,oldWeightUnit,to).toFixed(3));}}oldWeightUnit=to;if(category==='STRENGTH')renderBlocks();};
 
 /* ---------------- Building records ---------------- */
 function number(id,min=0,max=1000000,integer=true){const el=$(id),n=Number(el.value);if(el.value.trim()===''||!Number.isFinite(n)||n<min||n>max||(integer&&!Number.isInteger(n)))throw {key:'invalid',el};return n;}
@@ -1062,7 +1385,11 @@ function baseRecord(){if(category==='WOD'&&!$('wodTitle').value.trim())throw {ke
 function strengthLogs(base){if(!blocks.length)throw {key:'liftRequired',el:$('addLiftBlock')};
  return blocks.map((b,bi)=>{if(!liftInfo(b.liftKey))throw {key:'invalid'};const groups=b.rows.map((r,ri)=>{if(!finite(r.weight,.001,100000))throw {key:'weightRequired',el:rowInput(bi,ri,'r-weight')};if(!isInt(r.reps,1,10000))throw {key:'invalid',el:rowInput(bi,ri,'r-reps')};if(!isInt(r.sets,1,10000))throw {key:'invalid',el:rowInput(bi,ri,'r-sets')};const g={weight:Number(fmtNum(r.weight)),reps:r.reps,sets:r.sets};if(finite(r.pct,.1,200))g.pct=r.pct;return g;});
   const top=groups.reduce((a,g)=>g.weight>a.weight||(g.weight===a.weight&&g.reps>a.reps)?g:a);
-  const log={...base,id:'strength_'+uid(),title:liftInfo(b.liftKey).en,workoutType:'STRENGTH_MAX',liftKey:b.liftKey,weightUsed:top.weight,reps:top.reps,sets:top.sets,score:groups.map(g=>`${g.weight} × ${g.reps} × ${g.sets}`).join('; '),scoreUnit:'WEIGHT'};
+  const mv=cleanMovementName(b.liftKey,b.movementName);
+  const log={...base,id:'strength_'+uid(),title:mv||liftInfo(b.liftKey).en,workoutType:'STRENGTH_MAX',liftKey:b.liftKey,weightUsed:top.weight,reps:top.reps,sets:top.sets,score:groups.map(g=>`${g.weight} × ${g.reps} × ${g.sets}`).join('; '),scoreUnit:'WEIGHT'};
+  if(mv)log.movementName=mv;
+  if(b.baseMode&&BASE_MODES.has(b.baseMode)&&b.baseMode!=='main')log.baseMode=b.baseMode;
+  if(b.baseMode==='custom'&&finite(b.baseWeight,.1,100000))log.baseWeight=Number(fmtNum(b.baseWeight));
   if(groups.length>1||groups.some(g=>g.pct!==undefined))log.setGroups=groups;
   if(b.text)log.prescription=b.text.slice(0,300);
   return log;});}
@@ -1080,10 +1407,15 @@ function planItems(){if(!blocks.length)throw {key:'liftRequired',el:$('addLiftBl
   if(r.pct!==undefined&&!r.max){if(!finite(r.pct,.1,200))throw {key:'invalidPct',el:rowInput(bi,ri,'r-pct')};out.pct=r.pct;if(finite(r.pctMax,r.pct,200)&&r.pctMax>r.pct)out.pctMax=r.pctMax;}
   if(r.weight!==undefined&&!r.auto){if(!finite(r.weight,0,100000))throw {key:'invalid',el:rowInput(bi,ri,'r-weight')};out.weight=Number(fmtNum(r.weight));}
   if(isInt(r.repsMax,r.reps+1,10000))out.repsMax=r.repsMax;if(isInt(r.setsMax,r.sets+1,10000))out.setsMax=r.setsMax;if(r.max)out.max=true;if(r.ofDayMax&&out.pct!==undefined)out.ofDayMax=true;return out;});
-  const item={liftKey:b.liftKey,rows};if(b.text)item.text=b.text.slice(0,300);if(b.note)item.note=b.note.slice(0,1000);return item;});}
+  const mv=cleanMovementName(b.liftKey,b.movementName);
+  const item={liftKey:b.liftKey,rows};
+  if(mv)item.movementName=mv;
+  if(b.baseMode&&BASE_MODES.has(b.baseMode)&&b.baseMode!=='main')item.baseMode=b.baseMode;
+  if(b.baseMode==='custom'&&finite(b.baseWeight,.1,100000))item.baseWeight=Number(fmtNum(b.baseWeight));
+  if(b.text)item.text=b.text.slice(0,300);if(b.note)item.note=b.note.slice(0,1000);return item;});}
 function planRecord(){const b=baseRecord(),r={...b,id:activePlan?.id||'plan_'+uid(),status:'PLANNED',createdAt:activePlan?.createdAt||b.createdAt,updatedAt:new Date().toISOString(),workoutType:category==='WOD'?$('workoutType').value:'STRENGTH_MAX',weightUsed:category==='WOD'&&$('weightUsed').value!==''?number('weightUsed',0,100000,false):null};
  for(const k of ['programId','program'])if(activePlan?.[k]!==undefined)r[k]=activePlan[k];
- if(category==='STRENGTH'){r.items=planItems();r.liftKey=r.items[0].liftKey;r.title=activePlan?.category==='STRENGTH'&&activePlan.program?activePlan.title:r.items.map(i=>liftInfo(i.liftKey).en).join(' + ').slice(0,160);return r;}
+ if(category==='STRENGTH'){r.items=planItems();r.liftKey=r.items[0].liftKey;r.title=activePlan?.category==='STRENGTH'&&activePlan.program?activePlan.title:r.items.map(i=>i.movementName||liftInfo(i.liftKey).en).join(' + ').slice(0,160);return r;}
  r.title=$('wodTitle').value.trim();
  if(r.workoutType==='FOR_TIME'&&$('plannedCap').value!=='')r.timeCapMinutes=number('plannedCap',1,1440);
  if(r.workoutType==='AMRAP')r.durationMinutes=number('amrapMinutes',1,1440);
@@ -1092,13 +1424,15 @@ function planRecord(){const b=baseRecord(),r={...b,id:activePlan?.id||'plan_'+ui
  return r;}
 
 /* ---------------- PRs & celebrations ---------------- */
-function strengthPR(log,prev){const key=log.liftKey,same=prev.filter(x=>x.category==='STRENGTH'&&logLiftKey(x)===key);if(!same.length)return null;let best=null;
+function strengthPR(log,prev){const same=prev.filter(x=>x.category==='STRENGTH'&&sameMovement(log,x));if(!same.length)return null;let best=null;
  for(const g of logGroups(log)){const kg=toKg(g.weight,log.weightUnit);const prevBest=Math.max(0,...same.flatMap(x=>logGroups(x).filter(p=>p.reps>=g.reps).map(p=>toKg(p.weight,x.weightUnit))));if(prevBest>0&&kg>prevBest+1e-6&&(!best||kg>best.kg))best={g,kg,prevKg:prevBest};}
  return best;}
 function evaluateCelebration(logs,prev,maxKeys){const items=[],offers=[];let pr=false;
  for(const r of logs){
   if(r.category==='WOD'){const res=wodPR(r,prev);if(res?.type==='pr'){pr=true;items.push({title:r.title,now:`${t('newRecord')}: ${shownScore(r)}`,prev:`${t('prevBest')}: ${shownScore(res.prev)} · ${displayDate(res.prev.date)}`});}if(res?.type==='firstRx'){pr=true;items.push({title:r.title,now:`${t('firstRx')}: ${shownScore(r)}`});}continue;}
-  const res=strengthPR(r,prev);if(res){pr=true;items.push({title:liftName(r.liftKey),now:`${t('newRecord')}: ${dual(res.g.weight,r.weightUnit)} × ${res.g.reps}${t('repsWord')}`,prev:`${t('prevBest')}: ${dual(convert(res.prevKg,'kg',r.weightUnit),r.weightUnit)} (${res.g.reps}${t('repsWord')}+)`});}
+  const displayName=recordTitle(r);
+  const res=strengthPR(r,prev);if(res){pr=true;items.push({title:displayName,now:`${t('newRecord')}: ${dual(res.g.weight,r.weightUnit)} × ${res.g.reps}${t('repsWord')}`,prev:`${t('prevBest')}: ${dual(convert(res.prevKg,'kg',r.weightUnit),r.weightUnit)} (${res.g.reps}${t('repsWord')}+)`});}
+  if(r.movementName)continue;
   const singles=logGroups(r).filter(g=>g.reps===1);if(!singles.length)continue;const top=Math.max(...singles.map(g=>g.weight)),p=state.profiles[r.liftKey];
   if(p&&toKg(top,r.weightUnit)>toKg(p.weight,p.unit)+1e-6){pr=true;offers.push({key:r.liftKey,weight:top,unit:r.weightUnit});items.push({title:`${liftName(r.liftKey)} 1RM`,now:`${t('newRM')}: ${dual(top,r.weightUnit)}`,prev:`${t('prevRM')}: ${dual(p.weight,p.unit)}`});}
   else if(!p&&maxKeys.has(r.liftKey)){offers.push({key:r.liftKey,weight:top,unit:r.weightUnit});items.push({title:liftName(r.liftKey),now:`${t('dayMaxTag')}: ${dual(top,r.weightUnit)}`,prev:t('saveAsRMHint')});}
@@ -1122,7 +1456,7 @@ $('workoutForm').addEventListener('submit',e=>{
    const isSharedPlan = $('planSharePublic')?.checked ?? false;
    if(commit({...state,plans})){
      if(isSharedPlan && Supabase.session && Supabase.isApproved){
-       Supabase.publishSharedProgram(planTitle(p), p.date, p.weightUnit||'kg', p.content||p.title, p.category, p.items || null, p.category==='WOD'?WodFormat.fromPlan(p):null).catch(error=>Supabase.report(error));
+       Supabase.publishSharedProgram(planTitle(p), p.date, p.weightUnit||'kg', p.content||p.title, p.category, p.items ? itemsForWire(p.items) : null, p.category==='WOD'?WodFormat.fromPlan(p):null).catch(error=>Supabase.report(error));
      }
      resetEntry('plan');$('todoFilter').value='all';$('todoCategory').value='';$('todoSearch').value='';calSelected=p.date;calCursor=p.date.slice(0,7);showPage('todo');notify(t(editing?'planUpdated':'planSaved'));
    }
@@ -1172,7 +1506,12 @@ function resetEntry(mode){
 async function canReplaceEntry(){if((formDirty||timer.running)&&!await confirmAction(t('replaceDraft')))return false;return true;}
 $('newPlan').onclick=async()=>{if(await canReplaceEntry()){resetEntry('plan');if(calSelected>=localDate())$('date').value=calSelected;showPage('add');$('wodTitle').focus();}};
 $('cancelPlan').onclick=async()=>{if(await canReplaceEntry()){resetEntry('log');showPage('todo');}};
-function blockFromItem(item,mode,unit){const b={liftKey:item.liftKey,rows:item.rows.map(r=>({...r})),text:item.text||'',note:item.note||''};if(mode==='log')for(const r of b.rows){if(r.weight!==undefined)r.auto=false;}return b;}
+function blockFromItem(item,mode,unit){
+ const mapped=toActiveLift(item.liftKey,item.movementName||'');
+ const b={liftKey:mapped.liftKey,movementName:mapped.movementName,baseMode:item.baseMode&&BASE_MODES.has(item.baseMode)?item.baseMode:defaultBaseMode(mapped.liftKey),baseWeight:finite(item.baseWeight,.1,100000)?item.baseWeight:undefined,rows:item.rows.map(r=>({...r})),text:item.text||'',note:item.note||''};
+ if(mode==='log')for(const r of b.rows){if(r.weight!==undefined)r.auto=false;}
+ return b;
+}
 async function openPlan(id,mode){
  if(!await canReplaceEntry())return;
  const p=state.plans.find(x=>x.id===id);if(!p){notify(t('planMissing'));return;}
@@ -1195,13 +1534,13 @@ async function openPlan(id,mode){
 function planPeriod(p){const today=localDate();return p.date===today?'today':p.date<today?'overdue':'upcoming';}
 function planCardHTML(p){const period=planPeriod(p),cat=p.category==='WOD'?'wod':'str',missed=period==='overdue';
  return `<article class="day-card plan-card ${cat}${missed?' missed':''}" data-plan-id="${esc(p.id)}"><div class="plan-title-line"><span class="cat-pill ${missed?'missed':cat}">${p.category==='WOD'?'WOD':'STRENGTH'}</span><span class="pill ${missed?'overdue':''}">${esc(t(period+'Plans'))}</span><span class="meta">${esc(displayDate(p.date))} · ${esc(TYPES[p.workoutType])}</span></div><h4>${esc(planTitle(p))}</h4>${p.category==='STRENGTH'?itemsHTML(p):`<div class="record-content">${esc(p.content||t('noContent'))}</div>`}<div class="record-settings">${esc(planSettings(p))}</div>${notesHTML(p.notes)}<div class="day-actions"><button class="primary small" data-perform-plan="${esc(p.id)}">${esc(t('performPlan'))}</button><button class="small" data-edit-plan="${esc(p.id)}">${esc(t('editPlan'))}</button><button class="danger small" data-delete-plan="${esc(p.id)}">${esc(t('delete'))}</button></div></article>`;}
-function logCardHTML(r){const cat=r.category==='WOD'?'wod':'str';return `<article class="day-card ${cat}"><div class="plan-title-line"><span class="cat-pill ${cat}">✓ ${r.category==='WOD'?'WOD':'STRENGTH'}</span><span class="meta">${esc(TYPES[r.workoutType])}</span>${badge(r)}</div><h4>${esc(recordTitle(r))}${r.category==='STRENGTH'?`<span class="cls-pill">${esc(liftGroup(logLiftKey(r)))}</span>`:''}</h4><div class="record-score">${esc(shownScore(r))}</div>${r.prescription?`<div class="item-note">${esc(r.prescription)}</div>`:''}</article>`;}
+function logCardHTML(r){const cat=r.category==='WOD'?'wod':'str',title=recordTitle(r),pill=r.category==='STRENGTH'?liftPillLabel(logLiftKey(r),title):'';return `<article class="day-card ${cat}"><div class="plan-title-line"><span class="cat-pill ${cat}">✓ ${r.category==='WOD'?'WOD':'STRENGTH'}</span><span class="meta">${esc(TYPES[r.workoutType])}</span>${badge(r)}</div><h4>${esc(title)}${pill?`<span class="cls-pill">${esc(pill)}</span>`:''}</h4><div class="record-score">${esc(shownScore(r))}</div>${r.prescription?`<div class="item-note">${esc(r.prescription)}</div>`:''}</article>`;}
 function renderPlans(){
  const counts={today:0,overdue:0,upcoming:0};state.plans.forEach(p=>counts[planPeriod(p)]++);
  $('todoNavCount').textContent=state.plans.length;$('todayPlansSummary').textContent=t('todaySummary',{today:counts.today,overdue:counts.overdue,n:state.plans.length});
  $('todayList').innerHTML=state.plans.filter(p=>planPeriod(p)==='today').map(p=>`<li><span class="cat-pill ${p.category==='WOD'?'wod':'str'}">${p.category==='WOD'?'WOD':'STR'}</span> ${esc(planTitle(p))}</li>`).join('');
  const filter=$('todoFilter').value,q=normalized($('todoSearch').value),cat=$('todoCategory').value,priority={today:0,overdue:1,upcoming:2};
- const plans=state.plans.filter(p=>(filter==='all'||planPeriod(p)===filter)&&(!cat||p.category===cat)&&(!q||normalized([p.title,recordTitle(p),p.notes,p.content].join(' ')).includes(q))).sort((a,b)=>priority[planPeriod(a)]-priority[planPeriod(b)]||a.date.localeCompare(b.date)||a.createdAt.localeCompare(b.createdAt));
+ const plans=state.plans.filter(p=>(filter==='all'||planPeriod(p)===filter)&&(!cat||p.category===cat)&&(!q||normalized([p.title,recordTitle(p),...(p.items||[]).flatMap(i=>[i.movementName,liftName(i.liftKey)]),p.notes,p.content].join(' ')).includes(q))).sort((a,b)=>priority[planPeriod(a)]-priority[planPeriod(b)]||a.date.localeCompare(b.date)||a.createdAt.localeCompare(b.createdAt));
  $('todoCount').textContent=t('planCount',{n:plans.length});
  $('todoList').innerHTML=plans.length?plans.map(planCardHTML).join(''):`<div class="panel empty"><strong>${esc(t(state.plans.length?'noPlanResults':'noPlans'))}</strong>${state.plans.length?'':`<p>${esc(t('noPlansHint'))}</p>`}</div>`;
 }
@@ -1305,60 +1644,101 @@ $('calPrev').onclick=()=>shiftMonth(-1);$('calNext').onclick=()=>shiftMonth(1);$
  * "N sets; no rest:" accessory blocks and free-text notes. Unknown lines are kept as notes. */
 const PROGRAM_DEFAULT_NAME='Weightlifting 5-Week Peak';
 const normName=s=>String(s).normalize('NFKC').toLowerCase().replace(/[“”″]/g,'"').replace(/\s*&\s*/g,' and ').replace(/\s*\+\s*/g,' + ').replace(/\s+/g,' ').trim();
-const EXTRA_ALIASES=Object.fromEntries(Object.entries({'clean & jerk':'cleanAndJerk','c&j':'cleanAndJerk','power clean & power jerk':'powerCleanPowerJerk','mid-hang or block snatch':'midHangOrBlockSnatch','mid-hang or block clean':'midHangOrBlockClean','back or front squat':'backSquat','good mornings':'goodMorning','stiff legged deadlift':'stiffLeggedDeadlift','sldl':'stiffLeggedDeadlift','rdl':'romanianDeadlift','ohs':'overheadSquat','snatch pull off 2" riser':'snatchPullRiser','clean pull on 2" riser':'cleanPullRiser'}).map(([k,v])=>[normName(k),v]));
+const EXTRA_ALIASES=Object.fromEntries(Object.entries({
+ 'clean & jerk':'cleanAndJerk','c&j':'cleanAndJerk','clean and jerk':'cleanAndJerk',
+ 'clean & jerk variation':'cleanAndJerkVariation','clean and jerk variation':'cleanAndJerkVariation',
+ 'shoulder to overhead':'shoulderToOverhead','s2oh':'shoulderToOverhead','stoh':'shoulderToOverhead',
+ 'shoulder to overhead variation':'shoulderToOverheadVariation',
+ 'bench press':'benchPress','bp':'benchPress','bench':'benchPress',
+ 'back squat':'backSquat','bs':'backSquat','back or front squat':'backSquat',
+ 'front squat':'frontSquat','fs':'frontSquat',
+ 'overhead squat':'overheadSquat','ohs':'overheadSquat',
+ 'deadlift':'deadlift','dl':'deadlift',
+ 'power clean & power jerk':'powerCleanPowerJerk','mid-hang or block snatch':'midHangOrBlockSnatch','mid-hang or block clean':'midHangOrBlockClean',
+ 'good mornings':'goodMorning','stiff legged deadlift':'stiffLeggedDeadlift','sldl':'stiffLeggedDeadlift','rdl':'romanianDeadlift',
+ 'snatch pull off 2" riser':'snatchPullRiser','clean pull on 2" riser':'cleanPullRiser'
+}).map(([k,v])=>[normName(k),v]));
 const ACCESSORY_NAMES=new Set(['back extensions','back extension','light ab work','ab work','core work'].map(normName));
-function aliasKey(name){const n=normName(name);if(Object.hasOwn(EXTRA_ALIASES,n))return EXTRA_ALIASES[n];return allLiftKeys().find(k=>{const l=liftInfo(k);return normName(l.en)===n||normName(l.ko)===n;})||null;}
-function guessGroup(name){const n=normName(name);const cls=/pull|deadlift|push press|high/.test(n)?'strength':/balance|drop|muscle|tall/.test(n)?'skill':'variation';if(n.includes('snatch'))return {family:'snatch',cls};if(n.includes('jerk')&&!n.includes('clean'))return {family:'jerk',cls};if(n.includes('clean'))return {family:n.includes('jerk')?'cleanJerk':'clean',cls};if(n.includes('squat'))return {family:'squat',cls:'strength'};if(n.includes('press'))return {family:'press',cls:'strength'};if(/deadlift|good morning|pull|row/.test(n))return {family:'hinge',cls:'strength'};return {family:'other',cls:'strength'};}
+function classifyLift(name){
+ const raw=String(name??'').trim(), n=normName(raw);
+ if(!n)return null;
+ if(Object.hasOwn(EXTRA_ALIASES,n)){
+  const k=EXTRA_ALIASES[n];
+  if(Object.hasOwn(LIFTS,k))return {liftKey:k,movementName:''};
+  if(Object.hasOwn(LEGACY_LIFTS,k))return {liftKey:LEGACY_LIFTS[k].mappedKey,movementName:raw.slice(0,100)};
+ }
+ for(const k of Object.keys(LIFTS)){const l=LIFTS[k];if(normName(l.en)===n||normName(l.ko)===n)return {liftKey:k,movementName:''};}
+ for(const k of Object.keys(LEGACY_LIFTS)){const l=LEGACY_LIFTS[k];if(normName(l.en)===n||normName(l.ko)===n)return {liftKey:l.mappedKey,movementName:raw.slice(0,100)};}
+ if(n.includes('snatch')||n.includes('스내치'))return {liftKey:'snatchVariation',movementName:raw.slice(0,100)};
+ if((n.includes('clean')&&n.includes('jerk'))||(n.includes('클린')&&n.includes('저크')))return {liftKey:'cleanAndJerkVariation',movementName:raw.slice(0,100)};
+ if(n.includes('clean')||n.includes('클린'))return {liftKey:'cleanVariation',movementName:raw.slice(0,100)};
+ if(n.includes('jerk')||n.includes('저크'))return {liftKey:'jerkVariation',movementName:raw.slice(0,100)};
+ if(n.includes('overhead squat')||/\bohs\b/.test(n)||n.includes('오버헤드 스쿼트'))return {liftKey:'overheadSquatVariation',movementName:raw.slice(0,100)};
+ if(n.includes('front squat')||n.includes('프런트 스쿼트')||n.includes('프론트 스쿼트'))return {liftKey:'frontSquatVariation',movementName:raw.slice(0,100)};
+ if(n.includes('squat')||n.includes('스쿼트'))return {liftKey:'backSquatVariation',movementName:raw.slice(0,100)};
+ if(n.includes('bench')||n.includes('벤치'))return {liftKey:'benchPressVariation',movementName:raw.slice(0,100)};
+ if(n.includes('press')||n.includes('shoulder')||n.includes('프레스')||n.includes('숄더'))return {liftKey:'shoulderToOverheadVariation',movementName:raw.slice(0,100)};
+ if(/deadlift|good morning|rdl|sldl|pull|row|데드리프트|굿모닝/.test(n))return {liftKey:'deadliftVariation',movementName:raw.slice(0,100)};
+ return null;
+}
 function parseScheme(s){s=s.replace(/×/g,'x').replace(/\s+/g,' ').trim();if(/^max( for (the )?day)?$/i.test(s))return {max:true,reps:1,sets:1};
  let m=s.match(/^(\d+(?:\.\d+)?)(?:\s*-\s*(\d+(?:\.\d+)?))?\s*%\s*(of that)?(?:\s*x\s*(\d+)(?:\s*-\s*(\d+))?)?(?:\s*x\s*(\d+)(?:\s*-\s*(\d+))?)?\s*(sets?)?$/i);
  if(m){const row={pct:Number(m[1])};if(!finite(row.pct,.1,200))return null;if(m[2]&&Number(m[2])>row.pct&&Number(m[2])<=200)row.pctMax=Number(m[2]);if(m[3])row.ofDayMax=true;let a=m[4]?[Number(m[4]),m[5]?Number(m[5]):0]:null,b=m[6]?[Number(m[6]),m[7]?Number(m[7]):0]:null;if(m[8]&&a&&!b){b=a;a=null;}row.reps=a?a[0]:1;if(a&&a[1]>a[0])row.repsMax=a[1];row.sets=b?b[0]:1;if(b&&b[1]>b[0])row.setsMax=b[1];return isInt(row.reps,1,10000)&&isInt(row.sets,1,10000)?row:null;}
  m=s.match(/^(\d+)\s*x\s*(\d+)$/i);if(m){const row={sets:Number(m[1]),reps:Number(m[2])};return isInt(row.reps,1,10000)&&isInt(row.sets,1,10000)?row:null;}
  return null;}
 function parsePrescription(p){const rows=[],notes=[];for(const seg of p.split(';'))for(const part of seg.split(',')){let s=part.trim();if(!s)continue;const of=s.match(/\(of ([^)]*)\)/i);if(of)s=s.replace(of[0],' ').replace(/\s+/g,' ').trim();let tail='';const extra=s.match(/\(([^)]*)\)\s*$/);if(extra){tail=extra[1];s=s.slice(0,extra.index).trim();}const row=parseScheme(s);if(row){rows.push(row);if(tail)notes.push(tail);}else notes.push(part.trim());}return {rows,notes};}
-function parseLiftLine(line){const m=line.match(/^(.{2,80}?)\s+[-–]\s+(.+)$/);if(!m)return ACCESSORY_NAMES.has(normName(line))?{accessory:true}:null;const rawName=m[1].trim(),paren=rawName.match(/\(([^)]*)\)/),name=rawName.replace(/\([^)]*\)/g,'').trim();if(ACCESSORY_NAMES.has(normName(name)))return {accessory:true};const parsed=parsePrescription(m[2]);if(!parsed.rows.length)return null;return {name,key:aliasKey(name),rows:parsed.rows,notes:[paren?paren[1]:'',...parsed.notes].filter(Boolean),text:line};}
+function parseLiftLine(line){const m=line.match(/^(.{2,80}?)\s+[-–]\s+(.+)$/);if(!m)return ACCESSORY_NAMES.has(normName(line))?{accessory:true}:null;const rawName=m[1].trim(),paren=rawName.match(/\(([^)]*)\)/),name=rawName.replace(/\([^)]*\)/g,'').trim();if(ACCESSORY_NAMES.has(normName(name)))return {accessory:true};const parsed=parsePrescription(m[2]);if(!parsed.rows.length)return null;const cls=classifyLift(name);if(!cls)return null;return {name,key:cls.liftKey,movementName:cls.movementName,rows:parsed.rows,notes:[paren?paren[1]:'',...parsed.notes].filter(Boolean),text:line};}
 /* ------- Coach publish: structured lift items (survive the round trip) ------- */
 // Parse free-form coach text into strength items. Unlike parseProgram this needs
 // no "Monday - Day 1" header, so it also works for a single-day publish.
-function itemsFromText(text){const items=[],rest=[],newLifts={},unknown=new Map();
+function itemsFromText(text){const items=[],rest=[],newLifts={};
  for(const raw of String(text).replace(/\r/g,'').split('\n')){const line=raw.trim();
   if(!line){rest.push('');continue;}
   const l=parseLiftLine(line);
-  if(l&&!l.accessory&&Array.isArray(l.rows)&&l.rows.length){let key=l.key;
-   if(!key){const n=normName(l.name);
-    if(!unknown.has(n)){const k='custom_'+uid().replace(/[^A-Za-z0-9_-]/g,'').slice(0,40);unknown.set(n,k);newLifts[k]={name:l.name.slice(0,60),...guessGroup(l.name)};}
-    key=unknown.get(n);}
-   const it={liftKey:key,rows:l.rows.slice(0,30),text:l.text.slice(0,300)};
+  if(l&&!l.accessory&&Array.isArray(l.rows)&&l.rows.length){
+   const it={liftKey:l.key,rows:l.rows.slice(0,30),text:l.text.slice(0,300)};
+   if(l.movementName)it.movementName=l.movementName;
    if(l.notes.length)it.note=l.notes.join(' · ').slice(0,1000);
    items.push(it);continue;}
   rest.push(line);}
  return {items:items.slice(0,30),rest:rest.join('\n').trim(),newLifts};}
 
-// Serialise items for the database, carrying the lift identity so a member whose
-// list lacks the key can still resolve or register it.
+// Serialise items for the database, carrying the lift identity and optional movementName/baseMode.
 function itemsForWire(items,newLifts){if(!Array.isArray(items))return [];
  return items.slice(0,30).map(it=>{const out={liftKey:it.liftKey,rows:it.rows,text:it.text||''};
+  if(it.movementName)out.movementName=it.movementName;
+  if(it.baseMode&&BASE_MODES.has(it.baseMode)&&it.baseMode!=='main')out.baseMode=it.baseMode;
+  if(it.baseMode==='custom'&&finite(it.baseWeight,.1,100000))out.baseWeight=it.baseWeight;
   if(it.note)out.note=it.note;
   const def=newLifts?.[it.liftKey]||state.customLifts?.[it.liftKey]||null;
   if(def)out.lift={name:def.name,family:def.family,cls:def.cls};
-  else{const l=liftInfo(it.liftKey);if(l)out.lift={name:l.en,family:l.family,cls:l.cls};}
+  else{const l=liftInfo(it.liftKey);if(l)out.lift={name:it.movementName||l.en,family:l.family,cls:l.cls};}
   return out;});}
 
-// Resolve wire items against this member's lift list, registering unknown lifts.
+// Resolve wire items against the 20 simplified lifts (+ legacy compatibility).
 function adoptItems(wire){if(!Array.isArray(wire)||!wire.length)return null;
  const items=[],add={},names=[];
  for(const w of wire){if(!plainObject(w)||!Array.isArray(w.rows)||!w.rows.length)continue;
   const rows=w.rows.filter(validRow).map(r=>({...r}));if(!rows.length)continue;
   let key=typeof w.liftKey==='string'?w.liftKey:null;
+  let movementName=typeof w.movementName==='string'?w.movementName.trim().slice(0,100):'';
   const def=plainObject(w.lift)?w.lift:null;
-  if(!key||!liftInfo(key,{...state.customLifts,...add})){
-   const byName=def&&typeof def.name==='string'?aliasKey(def.name):null;
-   if(byName)key=byName;
-   else if(key&&def&&typeof def.name==='string'){
-    const g=FAMILIES[def.family]&&CLASSES[def.cls]?{family:def.family,cls:def.cls}:guessGroup(def.name);
-    add[key]={name:String(def.name).slice(0,60),...g};names.push(String(def.name).slice(0,60));}
-   else key=null;}
+  if(key&&Object.hasOwn(LIFTS,key)){
+   movementName=cleanMovementName(key,movementName);
+  }else if(key&&Object.hasOwn(LEGACY_LIFTS,key)){
+   const l=LEGACY_LIFTS[key];key=l.mappedKey;movementName=cleanMovementName(key,movementName||(KO?l.ko:l.en));
+  }else if(key&&liftInfo(key)){
+   const mapped=toActiveLift(key,movementName);key=mapped.liftKey;movementName=mapped.movementName;
+  }else if(def&&typeof def.name==='string'){
+   const cls=classifyLift(def.name);
+   if(cls){key=cls.liftKey;movementName=cleanMovementName(key,movementName||cls.movementName);}
+   else{key=FAMILY_VAR[normalizeLegacyFamily(def.family,def.name)]||'deadliftVariation';movementName=cleanMovementName(key,movementName||def.name);}
+  }else key=null;
   if(!key)continue;
   const it={liftKey:key,rows:rows.slice(0,30),text:typeof w.text==='string'?w.text.slice(0,300):''};
+  if(movementName)it.movementName=movementName;
+  if(w.baseMode&&BASE_MODES.has(w.baseMode)&&w.baseMode!=='main')it.baseMode=w.baseMode;
+  if(it.baseMode==='custom'&&finite(w.baseWeight,.1,100000))it.baseWeight=w.baseWeight;
   if(typeof w.note==='string'&&w.note)it.note=w.note.slice(0,1000);
   items.push(it);}
  return items.length?{items:items.slice(0,30),customLifts:add,names}:null;}
@@ -1407,7 +1787,7 @@ async function loadPublishedIntoForm(p,source='coach'){if(!p||!await canReplaceE
   notify(adopted?t('restoredItems',{n:adopted.items.length}):t('restoredNoItems'));
   if(adopted&&adopted.names.length)notify(t('restoredCustom',{list:adopted.names.join(', ')}));
  }else notify(t('useCoachWod'));
- setTimeout(()=>{const input=cat==='STRENGTH'?$('liftBlocks')?.querySelector('input'):($('finishTime')||$('amrapRounds')||$('qualityResult')||$('wodTitle'));if(input)input.focus();},100);}
+ setTimeout(()=>{const input=cat==='STRENGTH'?$('liftBlocks')?.querySelector('.r-weight, .r-pct, input'):($('finishTime')||$('amrapRounds')||$('qualityResult')||$('wodTitle'));if(input)input.focus();},100);}
 
 function parseProgram(text){const days=[],general=[];let day=null,block=null;const dayRe=/^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\s*[-–]\s*Day\s*(\d+)\s*$/i,blockRe=/^\d+\s*sets?\b[^:]{0,40}:\s*$/i,wodRe=/^wod\b\s*[:\-–]?\s*(.*)$/i;
  // A block line is a workout line, not prose: short, or short-ish with a number in it.
@@ -1428,15 +1808,13 @@ function parseProgram(text){const days=[],general=[];let day=null,block=null;con
   day.notes.push(line);}
  if(day)endBlock();return {days:days.filter(d=>isInt(d.day,1,1000)),general};}
 const WEEKDAYS=['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
-function buildProgram(text,start,unit,name){const parsed=parseProgram(text),plans=[],newLifts={},warnings=[],programId='prog_'+uid(),now=new Date().toISOString(),unknown=new Map();
+function buildProgram(text,start,unit,name){const parsed=parseProgram(text),plans=[],newLifts={},warnings=[],programId='prog_'+uid(),now=new Date().toISOString();
  if(!parsed.days.length)return {plans,newLifts,warnings:[t('programNoDays')],parsed,programId};
  const firstDay=parsed.days[0];const startWd=new Date(addDays(start,firstDay.day-1)+'T12:00:00').getDay();if(WEEKDAYS[startWd]!==firstDay.weekday.toLowerCase())warnings.push(t('programWeekdayWarn',{day:firstDay.day,wd:firstDay.weekday}));
  const seen=new Set();for(const d of parsed.days){if(seen.has(d.day))warnings.push(t('programDupDay',{day:d.day}));seen.add(d.day);}
  for(const d of parsed.days){const date=addDays(start,d.day-1),program={name,day:d.day},notes=[...(d.day===firstDay.day?parsed.general:[]),...d.notes].join('\n').slice(0,10000);
-  for(const l of d.lifts)if(!l.key){const n=normName(l.name);if(!unknown.has(n)){const key='custom_'+uid().replace(/[^A-Za-z0-9_-]/g,'').slice(0,40);unknown.set(n,key);newLifts[key]={name:l.name.slice(0,60),...guessGroup(l.name)};}l.key=unknown.get(n);}
-  if(d.lifts.length)plans.push({id:'plan_'+uid(),status:'PLANNED',category:'STRENGTH',date,title:`${name} · Day ${d.day}`.slice(0,160),workoutType:'STRENGTH_MAX',intervalSettings:null,content:d.lifts.map(l=>l.text).join('\n').slice(0,10000),isRxd:true,weightUnit:unit,weightUsed:null,notes,createdAt:now,updatedAt:now,items:d.lifts.slice(0,30).map(l=>{const it={liftKey:l.key,rows:l.rows.slice(0,30),text:l.text.slice(0,300)};if(l.notes.length)it.note=l.notes.join(' · ').slice(0,1000);return it;}),liftKey:d.lifts[0].key,programId,program});
+  if(d.lifts.length)plans.push({id:'plan_'+uid(),status:'PLANNED',category:'STRENGTH',date,title:`${name} · Day ${d.day}`.slice(0,160),workoutType:'STRENGTH_MAX',intervalSettings:null,content:d.lifts.map(l=>l.text).join('\n').slice(0,10000),isRxd:true,weightUnit:unit,weightUsed:null,notes,createdAt:now,updatedAt:now,items:d.lifts.slice(0,30).map(l=>{const it={liftKey:l.key,rows:l.rows.slice(0,30),text:l.text.slice(0,300)};if(l.movementName)it.movementName=l.movementName;if(l.notes.length)it.note=l.notes.join(' · ').slice(0,1000);return it;}),liftKey:d.lifts[0].key,programId,program});
   for(const a of d.accessory)plans.push({id:'plan_'+uid(),status:'PLANNED',category:'WOD',date,title:`${a.wod?'WOD':'Accessory'}: ${a.lines.join(' / ')}`.slice(0,160),workoutType:'FOR_QUALITY',intervalSettings:null,content:[a.header,...a.lines].filter(Boolean).join('\n').slice(0,10000),isRxd:true,weightUnit:unit,weightUsed:null,notes:d.lifts.length?'':notes,createdAt:now,updatedAt:now,programId,program});}
- if(Object.keys(newLifts).length)warnings.push(t('programNewLifts',{list:Object.values(newLifts).map(v=>`${v.name} (${groupLabel(v.family,v.cls)})`).join(', ')}));
  return {plans,newLifts,warnings,parsed,programId};}
 let programDraft=null;
 function programText(){return $('programText').value;}
@@ -1511,18 +1889,18 @@ $('programApply').onclick=async()=>{const d=programDraft;if(!d)return;
 $('programList').addEventListener('click',async e=>{const b=e.target.closest('[data-del-program]');if(!b)return;const id=b.dataset.delProgram,n=state.plans.filter(p=>p.programId===id).length;if(await confirmAction(t('programDeleteAsk',{n}))&&commit({...state,plans:state.plans.filter(p=>p.programId!==id)}))notify(t('deleted'));});
 
 /* ---------------- History ---------------- */
-function liftGroupFilterOptions(){const sel=$('liftGroupFilter'),cur=sel.value;let html=`<option value="">${esc(t('all'))}</option>`;for(const f of Object.keys(FAMILIES)){html+=`<option value="f:${f}">${esc(FAMILIES[f][KO?1:0])} (${esc(t('allOfFamily'))})</option>`;if(OLY.has(f))for(const c of Object.keys(CLASSES))html+=`<option value="g:${f}:${c}">— ${esc(groupLabel(f,c))}</option>`;}sel.innerHTML=html;sel.value=[...sel.options].some(o=>o.value===cur)?cur:'';}
-function matchesLiftGroup(r,v){if(!v)return true;if(r.category!=='STRENGTH')return false;const l=liftInfo(logLiftKey(r));if(!l)return false;const [kind,f,c]=v.split(':');return l.family===f&&(kind==='f'||l.cls===c);}
+function liftGroupFilterOptions(){const sel=$('liftGroupFilter'),cur=sel.value;let html=`<option value="">${esc(t('all'))}</option>`;for(const f of Object.keys(FAMILIES)){html+=`<option value="f:${f}">${esc(FAMILIES[f][KO?1:0])} (${esc(t('allOfFamily'))})</option>`;if(FAMILY_MAIN[f])html+=`<option value="k:${FAMILY_MAIN[f]}">— ${esc(liftName(FAMILY_MAIN[f]))}</option>`;if(FAMILY_VAR[f])html+=`<option value="k:${FAMILY_VAR[f]}">— ${esc(liftName(FAMILY_VAR[f]))}</option>`;}sel.innerHTML=html;sel.value=[...sel.options].some(o=>o.value===cur)?cur:'';}
+function matchesLiftGroup(r,v){if(!v)return true;if(r.category!=='STRENGTH')return false;const k=logLiftKey(r),l=liftInfo(k);if(!l)return false;const [kind,target]=v.split(':');if(kind==='f')return l.family===target;if(kind==='k')return k===target||l.mappedKey===target||(l.custom&&FAMILY_VAR[l.family]===target);return false;}
 function renderRecent(){const logs=ordered().slice(0,3);$('recentList').innerHTML=logs.length?logs.map(r=>`<div class="mini-record"><div class="mini-record-top"><div><h3>${esc(recordTitle(r))}</h3><small>${esc(displayDate(r.date))} · ${esc(TYPES[r.workoutType])}</small></div>${badge(r)}</div><strong>${esc(shownScore(r))}</strong></div>`).join(''):emptyHTML();}
-function renderHistory(){const q=normalized($('historySearch').value),cat=$('categoryFilter').value,type=$('typeFilter').value,lg=$('liftGroupFilter').value;const list=ordered().filter(r=>(!cat||cat===r.category)&&(!type||type===r.workoutType)&&matchesLiftGroup(r,lg)&&(!q||normalized([r.title,recordTitle(r),r.notes].join(' ')).includes(q)));selected=new Set([...selected].filter(id=>list.some(r=>r.id===id)));$('historyCount').textContent=t('count',{n:list.length});$('deleteSelected').disabled=!selected.size;
- $('historyList').innerHTML=list.length?list.map(r=>`<article class="record"><div class="record-top"><div><div class="meta">${esc(displayDate(r.date))} · ${esc(TYPES[r.workoutType])}</div><h3>${esc(recordTitle(r))}${r.category==='STRENGTH'&&liftInfo(logLiftKey(r))?`<span class="cls-pill">${esc(liftGroup(logLiftKey(r)))}</span>`:''}</h3></div>${badge(r)}</div><div class="record-score">${esc(shownScore(r))}</div>${r.prescription?`<div class="item-note">${esc(t('programLine'))}: ${esc(r.prescription)}</div>`:''}${r.content?`<div class="record-content">${esc(r.content)}</div>`:''}<div class="record-settings">${esc(settingsText(r))}</div>${r.notes?`<p class="record-note">${esc(r.notes)}</p>`:''}<div class="record-bottom"><label class="check"><input type="checkbox" data-select="${esc(r.id)}" ${selected.has(r.id)?'checked':''}>${esc(t('select'))}</label><div class="history-actions">${r.pendingEdit?`<span class="pill warning">${esc(t('editPendingBadge'))}</span>`:''}<button type="button" class="small ghost" data-edit-log="${esc(r.id)}">${esc(t('edit'))}</button><button type="button" class="small secondary" data-view-lb="${esc(r.title)}" data-date="${esc(r.date)}">${esc(t('viewLeaderboard'))}</button><button class="danger small" data-delete="${esc(r.id)}">${esc(t('delete'))}</button></div></div></article>`).join(''):state.logs.length?`<div class="panel empty"><p>${esc(t('noResults'))}</p></div>`:emptyHTML();}
+function renderHistory(){const q=normalized($('historySearch').value),cat=$('categoryFilter').value,type=$('typeFilter').value,lg=$('liftGroupFilter').value;const list=ordered().filter(r=>(!cat||cat===r.category)&&(!type||type===r.workoutType)&&matchesLiftGroup(r,lg)&&(!q||normalized([r.title,recordTitle(r),r.movementName||'',r.category==='STRENGTH'?liftName(logLiftKey(r)):'',r.notes].join(' ')).includes(q)));selected=new Set([...selected].filter(id=>list.some(r=>r.id===id)));$('historyCount').textContent=t('count',{n:list.length});$('deleteSelected').disabled=!selected.size;
+ $('historyList').innerHTML=list.length?list.map(r=>{const title=recordTitle(r),pill=r.category==='STRENGTH'?liftPillLabel(logLiftKey(r),title):'';return `<article class="record"><div class="record-top"><div><div class="meta">${esc(displayDate(r.date))} · ${esc(TYPES[r.workoutType])}</div><h3>${esc(title)}${pill?`<span class="cls-pill">${esc(pill)}</span>`:''}</h3></div>${badge(r)}</div><div class="record-score">${esc(shownScore(r))}</div>${r.prescription?`<div class="item-note">${esc(t('programLine'))}: ${esc(r.prescription)}</div>`:''}${r.content?`<div class="record-content">${esc(r.content)}</div>`:''}<div class="record-settings">${esc(settingsText(r))}</div>${r.notes?`<p class="record-note">${esc(r.notes)}</p>`:''}<div class="record-bottom"><label class="check"><input type="checkbox" data-select="${esc(r.id)}" ${selected.has(r.id)?'checked':''}>${esc(t('select'))}</label><div class="history-actions">${r.pendingEdit?`<span class="pill warning">${esc(t('editPendingBadge'))}</span>`:''}<button type="button" class="small ghost" data-edit-log="${esc(r.id)}">${esc(t('edit'))}</button><button type="button" class="small secondary" data-view-lb="${esc(r.title)}" data-date="${esc(r.date)}">${esc(t('viewLeaderboard'))}</button><button class="danger small" data-delete="${esc(r.id)}">${esc(t('delete'))}</button></div></div></article>`;}).join(''):state.logs.length?`<div class="panel empty"><p>${esc(t('noResults'))}</p></div>`:emptyHTML();}
 for(const id of ['historySearch','categoryFilter','typeFilter','liftGroupFilter'])$(id).addEventListener(id==='historySearch'?'input':'change',renderHistory);
 $('historyList').addEventListener('change',e=>{if(e.target.dataset.select){e.target.checked?selected.add(e.target.dataset.select):selected.delete(e.target.dataset.select);$('deleteSelected').disabled=!selected.size;}});
 $('historyList').addEventListener('click',async e=>{const b=e.target.closest('[data-delete]');if(b&&await confirmAction(t('deleteAsk'))){if(commit({...state,logs:state.logs.filter(r=>r.id!==b.dataset.delete)}))notify(t('deleted'));}});
 $('deleteSelected').onclick=async()=>{if(selected.size&&await confirmAction(t('selectedAsk',{n:selected.size}))){if(commit({...state,logs:state.logs.filter(r=>!selected.has(r.id))})){selected.clear();renderHistory();notify(t('deleted'));}}};
 
-/* ---------------- 1RM, comparison, custom lifts ---------------- */
-function rmOptions(){const sel=$('rmLift'),cur=sel.value||'snatch';sel.innerHTML=liftOptions(cur);if(!liftInfo(cur))sel.value='snatch';}
+/* ---------------- 1RM & comparison ---------------- */
+function rmOptions(){const sel=$('rmLift'),cur=sel.value||'snatch';sel.innerHTML=liftOptions(cur,true);if(!liftInfo(cur))sel.value='snatch';}
 function renderAllRMs(){
   const container=$('allRMsList');
   if(!container)return;
@@ -1531,7 +1909,7 @@ function renderAllRMs(){
   for(const r of state.logs){
     if(r.category==='STRENGTH'){
       const k=logLiftKey(r);
-      if(k&&liftInfo(k)){
+      if(k&&liftInfo(k)&&!cleanMovementName(k,recordTitle(r))){
         for(const g of logGroups(r)){
           const kg=toKg(g.weight,r.weightUnit);
           if(!logBestMap.has(k)||kg>logBestMap.get(k).kg){
@@ -1553,7 +1931,7 @@ function renderAllRMs(){
     const otherU=otherUnit(unit),otherW=fmt(rounded(convert(weight,unit,otherU),0.5));
     const dateStr=p?.updatedAt||best?.date,groupTxt=groupLabel(info.family,info.cls);
     const pubBadge = p ? (p.isPublic !== false ? `<span class="pill" style="background:rgba(46,125,50,0.12);color:var(--c-accent, #4c6545)">${t('publicRecord')}</span>` : `<span class="pill" style="background:rgba(217,52,43,0.12);color:#d9342b">${t('privateRecord')}</span>`) : '';
-    return `<div class="rm-card"><div><div class="rm-card-head"><h4>${esc(liftName(k))}</h4><span class="cls-pill">${esc(groupTxt)}</span></div><div class="rm-card-weight">${fmt(weight)} ${unit} <small>≈ ${otherW} ${otherU}</small></div><div class="rm-card-date">${dateStr?`${t('updated')}: ${displayDate(dateStr)}`:''}${pubBadge ? ` · ${pubBadge}` : ''}${!p&&best?` · <span class="pill">${t('recordLine')}</span>`:''}</div></div><div class="rm-card-actions"><button type="button" class="secondary small" data-load-rm="${esc(k)}">${esc(t('loadIntoCalc'))}</button><button type="button" class="ghost small" data-view-rm-lb="${esc(k)}">${esc(t('viewLeaderboard'))}</button>${p?`<button type="button" class="danger small" data-del-all-rm="${esc(k)}">${esc(t('delete'))}</button>`:''}</div></div>`;
+    return `<div class="rm-card"><div><div class="rm-card-head"><h4>${esc(liftName(k))}</h4><span class="cls-pill">${esc(groupTxt)}</span></div><div class="rm-card-weight">${fmt(weight)} ${unit} <small>≈ ${otherW} ${otherU}</small></div><div class="rm-card-date">${dateStr?`${t('updated')}: ${displayDate(dateStr)}`:''}${pubBadge ? ` · ${pubBadge}` : ''}${!p&&best?` · <span class="pill">${esc(t('fromLogs'))}</span>`:''}</div></div><div class="rm-card-actions"><button type="button" class="secondary small" data-load-rm="${esc(k)}">${esc(t('loadIntoCalc'))}</button><button type="button" class="ghost small" data-view-rm-lb="${esc(k)}">${esc(t('viewLeaderboard'))}</button>${p?`<button type="button" class="danger small" data-del-all-rm="${esc(k)}">${esc(t('delete'))}</button>`:''}</div></div>`;
   }).join('');
 }
 $('quickAddRmBtn')?.addEventListener('click',()=>{
@@ -1573,6 +1951,8 @@ $('allRMsList')?.addEventListener('click',async e=>{
   const loadBtn=e.target.closest('[data-load-rm]');
   if(loadBtn){
     const k=loadBtn.dataset.loadRm;
+    rmOptions();
+    if(![...$('rmLift').options].some(o=>o.value===k))$('rmLift').innerHTML=liftOptions(k,true);
     $('rmLift').value=k;
     loadRM();
     $('rmForm')?.scrollIntoView({behavior:'smooth',block:'center'});
@@ -1593,26 +1973,57 @@ $('allRMsList')?.addEventListener('click',async e=>{
     }
   }
 });
-function loadRM(){const key=$('rmLift').value,p=state.profiles[key];$('rmWeight').value=p?p.weight:'';$('rmUnit').value=p?p.unit:'lb';oldRmUnit=$('rmUnit').value;if($('rmPublicLeaderboard'))$('rmPublicLeaderboard').checked=p?(p.isPublic!==false):true;$('rmUpdated').textContent=p?`${t('updated')}: ${displayDate(p.updatedAt)}`:t('notSet');const b=baseFor(key);$('rmBaseInfo').textContent=b.key&&b.key!==key?t('rmBaseInfo',{lift:liftName(b.key)}):'';$('deleteRM').disabled=!p;updateCalc();}
+function loadRM(){const key=$('rmLift').value,p=state.profiles[key];$('rmWeight').value=p?p.weight:'';$('rmUnit').value=p?p.unit:'lb';oldRmUnit=$('rmUnit').value;if($('rmPublicLeaderboard'))$('rmPublicLeaderboard').checked=p?(p.isPublic!==false):true;$('rmUpdated').textContent=p?`${t('updated')}: ${displayDate(p.updatedAt)}`:t('notSet');const info=liftInfo(key),mainKey=info?FAMILY_MAIN[info.family]:null;$('rmBaseInfo').textContent=mainKey&&mainKey!==key?t('rmBaseInfo',{lift:liftName(mainKey)}):'';$('deleteRM').disabled=!p;updateCalc();}
 function updateCalc(){const n=Number($('rmWeight').value),unit=$('rmUnit').value,percent=Number($('calcPercent').value),step=Number($('rounding').value);const valid=$('rmWeight').value!==''&&n>0&&n<=100000&&percent>0&&percent<=200;const lb=convert(n,unit,'lb'),kg=convert(n,unit,'kg');$('calcResult').innerHTML=valid?`<p>${esc(t('liveTarget'))} · ${percent}%</p><strong>${fmt(rounded(n*percent/100,step))} ${unit}</strong><p>≈ ${fmt(rounded(convert(n,unit,otherUnit(unit))*percent/100,step))} ${otherUnit(unit)}</p>`:`<p>${esc(t('noRM'))}</p>`;$('percentTable').innerHTML=Array.from({length:11},(_,i)=>50+i*5).map(p=>`<tr class="${p===percent?'highlight':''}"><td>${p}%</td><td>${valid?fmt(rounded(lb*p/100,step)):'—'}</td><td>${valid?fmt(rounded(kg*p/100,step)):'—'}</td></tr>`).join('');}
 $('rmLift').onchange=loadRM;for(const id of ['rmWeight','calcPercent','rounding'])$(id).addEventListener('input',updateCalc);
 $('rmUnit').onchange=()=>{if($('rmWeight').value!==''&&finite(Number($('rmWeight').value)))$('rmWeight').value=String(Number(convert(Number($('rmWeight').value),oldRmUnit,$('rmUnit').value).toFixed(8)));oldRmUnit=$('rmUnit').value;updateCalc();};
 $('rmForm').onsubmit=async e=>{e.preventDefault();const weight=Number($('rmWeight').value);if(!finite(weight,.1,100000))return;const key=$('rmLift').value,unit=$('rmUnit').value,isPublic=$('rmPublicLeaderboard')?.checked??true;const profiles={...state.profiles,[key]:{weight,unit,updatedAt:localDate(),isPublic}};if(commit({...state,profiles})){loadRM();renderAllRMs();renderCompare();notify(t('savedRM'));}};
 $('deleteRM').onclick=async()=>{const key=$('rmLift').value;if(await confirmAction(t('deleteRMAsk'))){const profiles={...state.profiles};delete profiles[key];if(commit({...state,profiles})){loadRM();renderAllRMs();renderCompare();notify(t('deleted'));}}};
-function familyOptions(sel,cur){sel.innerHTML=Object.keys(FAMILIES).map(f=>`<option value="${f}">${esc(FAMILIES[f][KO?1:0])}</option>`).join('');sel.value=cur&&Object.hasOwn(FAMILIES,cur)?cur:'snatch';}
-function renderCompare(){const fam=$('compareFamily').value||'snatch',keys=allLiftKeys().filter(k=>liftInfo(k).family===fam),logsBy=new Map();
- for(const r of state.logs)if(r.category==='STRENGTH'){const k=logLiftKey(r);if(k&&keys.includes(k)){if(!logsBy.has(k))logsBy.set(k,[]);logsBy.get(k).push(r);}}
- const famBase=OLY.has(fam)?baseFor(keys.find(k=>liftInfo(k).cls==='main')||keys[0]):null;let rows='';
- for(const c of Object.keys(CLASSES)){const ks=keys.filter(k=>liftInfo(k).cls===c&&(logsBy.has(k)||state.profiles[k]));if(!ks.length)continue;rows+=`<tr class="compare-group"><td colspan="4">${esc(groupLabel(fam,c))}</td></tr>`;
-  for(const k of ks){const logs=(logsBy.get(k)||[]).sort((a,b)=>b.date.localeCompare(a.date)||b.createdAt.localeCompare(a.createdAt));let best=null;for(const r of logs)for(const g of logGroups(r)){const kg=toKg(g.weight,r.weightUnit);if(!best||kg>best.kg+1e-9||(Math.abs(kg-best.kg)<1e-9&&g.reps>best.g.reps))best={kg,g,r};}
-   const prof=state.profiles[k],ref=famBase?.profile;const pct=best&&ref?Math.round(best.kg/toKg(ref.weight,ref.unit)*100)+'%':'';
-   rows+=`<tr><td><details><summary>${esc(liftName(k))}</summary><div>${logs.length?logs.slice(0,8).map(r=>esc(`${displayDate(r.date)} · ${shownScore(r)}`)).join('<br>'):esc(t('noLift'))}</div></details></td><td>${best?esc(`${fmtW(best.g.weight)} ${best.r.weightUnit} × ${best.g.reps}`):'—'}<div class="help">${best?esc(displayDate(best.r.date)):''}</div></td><td>${prof?esc(`${fmtW(prof.weight)} ${prof.unit}`):'—'}</td><td>${esc(pct)}</td></tr>`;}}
- $('compareTable').innerHTML=rows?`<table class="compare-table"><thead><tr><th>${esc(t('lift'))}</th><th>${esc(t('bestCol'))}</th><th>1RM</th><th>${esc(famBase?.key?t('vsBase',{lift:liftName(famBase.key)}):'')}</th></tr></thead><tbody>${rows}</tbody></table>${famBase&&!famBase.profile?`<p class="help">${esc(t('baseMissing',{lift:liftName(famBase.key)}))}</p>`:''}`:`<p class="subtle">${esc(t('compareEmpty'))}</p>`;}
+function familyOptions(sel,cur){
+ const keys=[...Object.keys(FAMILIES)];
+ if(state.logs.some(r=>r.category==='STRENGTH'&&liftInfo(logLiftKey(r))?.family==='other')||Object.keys(state.profiles||{}).some(k=>liftInfo(k)?.family==='other'))keys.push('other');
+ sel.innerHTML=keys.map(f=>`<option value="${f}">${esc((FAMILIES[f]||LEGACY_FAMILY_LABELS[f])[KO?1:0])}</option>`).join('');
+ sel.value=cur&&keys.includes(cur)?cur:'snatch';
+}
+function renderCompare(){
+ const fam=$('compareFamily').value||'snatch', mainKey=FAMILY_MAIN[fam]||null, famBase=mainKey?baseFor(mainKey):null;
+ const mainLogs=[], varGroups=new Map();
+ for(const r of state.logs){
+  if(r.category!=='STRENGTH')continue;
+  const k=logLiftKey(r), l=liftInfo(k);if(!l||l.family!==fam)continue;
+  const title=recordTitle(r), isMain=k===mainKey&&!cleanMovementName(k,title);
+  if(isMain)mainLogs.push(r);
+  else{const gn=normalized(title);if(!varGroups.has(gn))varGroups.set(gn,{name:title,key:k,logs:[]});varGroups.get(gn).logs.push(r);}
+ }
+ for(const k of Object.keys(state.profiles||{})){
+  const l=liftInfo(k);if(!l||l.family!==fam||k===mainKey)continue;
+  const title=liftName(k), gn=normalized(title);
+  if(!varGroups.has(gn))varGroups.set(gn,{name:title,key:k,logs:[]});
+ }
+ const bestOf=logs=>{let best=null;for(const r of logs)for(const g of logGroups(r)){const kg=toKg(g.weight,r.weightUnit);if(!best||kg>best.kg+1e-9||(Math.abs(kg-best.kg)<1e-9&&g.reps>best.g.reps))best={kg,g,r};}return best;};
+ const rowItem=(name,logs,prof)=>{
+  const sorted=[...logs].sort((a,b)=>b.date.localeCompare(a.date)||b.createdAt.localeCompare(a.createdAt));
+  const best=bestOf(sorted), ref=famBase?.profile;
+  const pct=best&&ref?Math.round(best.kg/toKg(ref.weight,ref.unit)*100)+'%':'';
+  return `<tr><td><details><summary>${esc(name)}</summary><div>${sorted.length?sorted.slice(0,8).map(r=>esc(`${displayDate(r.date)} · ${shownScore(r)}`)).join('<br>'):esc(t('noLift'))}</div></details></td><td>${best?esc(`${fmtW(best.g.weight)} ${best.r.weightUnit} × ${best.g.reps}`):'—'}<div class="help">${best?esc(displayDate(best.r.date)):''}</div></td><td>${prof?esc(`${fmtW(prof.weight)} ${prof.unit}`):'—'}</td><td>${esc(pct)}</td></tr>`;
+ };
+ let rows='';
+ if(mainKey&&(mainLogs.length||state.profiles[mainKey])){
+  rows+=`<tr class="compare-group"><td colspan="4">${esc(t('mainLiftSection'))}</td></tr>`;
+  rows+=rowItem(liftName(mainKey),mainLogs,state.profiles[mainKey]);
+ }
+ const vars=[...varGroups.values()].sort((a,b)=>a.name.localeCompare(b.name,LOCALE));
+ if(vars.length){
+  rows+=`<tr class="compare-group"><td colspan="4">${esc(t('variationLiftSection'))}</td></tr>`;
+  for(const v of vars){
+   const mvProf=movementProfileOrBest(v.key,v.name);
+   const prof=(state.profiles[v.key]&&normalized(liftName(v.key))===normalized(v.name))?state.profiles[v.key]:(mvProf?.source==='profile'?state.profiles[mvProf.key]:null);
+   rows+=rowItem(v.name,v.logs,prof);
+  }
+ }
+ $('compareTable').innerHTML=rows?`<table class="compare-table"><thead><tr><th>${esc(t('lift'))}</th><th>${esc(t('bestCol'))}</th><th>1RM</th><th>${esc(famBase?.key?t('vsBase',{lift:liftName(famBase.key)}):'')}</th></tr></thead><tbody>${rows}</tbody></table>${famBase&&!famBase.profile?`<p class="help">${esc(t('baseMissing',{lift:liftName(famBase.key)}))}</p>`:''}`:`<p class="subtle">${esc(t('compareEmpty'))}</p>`;
+}
 $('compareFamily').onchange=renderCompare;
-function classOptions(){$('customLiftClass').innerHTML=Object.keys(CLASSES).map(c=>`<option value="${c}">${esc(CLASSES[c][KO?1:0])}</option>`).join('');}
-function renderCustomLifts(){const used=k=>state.logs.some(r=>r.liftKey===k)||state.plans.some(p=>p.items?.some(i=>i.liftKey===k))||state.profiles[k];const entries=Object.entries(state.customLifts);$('customLiftList').innerHTML=entries.length?entries.map(([k,v])=>`<div class="custom-row"><span><strong>${esc(v.name)}</strong> <span class="cls-pill">${esc(groupLabel(v.family,v.cls))}</span></span>${used(k)?`<span class="help">${esc(t('inUse'))}</span>`:`<button type="button" class="danger small" data-del-custom="${esc(k)}">${esc(t('delete'))}</button>`}</div>`).join(''):`<p class="help">${esc(t('noCustomLifts'))}</p>`;}
-$('customLiftForm').onsubmit=e=>{e.preventDefault();const name=$('customLiftName').value.trim().slice(0,60);if(!name){notify(t('invalid'));return;}if(liftKeyByName(name)){notify(t('customLiftExists'));return;}const key='custom_'+uid().replace(/[^A-Za-z0-9_-]/g,'').slice(0,40);const customLifts={...state.customLifts,[key]:{name,family:$('customLiftFamily').value,cls:$('customLiftClass').value}};if(!validCustomLifts(customLifts)){notify(t('invalid'));return;}if(commit({...state,customLifts})){$('customLiftName').value='';notify(t('customLiftAdded'));}};
-$('customLiftList').addEventListener('click',async e=>{const b=e.target.closest('[data-del-custom]');if(!b)return;if(await confirmAction(t('deleteAsk'))){const customLifts={...state.customLifts};delete customLifts[b.dataset.delCustom];if(commit({...state,customLifts}))notify(t('deleted'));}});
 function updateConverter(){const n=Number($('convertWeight').value),unit=$('convertUnit').value;$('convertResult').textContent=$('convertWeight').value!==''&&finite(n,0,100000)?`${fmt(convert(n,unit,otherUnit(unit)))} ${otherUnit(unit)}`:'—';}
 $('convertWeight').oninput=updateConverter;$('convertUnit').onchange=updateConverter;$('swapUnits').onclick=()=>{const unit=$('convertUnit').value,next=otherUnit(unit);if($('convertWeight').value!==''&&finite(Number($('convertWeight').value)))$('convertWeight').value=String(Number(convert(Number($('convertWeight').value),unit,next).toFixed(8)));$('convertUnit').value=next;updateConverter();};
 
@@ -1633,7 +2044,7 @@ $('scoreFields').addEventListener('input',updateTimerIdle);$('plannedCap').addEv
 
 /* ---------------- CSV & JSON ---------------- */
 const HEADERS={ko:['날짜','구분(WOD/Strength)','운동명(제목)','운동유형','세부내용','결과(Score)','Rx/Scaled','단위(lb/kg)','메모','생성일시'],en:['Date','Category(WOD/Strength)','Workout Title','Workout Type','Details','Score','Rx/Scaled','Unit(lb/kg)','Notes','Created At']};
-const META_KEYS=['liftKey','sets','reps','durationMinutes','timeCapMinutes','capReps','setGroups','sessionId','prescription','program','programId','plannedWorkoutId','plannedDate','coachProgramId'];
+const META_KEYS=['liftKey','movementName','baseMode','baseWeight','sets','reps','durationMinutes','timeCapMinutes','capReps','setGroups','sessionId','prescription','program','programId','plannedWorkoutId','plannedDate','coachProgramId'];
 function excelSafe(value){const s=String(value??'');return /^[=+\-@\t\r\n']/.test(s)?"'"+s:s;}
 function excelUnsafe(s){return /^'[=+\-@\t\r\n']/.test(s)?s.slice(1):s;}
 function csvCell(v){return '"'+excelSafe(v).replaceAll('"','""')+'"';}
@@ -1658,8 +2069,12 @@ function importCsvText(source){const rows=parseCSV(source);if(!rows.length)throw
   if(!['Rx',"Rx'd",'Rx’d','Scaled'].includes(rx))throw new Error('rx');const cat=categoryCell.toUpperCase();const r={id:(cat==='WOD'?'wod_':'strength_')+uid(),category:cat,date,title,workoutType,content,score,scoreUnit:meta.scoreUnit||({FOR_TIME:'TIME',AMRAP:'ROUNDS_REPS',STRENGTH_MAX:'WEIGHT'}[workoutType]||'CUSTOM'),isRxd:rx!=='Scaled',weightUnit:unit,weightUsed:meta.weightUsed??null,notes,createdAt,intervalSettings:meta.intervalSettings??null};for(const k of META_KEYS)if(meta[k]!==undefined&&k!=='setGroups')r[k]=meta[k];
   if(cat==='STRENGTH'){const groups=score.split(';').map(s=>s.trim()).filter(Boolean).map(s=>{const m=s.match(/^(\d+(?:\.\d+)?)\s*[×x]\s*(\d+)\s*[×x]\s*(\d+)$/);if(!m)throw new Error('strength score');return {weight:Number(m[1]),reps:Number(m[2]),sets:Number(m[3])};});if(!groups.length)throw new Error('strength score');const top=groups.reduce((a,g)=>g.weight>a.weight||(g.weight===a.weight&&g.reps>a.reps)?g:a);r.weightUsed=top.weight;r.reps=top.reps;r.sets=top.sets;
    const mg=Array.isArray(meta.setGroups)&&meta.setGroups.length===groups.length?meta.setGroups:[];const merged=groups.map((g,i)=>mg[i]&&mg[i].weight===g.weight&&finite(mg[i].pct,.1,200)?{...g,pct:mg[i].pct}:g);if(merged.length>1||merged.some(g=>g.pct!==undefined))r.setGroups=merged;
-   const metaLift=liftInfo(meta.liftKey);const key=metaLift&&[metaLift.en,metaLift.ko].some(n=>normalized(n)===normalized(title))?meta.liftKey:liftKeyByName(title);if(key)r.liftKey=key;else delete r.liftKey;}
-  else{delete r.liftKey;delete r.sets;delete r.reps;}
+   const metaLift=liftInfo(meta.liftKey);
+   const key=metaLift?meta.liftKey:liftKeyByName(title);
+   if(key){r.liftKey=key;const mv=cleanMovementName(key,r.movementName||title);if(mv)r.movementName=mv;else delete r.movementName;}
+   else{delete r.liftKey;delete r.movementName;delete r.baseMode;delete r.baseWeight;}
+  }
+  else{delete r.liftKey;delete r.movementName;delete r.baseMode;delete r.baseWeight;delete r.sets;delete r.reps;}
   if(!validLog(r))throw new Error('values');return r;}catch{throw new Error(`${t('line')} ${index+2}`);}});
 }
 async function readFile(input){const file=input.files[0];if(!file)return null;if(file.size>10*1024*1024)throw new Error(t('maxFile'));return file.text();}
@@ -1674,7 +2089,7 @@ $('resetAll').onclick=async()=>{
 
 /* ---------------- Refresh & boot ---------------- */
 function refresh(){const month=localDate().slice(0,7);$('totalStat').textContent=state.logs.length;$('monthStat').textContent=state.logs.filter(r=>r.date.startsWith(month)).length;$('rmStat').textContent=Object.keys(state.profiles).length;$('exportCount').textContent=t('count',{n:state.logs.length});
- rmOptions();liftGroupFilterOptions();renderRecent();renderHistory();renderPlans();renderCalendar();renderProgramList();renderCustomLifts();renderAllRMs();renderCompare();
+ rmOptions();familyOptions($('compareFamily'),$('compareFamily').value||'snatch');liftGroupFilterOptions();renderRecent();renderHistory();renderPlans();renderCalendar();renderProgramList();renderAllRMs();renderCompare();
  if(linkedTitle&&!wodGroups().some(g=>g.key===linkedTitle))linkedTitle=null;renderLinked();renderSuggest();if(category==='STRENGTH')renderBlocks();}
 window.addEventListener('storage',e=>{
  try{
@@ -2545,6 +2960,7 @@ $('editLogForm')?.addEventListener('submit',async e=>{
  try{
   if(Supabase.isCoach){
    const next={...r,...data};delete next.pendingEdit;
+   if(next.category==='STRENGTH'&&next.liftKey){const mv=cleanMovementName(next.liftKey,next.title);if(mv)next.movementName=mv;else delete next.movementName;}
    if(!commit({...state,logs:state.logs.map(log=>log.id===id?next:log)}))return;
    await Supabase.flush();notify(t('editApproved'));
   }else{
@@ -2678,7 +3094,7 @@ $('unlinkCoachProgram').addEventListener('click',()=>{activeCoachProgramId=null;
 
 // Boot only after every handler and state variable has been initialized.
 $('date').value=localDate();$('todayLabel').textContent=new Date().toLocaleDateString(LOCALE,{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-familyOptions($('compareFamily'),'snatch');familyOptions($('customLiftFamily'),'snatch');classOptions();rmOptions();
+familyOptions($('compareFamily'),'snatch');rmOptions();
 Supabase.init();
 blocks=[blankBlock()];scoreFields();loadRM();updateConverter();updateBoxWodBtn();
 try{refresh();showPage(location.hash.slice(1)||'todo');}catch(error){Supabase.report(error);}
