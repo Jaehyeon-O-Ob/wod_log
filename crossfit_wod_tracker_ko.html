@@ -51,7 +51,7 @@
 .lift-block{border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px;background:#fcfcfa}
 .lift-head{display:flex;gap:8px;align-items:center}.lift-head select{flex:1;min-height:47px;border:1px solid var(--line);border-radius:9px;padding:10px;font-size:14px;background:#fff;min-width:0}
 .lift-name-row{margin-top:8px}.lift-name-input{width:100%;min-height:44px;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:14px;background:#fff;color:var(--ink)}
-.lift-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.lift-chip{min-height:30px;padding:4px 10px;font-size:11px;font-weight:600;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--ink)}.lift-chip.active{border-color:var(--accent);background:var(--wash);color:var(--accent)}
+.lift-suggest{border:1px solid #b8c8f0;background:#f7f9ff;border-radius:10px;margin-top:6px;padding:6px;display:grid;gap:4px}.lift-suggest-label{font-size:10px;font-weight:700;color:#2a4a9a;padding:2px 6px}.lift-suggest button{min-height:36px;padding:7px 10px;font-size:13px;font-weight:600;text-align:left;border:1px solid transparent;border-radius:8px;background:#fff;color:var(--ink);display:flex;justify-content:space-between;align-items:center;gap:8px}.lift-suggest button:hover{border-color:#b8c8f0;background:#eef3ff}.lift-suggest button small{font-size:10px;font-weight:600;color:var(--muted)}
 .lift-base-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}.lift-base-row label{font-size:11px;font-weight:700;color:var(--muted);white-space:nowrap}.lift-base-select{flex:1;min-width:170px;min-height:40px;border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:13px;background:#fff;color:var(--ink)}.lift-base-weight{width:115px;min-height:40px;border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:13px;background:#fff;color:var(--ink)}
 .lift-meta{font-size:11px;color:var(--muted);line-height:1.6;margin:8px 0}.lift-source{font-size:11px;color:#6b5f45;background:#f6f2e8;border-radius:7px;padding:7px 9px;margin:6px 0;overflow-wrap:anywhere}
 .set-head,.set-row{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.2fr) minmax(0,.8fr) minmax(0,.8fr) 40px;gap:6px;align-items:center}
@@ -114,11 +114,19 @@
 .member-name{font-size:13px;font-weight:700}
 .member-email{font-size:11px;color:var(--muted)}
 .member-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
-.coach-programs-list{display:grid;gap:10px;margin-top:12px}
-.coach-program-card{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;display:flex;justify-content:space-between;align-items:start;gap:12px}
-.coach-program-meta{flex:1}
-.coach-program-meta h4{margin:0 0 4px;font-size:14px}
-.coach-program-meta p{margin:0;font-size:12px;color:var(--muted);white-space:pre-wrap;max-height:80px;overflow:hidden}
+.coach-prog-controls{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;margin:10px 0 12px}
+.coach-prog-controls input[type=search]{width:100%;min-height:42px;border:1px solid var(--line);border-radius:9px;padding:8px 12px;font-size:13px;background:#fff;color:var(--ink)}
+.coach-prog-filters{margin:0;min-width:210px}.coach-prog-filters button{min-height:36px;padding:6px 10px;font-size:12px}
+.coach-programs-list{display:grid;gap:8px;margin-top:8px;max-height:480px;overflow-y:auto;padding-right:4px}
+.coach-program-card{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff;display:flex;flex-direction:column;gap:6px}
+.coach-prog-row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.coach-prog-title{display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-width:0;flex:1;font-size:13px}
+.coach-prog-title strong{overflow-wrap:anywhere}
+.coach-prog-actions{display:flex;gap:5px;align-items:center;flex-wrap:wrap;flex-shrink:0}
+.coach-prog-actions button{min-height:34px;padding:5px 9px;font-size:11px}
+.coach-prog-preview summary{cursor:pointer;font-size:11px;color:var(--muted);display:inline-flex;align-items:center;gap:4px}
+.coach-prog-preview p{margin:6px 0 0;font-size:12px;color:var(--muted);white-space:pre-wrap;background:var(--bg);padding:8px 10px;border-radius:8px;max-height:180px;overflow-y:auto}
+@media(max-width:640px){.coach-prog-controls{grid-template-columns:1fr}.coach-prog-controls input[type=search]{font-size:16px}}
 .auth-toggle{margin:12px 0 16px}
 .auth-dialog{max-width:440px;width:90%}
 .approval-dialog{max-width:440px;width:90%;text-align:center}
@@ -424,8 +432,19 @@ body.auth-locked .shell,body.auth-locked .bottom-nav{filter:blur(14px);pointer-e
     </div>
     <div class="panel spaced">
       <div class="panel-header">
-        <h2 data-t="coachPrograms"></h2>
+        <div style="display:flex;align-items:center;gap:8px">
+          <h2 data-t="coachPrograms"></h2>
+          <span id="coachProgramsCount" class="pill">0</span>
+        </div>
         <button type="button" id="refreshCoachProgramsBtn" class="ghost small">↻</button>
+      </div>
+      <div class="coach-prog-controls">
+        <input id="coachProgramSearch" type="search" data-placeholder="coachProgramSearchHint">
+        <div class="segmented coach-prog-filters" role="group">
+          <button type="button" class="active" data-prog-filter="all" data-t="filterAll"></button>
+          <button type="button" data-prog-filter="coach" data-t="coachRole"></button>
+          <button type="button" data-prog-filter="member" data-t="memberRole"></button>
+        </div>
       </div>
       <div id="coachProgramsList" class="coach-programs-list"></div>
     </div>
@@ -638,7 +657,10 @@ Object.assign(T,LANG==='ko'?{
  coachSharedGroup:'코치 공유 운동',memberSharedGroup:'회원 공유 운동',noSharedPrograms:'등록된 공유 운동이 없습니다.',
  hideBoxWod:'공유 운동 숨김',showBoxWod:'공유 운동 보기',
  boxWodHiddenNotify:'공유 운동을 캘린더에서 숨겼습니다.',boxWodShownNotify:'공유 운동을 캘린더에 표시합니다.',
- boxWodHiddenNotice:'공유 운동이 숨김 설정되어 있습니다.'
+ boxWodHiddenNotice:'공유 운동이 숨김 설정되어 있습니다.',
+ movementNameHint:'세부 운동명 직접 입력 (선택 · 예: Power Clean, Pause Squat)',
+ liftSuggestTitle:'일치하는 운동 추천 (클릭하여 선택)',liftSuggestPrev:'이전 기록',
+ coachProgramSearchHint:'제목·날짜·작성자 검색…',showBodyPreview:'내용 보기',noMatchingPrograms:'조건에 맞는 공유 운동이 없습니다.'
 }:{
  sharedWorkoutsUnified:'Shared workouts',noDaySharedWorkouts:'No shared workouts for this date.',sharedBadge:'Shared',
  planShareLabel:'Share to box Shared workouts',
@@ -656,7 +678,10 @@ Object.assign(T,LANG==='ko'?{
  coachSharedGroup:'Coach-shared workouts',memberSharedGroup:'Member-shared workouts',noSharedPrograms:'No shared workouts yet.',
  hideBoxWod:'Hide Shared Workouts',showBoxWod:'Show Shared Workouts',
  boxWodHiddenNotify:'Shared workouts are now hidden from the calendar.',boxWodShownNotify:'Shared workouts are now visible on the calendar.',
- boxWodHiddenNotice:'Shared workouts are currently hidden.'
+ boxWodHiddenNotice:'Shared workouts are currently hidden.',
+ movementNameHint:'Type specific movement (optional · e.g. Power Clean, Pause Squat)',
+ liftSuggestTitle:'Matching movements (click to select)',liftSuggestPrev:'Past log',
+ coachProgramSearchHint:'Search title, date or author…',showBodyPreview:'Preview',noMatchingPrograms:'No shared workouts match your filter.'
 });
 const KO=LANG==='ko', LOCALE=KO?'ko-KR':'en-US';
 const $=id=>document.getElementById(id);
@@ -1274,28 +1299,64 @@ function blockBaseNote(b,unit){
  if(rb.weight!==null)return t('baseIs',{lift:rb.label,w:dual(rb.weight,unit)});
  return t('baseMissing',{lift:rb.label||liftName(b.liftKey)});
 }
-function movementChipsHTML(b,bi,prev){
- if(!prev.length)return '';
- const cur=normalized(b.movementName||'');
- return `<div class="lift-chips" aria-label="${esc(t('prevMovementsLabel'))}">${prev.slice(0,8).map(name=>`<button type="button" class="lift-chip${cur===normalized(name)?' active':''}" data-pick-movement="${bi}" data-name="${esc(name)}">${esc(name)}</button>`).join('')}</div>`;
+function matchingMovementNames(liftKey, query){
+ const q=normalized(query);
+ if(!q)return [];
+ const l=liftInfo(liftKey), fam=l?.family;
+ const seen=new Set(), out=[];
+ const add=(name, isPrev)=>{
+  const c=cleanMovementName(liftKey, name);if(!c)return;
+  const cn=normalized(c);if(seen.has(cn))return;
+  seen.add(cn);
+  if(cn.includes(q))out.push({name:c,isPrev,exact:cn===q,starts:cn.startsWith(q)});
+ };
+ for(const n of previousMovementNames(liftKey))add(n, true);
+ if(fam){
+  for(const k of Object.keys(LEGACY_LIFTS)){
+   const ll=LEGACY_LIFTS[k];
+   if(ll.family!==fam)continue;
+   add(KO?ll.ko:ll.en, false);
+   if(KO&&ll.en!==ll.ko)add(ll.en, false);
+  }
+ }
+ // Hide suggestions if user already typed an exact single match
+ if(out.length===1&&out[0].exact)return [];
+ return out.sort((a,b)=>(b.isPrev-a.isPrev)||(b.starts-a.starts)||a.name.localeCompare(b.name,LOCALE)).slice(0,6);
+}
+function shouldShowBaseRow(b){
+ const l=liftInfo(b.liftKey);
+ if(l?.cls==='variation')return true;
+ if(cleanMovementName(b.liftKey,b.movementName))return true;
+ if(b.baseMode&&b.baseMode!=='main')return true;
+ if(b.rows.some(r=>finite(r.pct,.1,200)))return true;
+ return false;
+}
+function renderLiftSuggest(bi, forceHide=false){
+ const b=blocks[bi], el=$('liftBlocks').querySelector(`.lift-block[data-bi="${bi}"]`);if(!b||!el)return;
+ const box=el.querySelector('.lift-suggest');if(!box)return;
+ if(forceHide){box.hidden=true;box.innerHTML='';return;}
+ const list=matchingMovementNames(b.liftKey, b.movementName||'');
+ if(!list.length){box.hidden=true;box.innerHTML='';return;}
+ box.innerHTML=`<div class="lift-suggest-label">${esc(t('liftSuggestTitle'))}</div>`+list.map(x=>`<button type="button" data-pick-movement="${bi}" data-name="${esc(x.name)}"><span>${esc(x.name)}</span>${x.isPrev?`<small>${esc(t('liftSuggestPrev'))}</small>`:''}</button>`).join('');
+ box.hidden=false;
 }
 function rowHTML(b,bi,r,ri){const plan=entryMode==='plan',unit=$('weightUnit').value,c=rowComputed(b,r,unit);const w=r.weight!==undefined&&Number.isFinite(r.weight)&&!(plan&&r.auto)?fmtNum(r.weight):'';
  return `<div class="set-row" data-bi="${bi}" data-ri="${ri}"><input class="r-pct" type="number" inputmode="decimal" min="0" max="200" step="any" value="${finite(r.pct,0,200)?r.pct:''}" aria-label="%"${r.max?' disabled':''}><input class="r-weight" type="number" inputmode="decimal" min="0" max="100000" step="any" value="${w}" placeholder="${c!==null?fmtW(c):''}" aria-label="${esc(t('weightCol'))}"><input class="r-reps" type="number" inputmode="numeric" min="1" max="10000" step="1" value="${isInt(r.reps,1,10000)?r.reps:''}" aria-label="${esc(t('repsCol'))}"><input class="r-sets" type="number" inputmode="numeric" min="1" max="10000" step="1" value="${isInt(r.sets,1,10000)?r.sets:''}" aria-label="${esc(t('setsCol'))}"><button type="button" class="row-del" data-del-row="${bi}:${ri}" aria-label="${esc(t('removeSet'))}">×</button><div class="row-tag">${esc(rowTag(b,r,unit))}</div></div>`;}
 function blockHTML(b,bi){
- const plan=entryMode==='plan',unit=$('weightUnit').value,prev=previousMovementNames(b.liftKey);
+ const plan=entryMode==='plan',unit=$('weightUnit').value;
  const mode=b.baseMode&&BASE_MODES.has(b.baseMode)?b.baseMode:defaultBaseMode(b.liftKey);
- return `<div class="lift-block" data-bi="${bi}"><div class="lift-head"><select class="lift-select" aria-label="${esc(t('lift'))}">${liftOptions(b.liftKey)}</select><button type="button" class="small ghost" data-del-block="${bi}" aria-label="${esc(t('removeLift'))}">✕</button></div><div class="lift-name-row"><input class="lift-name-input" type="text" maxlength="100" list="dl-lift-${bi}" value="${esc(b.movementName||'')}" placeholder="${esc(t('movementNameHint'))}" aria-label="${esc(t('movementNameLabel'))}"><datalist id="dl-lift-${bi}">${prev.map(n=>`<option value="${esc(n)}"></option>`).join('')}</datalist>${movementChipsHTML(b,bi,prev)}</div><div class="lift-base-row"><label for="baseSel-${bi}">${esc(t('pctBaseLabel'))}</label><select id="baseSel-${bi}" class="lift-base-select" aria-label="${esc(t('pctBaseLabel'))}">${baseSelectOptions(b,unit)}</select><input class="lift-base-weight" type="number" inputmode="decimal" min="0.1" max="100000" step="any" value="${finite(b.baseWeight,.1,100000)?fmtNum(b.baseWeight):''}" placeholder="${esc(t('baseCustomPlaceholder'))} (${unit})" aria-label="${esc(t('baseCustomPlaceholder'))}"${mode==='custom'?'':' hidden'}></div><div class="lift-meta">${esc(blockBaseNote(b,unit))}</div>${b.text?`<div class="lift-source">${esc(t('programLine'))}: ${esc(b.text)}</div>`:''}${b.note?`<div class="lift-meta">${esc(b.note)}</div>`:''}<div class="set-head"><span>%</span><span>${esc(t(plan?'targetWeightCol':'weightCol'))} (${unit})</span><span>${esc(t('repsCol'))}</span><span>${esc(t('setsCol'))}</span><span></span></div>${b.rows.map((r,ri)=>rowHTML(b,bi,r,ri)).join('')}<div class="block-actions"><button type="button" class="small" data-add-row="${bi}">${esc(t('addSet'))}</button></div><div class="lift-history">${liftHistoryHTML(b)}</div></div>`;
+ const showBase=shouldShowBaseRow(b);
+ return `<div class="lift-block" data-bi="${bi}"><div class="lift-head"><select class="lift-select" aria-label="${esc(t('lift'))}">${liftOptions(b.liftKey)}</select><button type="button" class="small ghost" data-del-block="${bi}" aria-label="${esc(t('removeLift'))}">✕</button></div><div class="lift-name-row"><input class="lift-name-input" type="text" maxlength="100" autocomplete="off" value="${esc(b.movementName||'')}" placeholder="${esc(t('movementNameHint'))}" aria-label="${esc(t('movementNameLabel'))}"><div class="lift-suggest" hidden></div></div><div class="lift-base-row"${showBase?'':' hidden'}><label for="baseSel-${bi}">${esc(t('pctBaseLabel'))}</label><select id="baseSel-${bi}" class="lift-base-select" aria-label="${esc(t('pctBaseLabel'))}">${baseSelectOptions(b,unit)}</select><input class="lift-base-weight" type="number" inputmode="decimal" min="0.1" max="100000" step="any" value="${finite(b.baseWeight,.1,100000)?fmtNum(b.baseWeight):''}" placeholder="${esc(t('baseCustomPlaceholder'))} (${unit})" aria-label="${esc(t('baseCustomPlaceholder'))}"${mode==='custom'?'':' hidden'}></div><div class="lift-meta">${esc(blockBaseNote(b,unit))}</div>${b.text?`<div class="lift-source">${esc(t('programLine'))}: ${esc(b.text)}</div>`:''}${b.note?`<div class="lift-meta">${esc(b.note)}</div>`:''}<div class="set-head"><span>%</span><span>${esc(t(plan?'targetWeightCol':'weightCol'))} (${unit})</span><span>${esc(t('repsCol'))}</span><span>${esc(t('setsCol'))}</span><span></span></div>${b.rows.map((r,ri)=>rowHTML(b,bi,r,ri)).join('')}<div class="block-actions"><button type="button" class="small" data-add-row="${bi}">${esc(t('addSet'))}</button></div><div class="lift-history">${liftHistoryHTML(b)}</div></div>`;
 }
 function refreshBlock(bi){const b=blocks[bi];if(!b)return;const unit=$('weightUnit').value,plan=entryMode==='plan';b.rows.forEach((r,ri)=>{const c=rowComputed(b,r,unit),w=rowInput(bi,ri,'r-weight');if(!plan&&c!==null&&(r.auto===true||(r.weight===undefined&&r.auto!==false))){r.weight=c;r.auto=true;if(w&&document.activeElement!==w)w.value=fmtNum(c);}else if(!plan&&c===null&&r.auto===true){delete r.weight;if(w&&document.activeElement!==w)w.value='';}if(w)w.placeholder=c!==null?fmtW(c):'';const tag=w?.parentElement.querySelector('.row-tag');if(tag)tag.textContent=rowTag(b,r,unit);});}
 function updateBlockContext(bi){
  const b=blocks[bi], el=$('liftBlocks').querySelector(`.lift-block[data-bi="${bi}"]`);if(!b||!el)return;
  const unit=$('weightUnit').value;
+ const baseRow=el.querySelector('.lift-base-row');if(baseRow)baseRow.hidden=!shouldShowBaseRow(b);
  const sel=el.querySelector('.lift-base-select');if(sel)sel.innerHTML=baseSelectOptions(b,unit);
  const mode=b.baseMode&&BASE_MODES.has(b.baseMode)?b.baseMode:defaultBaseMode(b.liftKey);
  const bw=el.querySelector('.lift-base-weight');if(bw)bw.hidden=mode!=='custom';
  const meta=el.querySelector('.lift-meta');if(meta)meta.textContent=blockBaseNote(b,unit);
- const cur=normalized(b.movementName||'');
- el.querySelectorAll('.lift-chip').forEach(ch=>ch.classList.toggle('active',cur!==''&&normalized(ch.dataset.name)===cur));
  const hist=el.querySelector('.lift-history');if(hist)hist.innerHTML=liftHistoryHTML(b);
  refreshBlock(bi);
 }
@@ -1303,16 +1364,22 @@ function renderBlocks(){$('liftBlocks').innerHTML=blocks.map(blockHTML).join('')
 $('liftBlocks').addEventListener('input',e=>{
  const blkEl=e.target.closest('.lift-block');if(!blkEl)return;
  const bi=Number(blkEl.dataset.bi), b=blocks[bi];if(!b)return;
- if(e.target.classList.contains('lift-name-input')){b.movementName=e.target.value;updateBlockContext(bi);return;}
+ if(e.target.classList.contains('lift-name-input')){b.movementName=e.target.value;updateBlockContext(bi);renderLiftSuggest(bi);return;}
  if(e.target.classList.contains('lift-base-weight')){const v=e.target.value.trim();b.baseWeight=v===''?undefined:Number(v);b.rows.forEach(r=>{if(r.auto)delete r.weight;});updateBlockContext(bi);return;}
  const row=e.target.closest('.set-row');if(!row)return;
  const r=b.rows[Number(row.dataset.ri)];if(!r)return;
  const v=e.target.value.trim(),n=v===''?undefined:Number(v),cl=e.target.classList;
- if(cl.contains('r-pct')){r.pct=n;delete r.pctMax;if(entryMode==='log')r.auto=true;}
+ if(cl.contains('r-pct')){r.pct=n;delete r.pctMax;if(entryMode==='log')r.auto=true;updateBlockContext(bi);return;}
  else if(cl.contains('r-weight')){r.weight=n;r.auto=false;}
  else if(cl.contains('r-reps')){r.reps=n;delete r.repsMax;}
  else if(cl.contains('r-sets')){r.sets=n;delete r.setsMax;}
  refreshBlock(bi);
+});
+$('liftBlocks').addEventListener('focusout',e=>{
+ if(!e.target.classList.contains('lift-name-input'))return;
+ const blkEl=e.target.closest('.lift-block');if(!blkEl)return;
+ const bi=Number(blkEl.dataset.bi);
+ setTimeout(()=>renderLiftSuggest(bi, true), 150);
 });
 $('liftBlocks').addEventListener('change',e=>{
  const blkEl=e.target.closest('.lift-block');if(!blkEl)return;
@@ -1332,13 +1399,16 @@ $('liftBlocks').addEventListener('change',e=>{
   if(b.baseMode==='custom'){const bw=blkEl.querySelector('.lift-base-weight');if(bw)bw.focus();}
  }
 });
+$('liftBlocks').addEventListener('mousedown',e=>{
+ if(e.target.closest('[data-pick-movement]'))e.preventDefault();
+});
 $('liftBlocks').addEventListener('click',e=>{const btn=e.target.closest('button');if(!btn)return;
  if(btn.dataset.pickMovement!==undefined){
   const bi=Number(btn.dataset.pickMovement), b=blocks[bi];if(!b)return;
-  const picked=btn.dataset.name||'';
-  b.movementName=normalized(b.movementName||'')===normalized(picked)?'':picked;
+  b.movementName=btn.dataset.name||'';
   const inp=$('liftBlocks').querySelector(`.lift-block[data-bi="${bi}"] .lift-name-input`);
   if(inp)inp.value=b.movementName;
+  renderLiftSuggest(bi, true);
   updateBlockContext(bi);formDirty=true;return;
  }
  if(btn.dataset.addRow!==undefined){const blk=blocks[Number(btn.dataset.addRow)],last=blk.rows[blk.rows.length-1]||{reps:1,sets:1},row={reps:isInt(last.reps,1,10000)?last.reps:1,sets:1};if(finite(last.pct,.1,200)&&!last.ofDayMax)row.pct=last.pct;if(entryMode==='log'&&finite(last.weight,0,100000)&&last.auto===false){row.weight=last.weight;row.auto=false;}blk.rows.push(row);renderBlocks();formDirty=true;}
@@ -2354,6 +2424,94 @@ function renderMembersList() {
   }).join('');
 }
 
+let currentCoachProgFilter = 'all';
+
+function renderCoachProgramsList() {
+  const container = $('coachProgramsList');
+  if (!container) return;
+  const totalCount = cachedCoachPrograms.length + sharedPrograms.length;
+  if ($('coachProgramsCount')) $('coachProgramsCount').textContent = totalCount;
+  if (!totalCount) {
+    container.innerHTML = `<p class="subtle">${esc(t('noSharedPrograms'))}</p>`;
+    return;
+  }
+  const q = normalized($('coachProgramSearch')?.value || '');
+  const matchRow = (p, author) => !q || normalized([cleanProgramTitle(p.title), p.start_date, author, p.program_text].join(' ')).includes(q);
+  const coachRows = currentCoachProgFilter === 'member' ? [] : cachedCoachPrograms.filter(p => matchRow(p, t('coachRole')));
+  const memberRows = currentCoachProgFilter === 'coach' ? [] : sharedPrograms.filter(p => matchRow(p, p.user_name || t('memberRole')));
+  if (!coachRows.length && !memberRows.length) {
+    container.innerHTML = `<p class="subtle">${esc(t('noMatchingPrograms'))}</p>`;
+    return;
+  }
+  const coachCard = p => {
+    const cat = getProgramCategory(p), isStr = cat === 'STRENGTH', refKey = `coach_programs:${p.id}`;
+    const body = (p.program_text || '').trim();
+    return `<div class="coach-program-card">
+      <div class="coach-prog-row">
+        <div class="coach-prog-title">
+          <span class="cat-pill ${isStr ? 'str' : 'wod'}">${cat}</span>
+          <span class="role-pill coach">${esc(t('coachRole'))}</span>
+          <strong>${esc(cleanProgramTitle(p.title))}</strong>
+          <span class="pill">${esc(p.start_date)}</span>
+          <span class="pill ${p.is_public ? 'green' : 'gray'}">${esc(p.is_public ? t('publicWod') : t('privateWod'))}</span>
+        </div>
+        <div class="coach-prog-actions">
+          <button type="button" class="secondary small" data-coach-completions="${esc(p.id)}">${esc(t('coachCompletions'))}</button>
+          <button type="button" class="small" data-edit-shared="${esc(refKey)}">${esc(t('edit'))}</button>
+          <button type="button" class="ghost small" data-toggle-prog="${esc(p.id)}" data-is-pub="${p.is_public ? '1' : '0'}">${esc(p.is_public ? t('togglePrivate') : t('togglePublic'))}</button>
+          <button type="button" class="danger small" data-delete-prog="${esc(p.id)}">${esc(t('delete'))}</button>
+        </div>
+      </div>
+      ${body ? `<details class="coach-prog-preview"><summary>${esc(t('showBodyPreview'))} ▾</summary><p>${esc(body)}</p></details>` : ''}
+    </div>`;
+  };
+  const memberCard = p => {
+    const cat = getProgramCategory(p), isStr = cat === 'STRENGTH', refKey = `shared_programs:${p.id}`;
+    const body = (p.program_text || '').trim();
+    return `<div class="coach-program-card">
+      <div class="coach-prog-row">
+        <div class="coach-prog-title">
+          <span class="cat-pill ${isStr ? 'str' : 'wod'}">${cat}</span>
+          <span class="role-pill member">${esc(p.user_name || t('memberRole'))}</span>
+          <strong>${esc(cleanProgramTitle(p.title))}</strong>
+          <span class="pill">${esc(p.start_date)}</span>
+        </div>
+        <div class="coach-prog-actions">
+          <button type="button" class="small" data-edit-shared="${esc(refKey)}">${esc(t('edit'))}</button>
+          <button type="button" class="danger small" data-del-shared-prog="${esc(p.id)}">${esc(t('delete'))}</button>
+        </div>
+      </div>
+      ${body ? `<details class="coach-prog-preview"><summary>${esc(t('showBodyPreview'))} ▾</summary><p>${esc(body)}</p></details>` : ''}
+    </div>`;
+  };
+  const groups = new Map();
+  for (const p of coachRows) {
+    const key = programGroupKey(p);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(p);
+  }
+  let html = '';
+  if (coachRows.length) {
+    html += `<h3 class="help">${esc(t('coachSharedGroup'))} (${coachRows.length})</h3>`;
+    for (const [key, rows] of groups) {
+      if (key) {
+        const dates = rows.map(r => r.start_date).sort();
+        html += `<div class="program-row">
+          <span><strong>${esc(key)}</strong><br><span class="help">${esc(t('programGroupCount', { n: rows.length, start: displayDate(dates[0]), end: displayDate(dates[dates.length - 1]) }))}</span></span>
+          <button type="button" class="danger small" data-del-prog-group="${esc(key)}">${esc(t('deleteProgramGroup'))}</button>
+        </div>
+        <details class="spaced" data-group="${esc(key)}"${openProgramGroups.has(key) ? ' open' : ''}><summary class="help">${esc(t('showProgramEntries', { n: rows.length }))}</summary>${rows.map(coachCard).join('')}</details>`;
+      } else {
+        html += rows.map(coachCard).join('');
+      }
+    }
+  }
+  if (memberRows.length) {
+    html += `<h3 class="help spaced">${esc(t('memberSharedGroup'))} (${memberRows.length})</h3>${memberRows.map(memberCard).join('')}`;
+  }
+  container.innerHTML = html;
+}
+
 async function loadCoachPublishedPrograms() {
   const container = $('coachProgramsList');
   if (!container) return;
@@ -2362,70 +2520,7 @@ async function loadCoachPublishedPrograms() {
     cachedCoachPrograms = cp || [];
     coachPrograms = cachedCoachPrograms;
     sharedPrograms = sp || [];
-    if (!cachedCoachPrograms.length && !sharedPrograms.length) {
-      container.innerHTML = `<p class="subtle">${esc(t('noSharedPrograms'))}</p>`;
-      return;
-    }
-    const coachCard = p => {
-      const cat = getProgramCategory(p);
-      const isStr = cat === 'STRENGTH';
-      const refKey = `coach_programs:${p.id}`;
-      return `
-      <div class="coach-program-card">
-        <div class="coach-program-meta">
-          <h4><span class="cat-pill ${isStr ? 'str' : 'wod'}">${cat}</span> <span class="role-pill coach">${esc(t('coachRole'))}</span> ${esc(cleanProgramTitle(p.title))} <span class="pill">${esc(p.start_date)}</span> <span class="pill">${esc(p.unit)}</span> <span class="pill ${p.is_public ? 'green' : 'gray'}">${esc(p.is_public ? t('publicWod') : t('privateWod'))}</span></h4>
-          <p>${esc(p.program_text)}</p>
-        </div>
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-          <button type="button" class="secondary small" data-coach-completions="${esc(p.id)}">${esc(t('coachCompletions'))}</button>
-          <button type="button" class="small" data-edit-shared="${esc(refKey)}">${esc(t('edit'))}</button>
-          <button type="button" class="ghost small" data-toggle-prog="${esc(p.id)}" data-is-pub="${p.is_public ? '1' : '0'}">${esc(p.is_public ? t('togglePrivate') : t('togglePublic'))}</button>
-          <button type="button" class="danger small" data-delete-prog="${esc(p.id)}">${esc(t('delete'))}</button>
-        </div>
-      </div>`;
-    };
-    const memberCard = p => {
-      const cat = getProgramCategory(p);
-      const isStr = cat === 'STRENGTH';
-      const refKey = `shared_programs:${p.id}`;
-      return `
-      <div class="coach-program-card">
-        <div class="coach-program-meta">
-          <h4><span class="cat-pill ${isStr ? 'str' : 'wod'}">${cat}</span> <span class="role-pill member">${esc(p.user_name || t('memberRole'))}</span> ${esc(cleanProgramTitle(p.title))} <span class="pill">${esc(p.start_date)}</span> <span class="pill">${esc(p.unit)}</span></h4>
-          <p>${esc(p.program_text)}</p>
-        </div>
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-          <button type="button" class="small" data-edit-shared="${esc(refKey)}">${esc(t('edit'))}</button>
-          <button type="button" class="danger small" data-del-shared-prog="${esc(p.id)}">${esc(t('delete'))}</button>
-        </div>
-      </div>`;
-    };
-    const groups = new Map();
-    for (const p of cachedCoachPrograms) {
-      const key = programGroupKey(p);
-      if (!groups.has(key)) groups.set(key, []);
-      groups.get(key).push(p);
-    }
-    let html = '';
-    if (cachedCoachPrograms.length) {
-      html += `<h3 class="help">${esc(t('coachSharedGroup'))}</h3>`;
-      for (const [key, rows] of groups) {
-        if (key) {
-          const dates = rows.map(r => r.start_date).sort();
-          html += `<div class="program-row">
-            <span><strong>${esc(key)}</strong><br><span class="help">${esc(t('programGroupCount', { n: rows.length, start: displayDate(dates[0]), end: displayDate(dates[dates.length - 1]) }))}</span></span>
-            <button type="button" class="danger small" data-del-prog-group="${esc(key)}">${esc(t('deleteProgramGroup'))}</button>
-          </div>
-          <details class="spaced" data-group="${esc(key)}"${openProgramGroups.has(key) ? ' open' : ''}><summary class="help">${esc(t('showProgramEntries', { n: rows.length }))}</summary>${rows.map(coachCard).join('')}</details>`;
-        } else {
-          html += `<h3 class="help spaced">${esc(t('singlePublishes'))}</h3>${rows.map(coachCard).join('')}`;
-        }
-      }
-    }
-    if (sharedPrograms.length) {
-      html += `<h3 class="help spaced">${esc(t('memberSharedGroup'))}</h3>${sharedPrograms.map(memberCard).join('')}`;
-    }
-    container.innerHTML = html;
+    renderCoachProgramsList();
   } catch (e) {
     container.innerHTML = `<p class="error-banner">${esc(e.message)}</p>`;
   }
@@ -2593,6 +2688,15 @@ function shareRowsFromDraft(d,unit,isPublic){const rows=[];
  return rows.sort((a,b)=>a.start_date<b.start_date?-1:a.start_date>b.start_date?1:0);}
 
 $('refreshCoachProgramsBtn')?.addEventListener('click', loadCoachPublishedPrograms);
+$('coachProgramSearch')?.addEventListener('input', renderCoachProgramsList);
+document.querySelectorAll('.coach-prog-filters button').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.coach-prog-filters button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    currentCoachProgFilter = b.dataset.progFilter || 'all';
+    renderCoachProgramsList();
+  });
+});
 
 $('coachProgramsList')?.addEventListener('toggle', (e) => {
   const d = e.target;
