@@ -649,6 +649,8 @@ Object.assign(T,LANG==='ko'?{
  sharedUpdated:'공유 운동을 수정했습니다.',sharedPublished:'공유 운동으로 등록했습니다.',
  sharedUnshareAsk:'공유 체크가 해제되었습니다. 박스 "공유 운동"에서도 기존 항목을 삭제할까요?',sharedUnshared:'공유 운동에서 삭제했습니다.',
  deleteLinkedSharedAsk:'이 계획과 연결된 박스 "공유 운동"도 함께 삭제할까요?',
+ deleteLinkedPlanAsk:'내 "해야 할 운동"에 있는 연결된 계획("{title}" · {date})도 함께 삭제할까요?',
+ deleteLinkedPlansAsk:'내 "해야 할 운동"에 있는 연결된 계획 {n}개도 함께 삭제할까요?',
  sharedDupOverwriteAsk:'같은 날짜({date})에 이미 공유된 "{title}" 운동이 있습니다.\n기존 공유 운동을 수정(덮어쓰기)할까요?\n(취소를 누르면 새 공유 운동으로 추가합니다)',
  sharedUpdateFailedNoRls:'공유 운동을 수정하지 못했습니다. Supabase의 UPDATE 권한(RLS)을 확인해주세요. (중복 생성을 막기 위해 새로 등록하지 않았습니다.)',
  useSharedWod:'이 WOD 기록하기',useSharedStrength:'이 스트렝스 기록하기',
@@ -670,6 +672,8 @@ Object.assign(T,LANG==='ko'?{
  sharedUpdated:'Shared workout updated.',sharedPublished:'Published to Shared workouts.',
  sharedUnshareAsk:'Sharing is unchecked. Also remove the linked workout from Shared workouts?',sharedUnshared:'Removed from Shared workouts.',
  deleteLinkedSharedAsk:'Also delete the linked box Shared workout?',
+ deleteLinkedPlanAsk:'Also delete the linked plan ("{title}" · {date}) from your personal To-do list?',
+ deleteLinkedPlansAsk:'Also delete the {n} linked plan(s) from your personal To-do list?',
  sharedDupOverwriteAsk:'A shared workout "{title}" already exists on {date}.\nUpdate (overwrite) the existing shared workout?\n(Cancel to add as a new entry)',
  sharedUpdateFailedNoRls:'Could not update the shared workout. Check your Supabase UPDATE RLS policy. (No duplicate was created.)',
  useSharedWod:'Log this WOD',useSharedStrength:'Log this Strength',
@@ -1546,6 +1550,28 @@ function clearLocalSharedRef(table,id){
  const plans=state.plans.map(x=>{if(x.sharedRef?.table===table&&x.sharedRef?.id===id){const copy={...x};delete copy.sharedRef;return copy;}return x;});
  commit({...state,plans});
 }
+function findLinkedLocalPlans(table,id,row=null){
+ const byRef=state.plans.filter(p=>p.sharedRef?.table===table&&p.sharedRef?.id===id);
+ if(byRef.length||!row)return byRef;
+ const cat=getProgramCategory(row), title=normalized(cleanProgramTitle(row.title));
+ return state.plans.filter(p=>!p.sharedRef&&p.date===row.start_date&&p.category===cat&&normalized(cleanProgramTitle(planTitle(p)))===title);
+}
+async function cleanupLocalPlansAfterSharedDelete(entries){
+ const matchedMap=new Map();
+ for(const e of entries)for(const p of findLinkedLocalPlans(e.table,e.id,e.row))matchedMap.set(p.id,p);
+ const matched=[...matchedMap.values()];
+ if(matched.length){
+  const ask=matched.length===1?t('deleteLinkedPlanAsk',{title:planTitle(matched[0]),date:displayDate(matched[0].date)}):t('deleteLinkedPlansAsk',{n:matched.length});
+  if(await confirmAction(ask)){
+   const removeIds=new Set(matched.map(p=>p.id));
+   if(commit({...state,plans:state.plans.filter(p=>!removeIds.has(p.id))})){
+    if(activePlan&&removeIds.has(activePlan.id))resetEntry('log');
+   }
+   return;
+  }
+ }
+ for(const e of entries)clearLocalSharedRef(e.table,e.id);
+}
 async function upsertSharedForPlan(p,prevPlan=null){
  let targetRef=prevPlan?.sharedRef||null;
  if(!targetRef){
@@ -1768,9 +1794,9 @@ async function planAction(e){
       if(commit({...state,plans:state.plans.filter(p=>p.id!==b.dataset.deletePlan)})){
         if(activePlan?.id===b.dataset.deletePlan)resetEntry('log');
         notify(t('deleted'));
-        const ref=targetPlan?.sharedRef;
-        if(ref&&findSharedEntry(ref.table,ref.id)&&await confirmAction(t('deleteLinkedSharedAsk'))){
-          try{await Supabase.deletePublishedProgram(ref.table,ref.id);await loadCoachWodForSelectedDate();notify(t('sharedUnshared'));}
+        const linked=targetPlan?.sharedRef?findSharedEntry(targetPlan.sharedRef.table,targetPlan.sharedRef.id):targetPlan?findDuplicateShared(targetPlan):null;
+        if(linked&&linked.canDelete&&await confirmAction(t('deleteLinkedSharedAsk'))){
+          try{await Supabase.deletePublishedProgram(linked.table,linked.id);await loadCoachWodForSelectedDate();notify(t('sharedUnshared'));}
           catch(err){Supabase.report(err);}
         }
       }
@@ -1789,9 +1815,10 @@ async function planAction(e){
   }
   if(b.dataset.delShared&&await confirmAction(t('deleteProgramConfirm'))){
     const [table,id]=b.dataset.delShared.split(':');
+    const entry=findSharedEntry(table,id);
     try{
       await Supabase.deletePublishedProgram(table,id);
-      clearLocalSharedRef(table,id);
+      await cleanupLocalPlansAfterSharedDelete([{table,id,row:entry?.row||null}]);
       notify(t('deleted'));
       await loadCoachWodForSelectedDate();
     }catch(err){Supabase.report(err);}
@@ -2736,7 +2763,7 @@ $('coachProgramsList')?.addEventListener('click', async (e) => {
     groupBtn.disabled = true;
     try {
       await Supabase.deleteCoachPrograms(rows.map(r => r.id));
-      for (const r of rows) clearLocalSharedRef('coach_programs', r.id);
+      await cleanupLocalPlansAfterSharedDelete(rows.map(r => ({ table: 'coach_programs', id: r.id, row: r })));
       notify(t('programGroupDeleted', { n: rows.length }));
       await loadCoachPublishedPrograms();
       loadCoachWodForSelectedDate();
@@ -2751,8 +2778,9 @@ $('coachProgramsList')?.addEventListener('click', async (e) => {
     if (!await confirmAction(t('deleteProgramConfirm'))) return;
     try {
       const id = delSharedBtn.dataset.delSharedProg;
+      const row = sharedPrograms.find(p => p.id === id) || null;
       await Supabase.deleteSharedProgram(id);
-      clearLocalSharedRef('shared_programs', id);
+      await cleanupLocalPlansAfterSharedDelete([{ table: 'shared_programs', id, row }]);
       notify(t('deleted'));
       await loadCoachPublishedPrograms();
       loadCoachWodForSelectedDate();
@@ -2766,8 +2794,9 @@ $('coachProgramsList')?.addEventListener('click', async (e) => {
   if (!await confirmAction(t('deleteProgramConfirm'))) return;
   try {
     const id = btn.dataset.deleteProg;
+    const row = cachedCoachPrograms.find(p => p.id === id) || null;
     await Supabase.deleteCoachProgram(id);
-    clearLocalSharedRef('coach_programs', id);
+    await cleanupLocalPlansAfterSharedDelete([{ table: 'coach_programs', id, row }]);
     notify(t('deleted'));
     await loadCoachPublishedPrograms();
     loadCoachWodForSelectedDate();
